@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"errors"
+	. "github.com/jacobsa/oglematchers"
 	"github.com/jacobsa/ogletest/internal"
 	"testing"
 )
@@ -147,7 +148,7 @@ func TestMatchFalseWithoutMessages(t *testing.T) {
 
 	record := internal.CurrentTest.FailureRecords[0]
 	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 144, record.LineNumber)
+	expectEqInt(t, 145, record.LineNumber)
 	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
 	expectEqStr(t, "", record.UserError)
 }
@@ -161,7 +162,7 @@ func TestMatchUndefinedWithoutMessages(t *testing.T) {
 
 	record := internal.CurrentTest.FailureRecords[0]
 	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 158, record.LineNumber)
+	expectEqInt(t, 159, record.LineNumber)
 	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
 	expectEqStr(t, "", record.UserError)
 }
