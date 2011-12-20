@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"fmt"
+	"github.com/jacobsa/oglematchers"
 	"github.com/jacobsa/ogletest/internal"
 	"path"
 	"reflect"
@@ -34,7 +35,7 @@ import (
 //     ExpectThat(userName, Equals("jacobsa"))
 //     ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
 //
-func ExpectThat(x interface{}, m Matcher, errorParts ...interface{}) {
+func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) {
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)
 	if !ok {
@@ -62,12 +63,12 @@ func ExpectThat(x interface{}, m Matcher, errorParts ...interface{}) {
 	res, matcherErr := m.Matches(x)
 	switch res {
 	// Return immediately on success.
-	case MATCH_TRUE:
+	case oglematchers.MATCH_TRUE:
 		return
 
 	// Handle errors below.
-	case MATCH_FALSE:
-	case MATCH_UNDEFINED:
+	case oglematchers.MATCH_FALSE:
+	case oglematchers.MATCH_UNDEFINED:
 
 	// Panic for invalid results.
 	default:
