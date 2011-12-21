@@ -22,6 +22,27 @@ import (
 	"testing"
 )
 
+// runTest runs a single test, returning a slice of failure records for that test.
+func runTest(suite interface{}, method reflect.Method) []internal.FailureRecord {
+	suiteValue := reflect.ValueOf(suite)
+	suiteType := suiteValue.Type()
+	suiteName := suiteType.Elem().Name()
+
+	fmt.Printf("==== %s.%s\n", suiteName, method.Name)
+
+	// Set up a clean slate for this test.
+	internal.CurrentTest = internal.NewTestState()
+
+	// Create a receiver, and call it.
+	suiteInstance := reflect.New(suiteType.Elem())
+	runMethodIfExists(suiteInstance, "SetUp")
+	runMethodIfExists(suiteInstance, method.Name)
+	runMethodIfExists(suiteInstance, "TearDown")
+
+	// Return any failures recorded.
+	return internal.CurrentTest.FailureRecords
+}
+
 // RunTests runs the test suites registered with ogletest, communicating
 // failures to the supplied testing.T object. This is the bridge between
 // ogletest and the testing package (and gotest); you should ensure that it's
@@ -61,19 +82,11 @@ func RunTests(t *testing.T) {
 				continue
 			}
 
-			fmt.Printf("==== %s.%s\n", suiteName, method.Name)
-
-			// Set up a clean slate for this test.
-			internal.CurrentTest = internal.NewTestState()
-
-			// Create a receiver, and call it.
-			rcvr := reflect.New(typ.Elem())
-			runMethodIfExists(rcvr, "SetUp")
-			runMethodIfExists(rcvr, method.Name)
-			runMethodIfExists(rcvr, "TearDown")
+			// Run the test.
+			failures := runTest(suite, method)
 
 			// Print any failures, and mark the test as having failed if there are any.
-			for _, record := range internal.CurrentTest.FailureRecords {
+			for _, record := range failures {
 				t.Fail()
 				fmt.Printf(
 					"%s:%d:\n%s\n%s",
