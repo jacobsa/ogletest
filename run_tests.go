@@ -18,7 +18,9 @@ package ogletest
 import (
 	"fmt"
 	"github.com/jacobsa/ogletest/internal"
+	"path"
 	"reflect"
+	"runtime"
 	"testing"
 )
 
@@ -38,6 +40,21 @@ func runTest(suite interface{}, method reflect.Method) (failures []internal.Fail
 		// panics, additionally return a failure for the panic.
 		failures = internal.CurrentTest.FailureRecords
 		if r := recover(); r != nil {
+			// The stack looks like this:
+			//
+			//     <this deferred function>
+			//     panic(r)
+			//     <function that called panic>
+			//
+			_, fileName, lineNumber, ok := runtime.Caller(2)
+			var panicRecord internal.FailureRecord
+			if ok {
+				panicRecord.FileName = path.Base(fileName)
+				panicRecord.LineNumber = lineNumber
+			}
+
+			panicRecord.GeneratedError = fmt.Sprintf("panic: %v", r)
+			failures = append(failures, panicRecord)
 		}
 
 		// Reset the global CurrentTest state, so we don't accidentally use it elsewhere.
