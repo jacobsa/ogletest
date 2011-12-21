@@ -23,7 +23,7 @@ import (
 )
 
 // runTest runs a single test, returning a slice of failure records for that test.
-func runTest(suite interface{}, method reflect.Method) []internal.FailureRecord {
+func runTest(suite interface{}, method reflect.Method) (failures []internal.FailureRecord) {
 	suiteValue := reflect.ValueOf(suite)
 	suiteType := suiteValue.Type()
 	suiteName := suiteType.Elem().Name()
@@ -33,14 +33,25 @@ func runTest(suite interface{}, method reflect.Method) []internal.FailureRecord 
 	// Set up a clean slate for this test.
 	internal.CurrentTest = internal.NewTestState()
 
+	defer func() {
+		// Return the failures the test recorded, whether it panics or not. If it
+		// panics, additionally return a failure for the panic.
+		failures = internal.CurrentTest.FailureRecords
+		if r := recover(); r != nil {
+		}
+
+		// Reset the global CurrentTest state, so we don't accidentally use it elsewhere.
+		internal.CurrentTest = nil
+	}()
+
 	// Create a receiver, and call it.
 	suiteInstance := reflect.New(suiteType.Elem())
 	runMethodIfExists(suiteInstance, "SetUp")
 	runMethodIfExists(suiteInstance, method.Name)
 	runMethodIfExists(suiteInstance, "TearDown")
 
-	// Return any failures recorded.
-	return internal.CurrentTest.FailureRecords
+	// The return value is set in the deferred function above.
+	return
 }
 
 // RunTests runs the test suites registered with ogletest, communicating
