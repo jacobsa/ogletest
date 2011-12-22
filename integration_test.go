@@ -52,8 +52,8 @@ func getCaseNames() ([]string, error) {
 	result := make([]string, len(names))
 	resultLen := 0
 	for _, name := range names {
-		// Skip golden files.
-		if strings.HasPrefix(name, "golden.") {
+		// Skip golden files and hidden files.
+		if strings.HasPrefix(name, "golden.") || strings.HasPrefix(name, ".") {
 			continue
 		}
 
