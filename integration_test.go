@@ -16,12 +16,50 @@
 package ogletest_test
 
 import (
+	"errors"
+	"fmt"
+	"os"
+	"strings"
 	"testing"
 )
 
 ////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////
+
+func getCaseNames() ([]string, error) {
+	// Open the test cases directory.
+	dir, err := os.Open("integration_test_cases")
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Opening dir: %v", err))
+	}
+
+	// Get a list of the names in the directory.
+	names, err := dir.Readdirnames(0)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Readdirnames: %v", err))
+	}
+
+	// Filter the names.
+	result := make([]string, len(names))
+	resultLen := 0
+	for _, name := range names {
+		// Skip golden files.
+		if strings.HasPrefix(name, "golden.") {
+			continue
+		}
+
+		// Check for the right format.
+		if !strings.HasSuffix(name, "_test.go") {
+			return nil, errors.New(fmt.Sprintf("Unexpected file: %s", name))
+		}
+
+		// Store the name minus the extension.
+		result[resultLen] = name[len(name) - 2:]
+	}
+
+	return result, nil
+}
 
 ////////////////////////////////////////////////////////////
 // Tests
