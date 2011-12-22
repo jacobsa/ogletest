@@ -107,8 +107,12 @@ func runTestCase(name string) ([]byte, int, error) {
 	testContents := readFileOrDie(path.Join("integration_test_cases", sourceFile))
 	writeContentsToFileOrDie(testContents, path.Join(tempDir, sourceFile))
 
-	// Invoke gotest.
+	// Invoke gotest. Special case: pass a test filter to the filtered_test case.
 	cmd := exec.Command("gotest")
+	if name == "filtered_test" {
+		cmd.Args = append(cmd.Args, "--ogletest.run=Test(Bar|Baz)")
+	}
+
 	cmd.Dir = tempDir
 	output, err := cmd.Output()
 
