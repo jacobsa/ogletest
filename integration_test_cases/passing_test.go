@@ -43,3 +43,17 @@ func (t *PassingTest) SuccessfullMatches() {
 	ExpectThat(16.9, LessThan(17))
 	ExpectThat("taco", HasSubstr("ac"))
 }
+
+func (t *PassingTest) ExpectationAliases() {
+	ExpectEq(17, 17.0)
+
+	ExpectLe(17, 17.0)
+	ExpectLe(17, 18.0)
+	ExpectLt(17, 18.0)
+
+	ExpectGe(17, 17.0)
+	ExpectGe(17, 16.0)
+	ExpectGt(17, 16.0)
+
+	ExpectNe(17, 18.0)
+}
