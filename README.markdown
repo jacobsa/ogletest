@@ -21,8 +21,8 @@ First, make sure you have installed a version of the Go tools at least as new as
 `weekly/weekly.2011-12-14`. See [here][golang-install] for instructions. Until
 release `r61` comes out, this involes using the `weekly` tag.
 
-Use `goinstall` to install `ogletest` and its dependencies, and to keep them up
-to date:
+Use the following command to install `ogletest` and its dependencies, and to
+keep them up to date:
 
     goinstall -u github.com/jacobsa/ogletest
 
