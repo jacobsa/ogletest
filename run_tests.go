@@ -154,12 +154,17 @@ func runTestsInternal(t *testing.T) {
 			// Print any failures, and mark the test as having failed if there are any.
 			for _, record := range failures {
 				t.Fail()
+				userErrorSection := ""
+				if record.UserError != "" {
+					userErrorSection = record.UserError + "\n"
+				}
+
 				fmt.Printf(
-					"%s:%d:\n%s\n%s\n\n",
+					"%s:%d:\n%s\n%s\n",
 					record.FileName,
 					record.LineNumber,
 					record.GeneratedError,
-					record.UserError)
+					userErrorSection)
 			}
 		}
 

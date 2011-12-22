@@ -9,13 +9,11 @@ assert_that.go:34:
 Expected: 19
 Actual:   17
 
-
 [ RUN      ] FailingTest.AssertFalseFailure
 [  FAILED  ] FailingTest.AssertFalseFailure
 assert_that.go:34:
 Expected: false
 Actual:   taco, which is not a bool
-
 
 [ RUN      ] FailingTest.AssertGeFailure
 [  FAILED  ] FailingTest.AssertGeFailure
@@ -23,13 +21,11 @@ assert_that.go:34:
 Expected: greater than or equal to 19
 Actual:   17
 
-
 [ RUN      ] FailingTest.AssertGtFailure
 [  FAILED  ] FailingTest.AssertGtFailure
 assert_that.go:34:
 Expected: greater than 19
 Actual:   17
-
 
 [ RUN      ] FailingTest.AssertLeFailure
 [  FAILED  ] FailingTest.AssertLeFailure
@@ -37,13 +33,11 @@ assert_that.go:34:
 Expected: less than or equal to 17
 Actual:   19
 
-
 [ RUN      ] FailingTest.AssertLtFailure
 [  FAILED  ] FailingTest.AssertLtFailure
 assert_that.go:34:
 Expected: less than 17
 Actual:   19
-
 
 [ RUN      ] FailingTest.AssertNeFailure
 [  FAILED  ] FailingTest.AssertNeFailure
@@ -51,13 +45,11 @@ assert_that.go:34:
 Expected: not(19)
 Actual:   19
 
-
 [ RUN      ] FailingTest.AssertThatFailure
 [  FAILED  ] FailingTest.AssertThatFailure
 assert_that.go:34:
 Expected: 19
 Actual:   17
-
 
 [ RUN      ] FailingTest.AssertTrueFailure
 [  FAILED  ] FailingTest.AssertTrueFailure
@@ -65,18 +57,15 @@ assert_that.go:34:
 Expected: true
 Actual:   taco, which is not a bool
 
-
 [ RUN      ] FailingTest.Equals
 [  FAILED  ] FailingTest.Equals
 failing_test.go:42:
 Expected: 17.5
 Actual:   17
 
-
 failing_test.go:43:
 Expected: taco
 Actual:   17, which is not a string
-
 
 [ RUN      ] FailingTest.ExpectationAliases
 [  FAILED  ] FailingTest.ExpectationAliases
@@ -84,71 +73,57 @@ failing_test.go:66:
 Expected: 17
 Actual:   17.5
 
-
 failing_test.go:67:
 Expected: taco
 Actual:   17.5, which is not a string
-
 
 failing_test.go:69:
 Expected: less than or equal to 16.9
 Actual:   17
 
-
 failing_test.go:70:
 Expected: less than 16.9
 Actual:   17
-
 
 failing_test.go:71:
 Expected: less than "taco"
 Actual:   17, which is not comparable
 
-
 failing_test.go:73:
 Expected: greater than or equal to 17.1
 Actual:   17
-
 
 failing_test.go:74:
 Expected: greater than 17.1
 Actual:   17
 
-
 failing_test.go:75:
 Expected: greater than "taco"
 Actual:   17, which is not comparable
-
 
 failing_test.go:77:
 Expected: not(17)
 Actual:   17
 
-
 failing_test.go:78:
 Expected: not(17)
 Actual:   taco, which is not numeric
-
 
 failing_test.go:80:
 Expected: false
 Actual:   true
 
-
 failing_test.go:81:
 Expected: false
 Actual:   taco, which is not a bool
-
 
 failing_test.go:83:
 Expected: true
 Actual:   false
 
-
 failing_test.go:84:
 Expected: true
 Actual:   taco, which is not a bool
-
 
 [ RUN      ] FailingTest.HasSubstr
 [  FAILED  ] FailingTest.HasSubstr
@@ -156,18 +131,15 @@ failing_test.go:53:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 
-
 [ RUN      ] FailingTest.LessThan
 [  FAILED  ] FailingTest.LessThan
 failing_test.go:47:
 Expected: less than 17
 Actual:   18
 
-
 failing_test.go:48:
 Expected: less than "taco"
 Actual:   18, which is not comparable
-
 
 [ RUN      ] FailingTest.ModifiedExpectation
 [  FAILED  ] FailingTest.ModifiedExpectation
@@ -175,11 +147,9 @@ foo.go:112:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 
-
 bar.go:117:
 Expected: 17
 Actual:   19
-
 
 [ RUN      ] FailingTest.PassingMethod
 [       OK ] FailingTest.PassingMethod

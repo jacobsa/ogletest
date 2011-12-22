@@ -9,7 +9,6 @@ run_twice_test.go:46:
 Expected: 17.5
 Actual:   17
 
-
 [ RUN      ] RunTwiceTest.PassingMethod
 [       OK ] RunTwiceTest.PassingMethod
 [----------] Finished with tests from RunTwiceTest

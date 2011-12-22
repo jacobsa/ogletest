@@ -9,13 +9,11 @@ filtered_test.go:51:
 Expected: has substring "blah"
 Actual:   taco
 
-
 [ RUN      ] FilteredTest.FilteredTestBaz
 [  FAILED  ] FilteredTest.FilteredTestBaz
 filtered_test.go:55:
 Expected: less than 17
 Actual:   18
-
 
 [ RUN      ] FilteredTest.PassingTestBar
 [       OK ] FilteredTest.PassingTestBar

@@ -8,7 +8,6 @@ gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6
 panicking_test.go:39:
 panic: foobar
 
-
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest

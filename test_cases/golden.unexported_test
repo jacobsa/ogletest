@@ -9,7 +9,6 @@ unexported_test.go:42:
 Expected: 4
 Actual:   3
 
-
 [----------] Finished with tests from UnexportedTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
