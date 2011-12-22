@@ -1,0 +1,26 @@
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+6g   -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 failing_test.go 
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+========= FailingTest
+==== FailingTest.Equals
+failing_test.go:42:
+Expected: 17.5
+Actual:   17
+failing_test.go:43:
+Expected: taco
+Actual:   17, which is not a string
+==== FailingTest.HasSubstr
+failing_test.go:53:
+Expected: has substring "ac"
+Actual:   17, which is not a string
+==== FailingTest.LessThan
+failing_test.go:47:
+Expected: less than 17
+Actual:   18
+failing_test.go:48:
+Expected: less than "taco"
+Actual:   18, which is not comparable
+==== FailingTest.PassingMethod
+--- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
+FAIL
