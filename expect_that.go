@@ -31,7 +31,7 @@ type ExpectationModifier interface {
 	// *its* caller should have its line number printed if the expectation fails,
 	// instead of the line number of the ExpectThat call within the utility
 	// function.
-	SetCaller(fileName string, lineNumber int)
+	SetCaller(fileName string, lineNumber int) ExpectationModifier
 }
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
@@ -115,7 +115,13 @@ type expectationModifierImpl struct {
 	failureRecord *failureRecord
 }
 
-func (m *expectationModifierImpl) SetCaller(fileName string, lineNumber int) {
+func (m *expectationModifierImpl) SetCaller(fileName string, lineNumber int) ExpectationModifier {
+	if m.failureRecord == nil {
+		// Do nothing.
+		return m
+	}
+
 	m.failureRecord.FileName = fileName
 	m.failureRecord.LineNumber = lineNumber
+	return m
 }

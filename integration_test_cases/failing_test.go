@@ -59,4 +59,27 @@ func (t *FailingTest) UserErrorMessage() {
 
 func (t *FailingTest) ModifiedExpectation() {
 	ExpectThat(17, HasSubstr("ac")).SetCaller("foo.go", 112)
+	ExpectEq(17, 19).SetCaller("bar.go", 117)
+}
+
+func (t FailingTest) ExpectationAliases() {
+	ExpectEq(17, 17.5)
+	ExpectEq("taco", 17.5)
+
+	ExpectLe(17, 16.9)
+	ExpectLt(17, 16.9)
+	ExpectLt(17, "taco")
+
+	ExpectGe(17, 17.1)
+	ExpectGt(17, 17.1)
+	ExpectGt(17, "taco")
+
+	ExpectNe(17, 17.0)
+	ExpectNe(17, "taco")
+
+	ExpectFalse(true)
+	ExpectFalse("taco")
+
+	ExpectTrue(false)
+	ExpectTrue("taco")
 }
