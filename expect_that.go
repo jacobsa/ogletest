@@ -82,6 +82,8 @@ func ExpectThat(
 
 	// Check whether the value matches.
 	matcherRes, matcherErr := m.Matches(x)
+	res.matchResult = matcherRes
+
 	switch matcherRes {
 	// Return immediately on success.
 	case oglematchers.MATCH_TRUE:
@@ -125,13 +127,20 @@ func ExpectThat(
 type expectationResultImpl struct {
 	// The failure record created by the expectation, or nil if none.
 	failureRecord *failureRecord
+
+	// The result of the matcher.
+	matchResult oglematchers.MatchResult
 }
 
-func (m *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
-	if m.failureRecord == nil {
+func (r *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
+	if r.failureRecord == nil {
 		return
 	}
 
-	m.failureRecord.FileName = fileName
-	m.failureRecord.LineNumber = lineNumber
+	r.failureRecord.FileName = fileName
+	r.failureRecord.LineNumber = lineNumber
+}
+
+func (r *expectationResultImpl) MatchResult() oglematchers.MatchResult {
+	return r.matchResult
 }
