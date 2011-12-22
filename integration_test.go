@@ -18,7 +18,10 @@ package ogletest_test
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 )
@@ -27,6 +30,8 @@ import (
 // Helpers
 ////////////////////////////////////////////////////////////
 
+// getCaseNames looks for integration test cases as files in the
+// integration_test_cases directory.
 func getCaseNames() ([]string, error) {
 	// Open the test cases directory.
 	dir, err := os.Open("integration_test_cases")
@@ -59,6 +64,62 @@ func getCaseNames() ([]string, error) {
 	}
 
 	return result, nil
+}
+
+func writeStringToFileOrDie(contents []byte, path string) {
+	if err := ioutil.WriteFile(path, contents, 0600); err != nil {
+		panic("iotuil.WriteFile: " + err.Error())
+	}
+}
+
+func readFileOrDie(path string) []byte {
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic("iotuil.ReadFile: " + err.Error())
+	}
+
+	return contents
+}
+
+// runTestCase runs the case with the supplied name (e.g. "passing_test"), and
+// returns its output and exit code.
+func runTestCase(name string) ([]byte, int, error) {
+	// Create a temporary directory for the test files.
+	tempDir, err := ioutil.TempDir("", "ogletest_integration_test")
+	if err != nil {
+		return nil, 0, errors.New("ioutil.TempDir: " + err.Error())
+	}
+
+	// Create a makefile within the directory.
+	makefileContents := "include $(GOROOT)/src/Make.inc\n" +
+		"TARG = github.com/jacobsa/ogletest/foobar\n" +
+		"GOFILES = " + name + ".go\n" +
+		"include $(GOROOT)/src/Make.pkg\n"
+
+	writeStringToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
+
+	// Create the test source file.
+	sourceFile := name + ".go"
+	testContents := readFileOrDie(path.Join("integration_test_cases", sourceFile))
+	writeStringToFileOrDie(testContents, path.Join(tempDir, sourceFile))
+
+	// Invoke gotest.
+	cmd := exec.Command("gotest")
+	cmd.Dir = tempDir
+	output, err := cmd.Output()
+
+	// Did the process exist with zero code?
+	if err == nil {
+		return output, 0, nil
+	}
+
+	// Make sure the process actually exited.
+	exitError, ok := err.(*exec.ExitError)
+	if !ok || !exitError.Exited() {
+		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
+	}
+
+	return output, exitError.ExitStatus(), nil
 }
 
 ////////////////////////////////////////////////////////////
