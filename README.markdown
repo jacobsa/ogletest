@@ -37,13 +37,13 @@ and then use `godoc`:
     godoc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
-[oglematchers][matcher-reference] package. See that package's documentation
+[`oglematchers`][matcher-reference] package. See that package's documentation
 for information on the built-in matchers available, and check out the
 `oglematchers.Matcher` interface if you want to define your own.
 
 
 [reference]: http://gopkgdoc.appspot.com/pkg/github.com/jacobsa/ogletest
-[matcher-reference]: ://gopkgdoc.appspot.com/pkg/github.com/jacobsa/oglematchers
+[matcher-reference]: http://gopkgdoc.appspot.com/pkg/github.com/jacobsa/oglematchers
 [golang-install]: http://golang.org/doc/install.html#releases
 [googletest]: http://code.google.com/p/googletest/
 [google-js-test]: http://code.google.com/p/google-js-test/
