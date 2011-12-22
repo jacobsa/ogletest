@@ -132,4 +132,22 @@ func TestGoldenFiles(t *testing.T) {
 	if err != nil || len(caseNames) == 0 {
 		t.Fatalf("Error getting cases: %v", err)
 	}
+
+	// Run each test case.
+	for _, caseName := range caseNames {
+		t.Logf("Running test case: %s", caseName)
+
+		// Run the test case.
+		_, exitCode, err := runTestCase(caseName)
+		if err != nil {
+			t.Fatalf("Running test case %s: %v", caseName, err)
+		}
+
+		// Check the status code. We assume all test cases fail except for passing_test.
+		shouldPass := caseName == "passint_test"
+		didPass := exitCode == 0
+		if shouldPass != didPass {
+			t.Errorf("Bad exit code for test case %s: %d", caseName, exitCode)
+		}
+	}
 }
