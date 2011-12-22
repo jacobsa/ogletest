@@ -94,6 +94,8 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("ioutil.TempDir: " + err.Error())
 	}
 
+	defer os.RemoveAll(tempDir)
+
 	// Create a makefile within the directory.
 	makefileContents := "include $(GOROOT)/src/Make.inc\n" +
 		"TARG = github.com/jacobsa/ogletest/foobar\n" +
