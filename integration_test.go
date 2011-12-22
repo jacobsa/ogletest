@@ -61,11 +61,11 @@ func buildPackage() (string, error) {
 	return path.Join(wd, "_obj"), nil
 }
 
-// getCaseNames looks for integration test cases as files in the
-// integration_test_cases directory.
+// getCaseNames looks for integration test cases as files in the test_cases
+// directory.
 func getCaseNames() ([]string, error) {
 	// Open the test cases directory.
-	dir, err := os.Open("integration_test_cases")
+	dir, err := os.Open("test_cases")
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Opening dir: %v", err))
 	}
@@ -135,7 +135,7 @@ func runTestCase(name string) ([]byte, int, error) {
 
 	// Create the test source file.
 	sourceFile := name + ".go"
-	testContents := readFileOrDie(path.Join("integration_test_cases", sourceFile))
+	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
 	writeContentsToFileOrDie(testContents, path.Join(tempDir, sourceFile))
 
 	// Invoke gotest. Special case: pass a test filter to the filtered_test case.
@@ -165,7 +165,7 @@ func runTestCase(name string) ([]byte, int, error) {
 // against the golden file for that case. If requested by the user, it rewrites
 // the golden file on failure.
 func checkAgainstGoldenFile(caseName string, output []byte) bool {
-	goldenFile := path.Join("integration_test_cases", "golden." + caseName)
+	goldenFile := path.Join("test_cases", "golden." + caseName)
 	goldenContents := readFileOrDie(goldenFile)
 
 	result := string(output) == string(goldenContents)
