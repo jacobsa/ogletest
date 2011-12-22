@@ -103,13 +103,11 @@ func RunTests(t *testing.T) {
 		runMethodIfExists(val, "SetUpTestSuite")
 
 		// Run each method.
-		//
-		// TODO(jacobsa): Recover from panics.
-		// TODO(jacobsa): Pay attention to failures.
-		// TODO(jacobsa): Confirm that unexported methods don't show up here.
 		for i := 0; i < typ.NumMethod(); i++ {
 			method := typ.Method(i)
-			if isSpecialMethod(method.Name) {
+
+			// Skip setup/teardown and unexported methods.
+			if isSpecialMethod(method.Name) || !isExportedMethod(method.Name) {
 				continue
 			}
 
@@ -160,4 +158,8 @@ func isSpecialMethod(name string) bool {
 		(name == "TearDownTestSuite") ||
 		(name == "SetUp") ||
 		(name == "TearDown")
+}
+
+func isExportedMethod(name string) bool {
+	return len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z'
 }

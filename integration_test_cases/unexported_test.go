@@ -16,6 +16,7 @@
 package oglematchers_test
 
 import (
+	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
 )
@@ -38,4 +39,5 @@ func (t *UnexportedTest) someUnexportedMethod() {
 ////////////////////////////////////////////////////////////
 
 func (t *UnexportedTest) SomeTest() {
+	ExpectThat(3, Equals(4))
 }

@@ -4,9 +4,9 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
 ========= UnexportedTest
 ==== UnexportedTest.SomeTest
-==== UnexportedTest.someUnexportedMethod
-value.go:378:
-panic: Call of unexported method
+unexported_test.go:42:
+Expected: 4
+Actual:   3
 
 
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
