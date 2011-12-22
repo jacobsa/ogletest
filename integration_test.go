@@ -17,6 +17,7 @@ package ogletest_test
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"path"
@@ -25,6 +26,8 @@ import (
 	"strings"
 	"testing"
 )
+
+var dumpNew = flag.Bool("dump_new", false, "Dump new golden files.")
 
 ////////////////////////////////////////////////////////////
 // Helpers
@@ -67,7 +70,7 @@ func getCaseNames() ([]string, error) {
 	return result[:resultLen], nil
 }
 
-func writeStringToFileOrDie(contents []byte, path string) {
+func writeContentsToFileOrDie(contents []byte, path string) {
 	if err := ioutil.WriteFile(path, contents, 0600); err != nil {
 		panic("iotuil.WriteFile: " + err.Error())
 	}
@@ -97,12 +100,12 @@ func runTestCase(name string) ([]byte, int, error) {
 		"GOFILES = " + name + ".go\n" +
 		"include $(GOROOT)/src/Make.pkg\n"
 
-	writeStringToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
+	writeContentsToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
 
 	// Create the test source file.
 	sourceFile := name + ".go"
 	testContents := readFileOrDie(path.Join("integration_test_cases", sourceFile))
-	writeStringToFileOrDie(testContents, path.Join(tempDir, sourceFile))
+	writeContentsToFileOrDie(testContents, path.Join(tempDir, sourceFile))
 
 	// Invoke gotest.
 	cmd := exec.Command("gotest")
@@ -127,10 +130,15 @@ func runTestCase(name string) ([]byte, int, error) {
 // against the golden file for that case. If requested by the user, it rewrites
 // the golden file on failure.
 func checkAgainstGoldenFile(caseName string, output []byte) bool {
-	goldenFile := "golden." + caseName
-	goldenContents := readFileOrDie(path.Join("integration_test_cases", goldenFile))
+	goldenFile := path.Join("integration_test_cases", "golden." + caseName)
+	goldenContents := readFileOrDie(goldenFile)
 
-	return string(output) == string(goldenContents)
+	result := string(output) == string(goldenContents)
+	if !result && *dumpNew {
+		writeContentsToFileOrDie(output, goldenFile)
+	}
+
+	return result
 }
 
 ////////////////////////////////////////////////////////////
