@@ -1,0 +1,8 @@
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+6g   -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 passing_test.go 
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+========= PassingTest
+==== PassingTest.EmptyTestMethod
+==== PassingTest.SuccessfullMatches
+PASS
