@@ -65,5 +65,10 @@ func getCaseNames() ([]string, error) {
 // Tests
 ////////////////////////////////////////////////////////////
 
-func TestFoo(t *testing.T) {
+func TestGoldenFiles(t *testing.T) {
+	// We expect there to be at least one case.
+	caseNames, err := getCaseNames()
+	if err != nil || len(caseNames) == 0 {
+		t.Fatalf("Error getting cases: %v", err)
+	}
 }
