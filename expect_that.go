@@ -51,7 +51,12 @@ type ExpectationResult interface {
 //     ExpectThat(userName, Equals("jacobsa"))
 //     ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
 //
-func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) ExpectationResult {
+func ExpectThat(
+	x interface{},
+	m oglematchers.Matcher,
+	errorParts ...interface{}) ExpectationResult {
+  res := &expectationResultImpl{}
+
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)
 	if !ok {
@@ -76,11 +81,11 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	}
 
 	// Check whether the value matches.
-	res, matcherErr := m.Matches(x)
-	switch res {
+	matcherRes, matcherErr := m.Matches(x)
+	switch matcherRes {
 	// Return immediately on success.
 	case oglematchers.MATCH_TRUE:
-		return &expectationResultImpl{}
+		return res
 
 	// Handle errors below.
 	case oglematchers.MATCH_FALSE:
@@ -88,7 +93,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 
 	// Panic for invalid results.
 	default:
-		panic(fmt.Sprintf("ExpectThat: invalid matcher result %v.", res))
+		panic(fmt.Sprintf("ExpectThat: invalid matcher result %v.", matcherRes))
 	}
 
 	// Form an appropriate failure message. Make sure that the expected and
@@ -112,8 +117,9 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 
 	// Store the failure.
 	state.FailureRecords = append(state.FailureRecords, &record)
+	res.failureRecord = &record
 
-	return &expectationResultImpl{&record}
+	return res
 }
 
 type expectationResultImpl struct {
