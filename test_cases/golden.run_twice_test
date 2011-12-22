@@ -11,14 +11,5 @@ Actual:   17
 
 ==== RunTwiceTest.PassingMethod
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
-========= RunTwiceTest
-==== RunTwiceTest.FailingMethod
-run_twice_test.go:46:
-Expected: 17.5
-Actual:   17
-
-
-==== RunTwiceTest.PassingMethod
---- FAIL: oglematchers_test.TestOgletest2 (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1

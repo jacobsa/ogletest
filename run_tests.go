@@ -22,10 +22,14 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"sync"
 	"testing"
 )
 
 var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
+
+// runTestsOnce protects RunTests from executing multiple times.
+var runTestsOnce sync.Once
 
 func isAssertThatError(x interface{}) bool {
 	_, ok := x.(*assertThatError)
@@ -99,6 +103,12 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 //     }
 //
 func RunTests(t *testing.T) {
+	runTestsOnce.Do(func() { runTestsInternal(t) })
+}
+
+// runTestsInternal does the real work of RunTests, which simply wraps it in a
+// sync.Once.
+func runTestsInternal(t *testing.T) {
 	for _, suite := range testSuites {
 		val := reflect.ValueOf(suite)
 		typ := val.Type()
