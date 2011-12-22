@@ -17,44 +17,52 @@ package ogletest
 
 import (
 	"github.com/jacobsa/oglematchers"
+	"path"
+	"runtime"
 )
+
+func getCallerForAlias() (fileName string, lineNumber int) {
+	_, fileName, lineNumber, _ = runtime.Caller(2)
+	fileName = path.Base(fileName)
+	return
+}
 
 // ExpectEq(e, a) is equivalent to ExpectThat(a, oglematchers.Equals(e)).
 func ExpectEq(expected, actual interface{}) ExpectationModifier {
-	return ExpectThat(actual, oglematchers.Equals(expected))
+	return ExpectThat(actual, oglematchers.Equals(expected)).SetCaller(getCallerForAlias())
 }
 
 // ExpectNe(e, a) is equivalent to ExpectThat(a, oglematchers.Not(oglematchers.Equals(e))).
 func ExpectNe(expected, actual interface{}) ExpectationModifier {
-	return ExpectThat(actual, oglematchers.Not(oglematchers.Equals(expected)))
+	return ExpectThat(actual, oglematchers.Not(oglematchers.Equals(expected))).SetCaller(getCallerForAlias())
 }
 
 // ExpectLt(x, y) is equivalent to ExpectThat(x, oglematchers.LessThan(y)).
 func ExpectLt(x, y interface{}) ExpectationModifier {
-	return ExpectThat(x, oglematchers.LessThan(y))
+	return ExpectThat(x, oglematchers.LessThan(y)).SetCaller(getCallerForAlias())
 }
 
 // ExpectLe(x, y) is equivalent to ExpectThat(x, oglematchers.LessOrEqual(y)).
 func ExpectLe(x, y interface{}) ExpectationModifier {
-	return ExpectThat(x, oglematchers.LessOrEqual(y))
+	return ExpectThat(x, oglematchers.LessOrEqual(y)).SetCaller(getCallerForAlias())
 }
 
 // ExpectGt(x, y) is equivalent to ExpectThat(x, oglematchers.GreaterThan(y)).
 func ExpectGt(x, y interface{}) ExpectationModifier {
-	return ExpectThat(x, oglematchers.GreaterThan(y))
+	return ExpectThat(x, oglematchers.GreaterThan(y)).SetCaller(getCallerForAlias())
 }
 
 // ExpectGe(x, y) is equivalent to ExpectThat(x, oglematchers.GreaterOrEqual(y)).
 func ExpectGe(x, y interface{}) ExpectationModifier {
-	return ExpectThat(x, oglematchers.GreaterOrEqual(y))
+	return ExpectThat(x, oglematchers.GreaterOrEqual(y)).SetCaller(getCallerForAlias())
 }
 
 // ExpectTrue(b) is equivalent to ExpectThat(b, oglematchers.Equals(true)).
 func ExpectTrue(b interface{}) ExpectationModifier {
-	return ExpectThat(b, oglematchers.Equals(true))
+	return ExpectThat(b, oglematchers.Equals(true)).SetCaller(getCallerForAlias())
 }
 
 // ExpectFalse(b) is equivalent to ExpectThat(b, oglematchers.Equals(false)).
 func ExpectFalse(b interface{}) ExpectationModifier {
-	return ExpectThat(b, oglematchers.Equals(false))
+	return ExpectThat(b, oglematchers.Equals(false)).SetCaller(getCallerForAlias())
 }

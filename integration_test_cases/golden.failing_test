@@ -15,72 +15,72 @@ Actual:   17, which is not a string
 
 
 ==== FailingTest.ExpectationAliases
-expect_aliases.go:24:
+failing_test.go:66:
 Expected: 17
 Actual:   17.5
 
 
-expect_aliases.go:24:
+failing_test.go:67:
 Expected: taco
 Actual:   17.5, which is not a string
 
 
-expect_aliases.go:39:
+failing_test.go:69:
 Expected: less than or equal to 16.9
 Actual:   17
 
 
-expect_aliases.go:34:
+failing_test.go:70:
 Expected: less than 16.9
 Actual:   17
 
 
-expect_aliases.go:34:
+failing_test.go:71:
 Expected: less than "taco"
 Actual:   17, which is not comparable
 
 
-expect_aliases.go:49:
+failing_test.go:73:
 Expected: greater than or equal to 17.1
 Actual:   17
 
 
-expect_aliases.go:44:
+failing_test.go:74:
 Expected: greater than 17.1
 Actual:   17
 
 
-expect_aliases.go:44:
+failing_test.go:75:
 Expected: greater than "taco"
 Actual:   17, which is not comparable
 
 
-expect_aliases.go:29:
+failing_test.go:77:
 Expected: not(17)
 Actual:   17
 
 
-expect_aliases.go:29:
+failing_test.go:78:
 Expected: not(17)
 Actual:   taco, which is not numeric
 
 
-expect_aliases.go:59:
+failing_test.go:80:
 Expected: false
 Actual:   true
 
 
-expect_aliases.go:59:
+failing_test.go:81:
 Expected: false
 Actual:   taco, which is not a bool
 
 
-expect_aliases.go:54:
+failing_test.go:83:
 Expected: true
 Actual:   false
 
 
-expect_aliases.go:54:
+failing_test.go:84:
 Expected: true
 Actual:   taco, which is not a bool
 
