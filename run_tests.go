@@ -16,6 +16,7 @@
 package ogletest
 
 import (
+	"flag"
 	"fmt"
 	"github.com/jacobsa/ogletest/internal"
 	"path"
@@ -23,6 +24,8 @@ import (
 	"runtime"
 	"testing"
 )
+
+var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
 
 // runTest runs a single test, returning a slice of failure records for that test.
 func runTest(suite interface{}, method reflect.Method) (failures []internal.FailureRecord) {
