@@ -60,7 +60,7 @@ func getCaseNames() ([]string, error) {
 		}
 
 		// Store the name minus the extension.
-		result[resultLen] = name[len(name) - 2:]
+		result[resultLen] = name[:len(name) - 3]
 	}
 
 	return result, nil
