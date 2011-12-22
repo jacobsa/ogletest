@@ -14,6 +14,57 @@ Expected: taco
 Actual:   17, which is not a string
 
 
+==== FailingTest.ExpectationAliases
+expect_aliases.go:24:
+Expected: 17
+Actual:   17.5
+
+
+expect_aliases.go:24:
+Expected: taco
+Actual:   17.5, which is not a string
+
+
+expect_aliases.go:39:
+Expected: less than or equal to 16.9
+Actual:   17
+
+
+expect_aliases.go:34:
+Expected: less than 16.9
+Actual:   17
+
+
+expect_aliases.go:34:
+Expected: less than "taco"
+Actual:   17, which is not comparable
+
+
+expect_aliases.go:49:
+Expected: greater than or equal to 17.1
+Actual:   17
+
+
+expect_aliases.go:44:
+Expected: greater than 17.1
+Actual:   17
+
+
+expect_aliases.go:44:
+Expected: greater than "taco"
+Actual:   17, which is not comparable
+
+
+expect_aliases.go:29:
+Expected: not(17)
+Actual:   17
+
+
+expect_aliases.go:29:
+Expected: not(17)
+Actual:   taco, which is not numeric
+
+
 ==== FailingTest.HasSubstr
 failing_test.go:53:
 Expected: has substring "ac"
@@ -35,6 +86,11 @@ Actual:   18, which is not comparable
 foo.go:112:
 Expected: has substring "ac"
 Actual:   17, which is not a string
+
+
+bar.go:117:
+Expected: 17
+Actual:   19
 
 
 ==== FailingTest.PassingMethod
