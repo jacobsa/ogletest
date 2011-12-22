@@ -23,15 +23,17 @@ import (
 	"runtime"
 )
 
-// ExpectationModifier is an interface returned by ExpectThat that allows
-// callers to set custom information on the expectation.
-type ExpectationModifier interface {
+// ExpectationResult is an interface returned by ExpectThat that allows callers
+// to get information about the result of the expectation and set their own
+// custom information. This is not useful to the average consumer, but may be
+// helpful if you're writing widely used test utility functions.
+type ExpectationResult interface {
 	// SetCaller updates the file name and line number associated with the
 	// expectation. This allows, for example, a utility function to express that
 	// *its* caller should have its line number printed if the expectation fails,
 	// instead of the line number of the ExpectThat call within the utility
 	// function.
-	SetCaller(fileName string, lineNumber int) ExpectationModifier
+	SetCaller(fileName string, lineNumber int) ExpectationResult
 }
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
@@ -45,7 +47,7 @@ type ExpectationModifier interface {
 //     ExpectThat(userName, Equals("jacobsa"))
 //     ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
 //
-func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) ExpectationModifier {
+func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) ExpectationResult {
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)
 	if !ok {
@@ -74,7 +76,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	switch res {
 	// Return immediately on success.
 	case oglematchers.MATCH_TRUE:
-		return &expectationModifierImpl{}
+		return &expectationResultImpl{}
 
 	// Handle errors below.
 	case oglematchers.MATCH_FALSE:
@@ -107,15 +109,15 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	// Store the failure.
 	state.FailureRecords = append(state.FailureRecords, &record)
 
-	return &expectationModifierImpl{&record}
+	return &expectationResultImpl{&record}
 }
 
-type expectationModifierImpl struct {
+type expectationResultImpl struct {
 	// The failure record created by the expectation, or nil if none.
 	failureRecord *failureRecord
 }
 
-func (m *expectationModifierImpl) SetCaller(fileName string, lineNumber int) ExpectationModifier {
+func (m *expectationResultImpl) SetCaller(fileName string, lineNumber int) ExpectationResult {
 	if m.failureRecord == nil {
 		// Do nothing.
 		return m
