@@ -76,4 +76,10 @@ func (t FailingTest) ExpectationAliases() {
 
 	ExpectNe(17, 17.0)
 	ExpectNe(17, "taco")
+
+	ExpectFalse(true)
+	ExpectFalse("taco")
+
+	ExpectTrue(false)
+	ExpectTrue("taco")
 }

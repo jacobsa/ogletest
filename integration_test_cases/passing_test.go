@@ -56,4 +56,7 @@ func (t *PassingTest) ExpectationAliases() {
 	ExpectGt(17, 16.0)
 
 	ExpectNe(17, 18.0)
+
+	ExpectTrue(true)
+	ExpectFalse(false)
 }
