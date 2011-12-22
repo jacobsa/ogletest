@@ -21,6 +21,10 @@ Actual:   18
 failing_test.go:48:
 Expected: less than "taco"
 Actual:   18, which is not comparable
+==== FailingTest.ModifiedExpectation
+failing_test.go:57:
+Expected: has substring "ac"
+Actual:   17, which is not a string
 ==== FailingTest.PassingMethod
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
