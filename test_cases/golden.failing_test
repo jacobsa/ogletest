@@ -2,62 +2,72 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 failing_test.go 
 rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
-========= FailingTest
-==== FailingTest.AssertEqFailure
+[----------] Running tests from FailingTest
+[ RUN      ] FailingTest.AssertEqFailure
+[  FAILED  ] FailingTest.AssertEqFailure
 assert_that.go:34:
 Expected: 19
 Actual:   17
 
 
-==== FailingTest.AssertFalseFailure
+[ RUN      ] FailingTest.AssertFalseFailure
+[  FAILED  ] FailingTest.AssertFalseFailure
 assert_that.go:34:
 Expected: false
 Actual:   taco, which is not a bool
 
 
-==== FailingTest.AssertGeFailure
+[ RUN      ] FailingTest.AssertGeFailure
+[  FAILED  ] FailingTest.AssertGeFailure
 assert_that.go:34:
 Expected: greater than or equal to 19
 Actual:   17
 
 
-==== FailingTest.AssertGtFailure
+[ RUN      ] FailingTest.AssertGtFailure
+[  FAILED  ] FailingTest.AssertGtFailure
 assert_that.go:34:
 Expected: greater than 19
 Actual:   17
 
 
-==== FailingTest.AssertLeFailure
+[ RUN      ] FailingTest.AssertLeFailure
+[  FAILED  ] FailingTest.AssertLeFailure
 assert_that.go:34:
 Expected: less than or equal to 17
 Actual:   19
 
 
-==== FailingTest.AssertLtFailure
+[ RUN      ] FailingTest.AssertLtFailure
+[  FAILED  ] FailingTest.AssertLtFailure
 assert_that.go:34:
 Expected: less than 17
 Actual:   19
 
 
-==== FailingTest.AssertNeFailure
+[ RUN      ] FailingTest.AssertNeFailure
+[  FAILED  ] FailingTest.AssertNeFailure
 assert_that.go:34:
 Expected: not(19)
 Actual:   19
 
 
-==== FailingTest.AssertThatFailure
+[ RUN      ] FailingTest.AssertThatFailure
+[  FAILED  ] FailingTest.AssertThatFailure
 assert_that.go:34:
 Expected: 19
 Actual:   17
 
 
-==== FailingTest.AssertTrueFailure
+[ RUN      ] FailingTest.AssertTrueFailure
+[  FAILED  ] FailingTest.AssertTrueFailure
 assert_that.go:34:
 Expected: true
 Actual:   taco, which is not a bool
 
 
-==== FailingTest.Equals
+[ RUN      ] FailingTest.Equals
+[  FAILED  ] FailingTest.Equals
 failing_test.go:42:
 Expected: 17.5
 Actual:   17
@@ -68,7 +78,8 @@ Expected: taco
 Actual:   17, which is not a string
 
 
-==== FailingTest.ExpectationAliases
+[ RUN      ] FailingTest.ExpectationAliases
+[  FAILED  ] FailingTest.ExpectationAliases
 failing_test.go:66:
 Expected: 17
 Actual:   17.5
@@ -139,13 +150,15 @@ Expected: true
 Actual:   taco, which is not a bool
 
 
-==== FailingTest.HasSubstr
+[ RUN      ] FailingTest.HasSubstr
+[  FAILED  ] FailingTest.HasSubstr
 failing_test.go:53:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 
 
-==== FailingTest.LessThan
+[ RUN      ] FailingTest.LessThan
+[  FAILED  ] FailingTest.LessThan
 failing_test.go:47:
 Expected: less than 17
 Actual:   18
@@ -156,7 +169,8 @@ Expected: less than "taco"
 Actual:   18, which is not comparable
 
 
-==== FailingTest.ModifiedExpectation
+[ RUN      ] FailingTest.ModifiedExpectation
+[  FAILED  ] FailingTest.ModifiedExpectation
 foo.go:112:
 Expected: has substring "ac"
 Actual:   17, which is not a string
@@ -167,13 +181,16 @@ Expected: 17
 Actual:   19
 
 
-==== FailingTest.PassingMethod
-==== FailingTest.UserErrorMessage
+[ RUN      ] FailingTest.PassingMethod
+[       OK ] FailingTest.PassingMethod
+[ RUN      ] FailingTest.UserErrorMessage
+[  FAILED  ] FailingTest.UserErrorMessage
 failing_test.go:57:
 Expected: 19
 Actual:   17
 foo bar
 
+[----------] Finished with tests from FailingTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1

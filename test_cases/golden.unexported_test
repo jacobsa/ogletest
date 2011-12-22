@@ -2,13 +2,15 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 unexported_test.go 
 rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
-========= UnexportedTest
-==== UnexportedTest.SomeTest
+[----------] Running tests from UnexportedTest
+[ RUN      ] UnexportedTest.SomeTest
+[  FAILED  ] UnexportedTest.SomeTest
 unexported_test.go:42:
 Expected: 4
 Actual:   3
 
 
+[----------] Finished with tests from UnexportedTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1
