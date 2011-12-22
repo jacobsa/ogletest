@@ -26,6 +26,10 @@ foo.go:112:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 ==== FailingTest.PassingMethod
---- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
+==== FailingTest.UserErrorMessage
+failing_test.go:57:
+Expected: 19
+Actual:   17
+foo bar--- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1

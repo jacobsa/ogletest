@@ -53,6 +53,10 @@ func (t *FailingTest) HasSubstr() {
 	ExpectThat(17, HasSubstr("ac"))
 }
 
+func (t *FailingTest) UserErrorMessage() {
+	ExpectThat(17, Equals(19), "foo bar")
+}
+
 func (t *FailingTest) ModifiedExpectation() {
 	ExpectThat(17, HasSubstr("ac")).SetCaller("foo.go", 112)
 }
