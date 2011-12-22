@@ -23,6 +23,17 @@ import (
 	"runtime"
 )
 
+// ExpectationModifier is an interface returned by ExpectThat that allows
+// callers to set custom information on the expectation.
+type ExpectationModifier interface {
+	// SetCaller updates the file name and line number associated with the
+	// expectation. This allows, for example, a utility function to express that
+	// *its* caller should have its line number printed if the expectation fails,
+	// instead of the line number of the ExpectThat call within the utility
+	// function.
+	SetCaller(fileName string, lineNumber int)
+}
+
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
 // failure record to the currently running test if it does not. If additional
 // parameters are supplied, the first will be used as a format string for the
