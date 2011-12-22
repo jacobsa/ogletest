@@ -18,7 +18,6 @@ package ogletest
 import (
 	"errors"
 	. "github.com/jacobsa/oglematchers"
-	"github.com/jacobsa/ogletest/internal"
 	"testing"
 )
 
@@ -28,7 +27,7 @@ import (
 
 // Set up a new test state with empty fields.
 func setUpCurrentTest() {
-	internal.CurrentTest = internal.NewTestState()
+	currentlyRunningTest = newTestState()
 }
 
 type fakeExpectThatMatcher struct {
@@ -87,7 +86,7 @@ func TestNoCurrentTest(t *testing.T) {
 		}
 	}()
 
-	internal.CurrentTest = nil
+	currentlyRunningTest = nil
 	ExpectThat(17, Equals(17))
 }
 
@@ -96,7 +95,7 @@ func TestNoFailure(t *testing.T) {
 	matcher := &fakeExpectThatMatcher{"", MATCH_TRUE, ""}
 	ExpectThat(17, matcher)
 
-	assertEqInt(t, 0, len(internal.CurrentTest.FailureRecords))
+	assertEqInt(t, 0, len(currentlyRunningTest.FailureRecords))
 }
 
 func TestInvalidMatcherResult(t *testing.T) {
@@ -144,11 +143,11 @@ func TestMatchFalseWithoutMessages(t *testing.T) {
 	matcher := &fakeExpectThatMatcher{"taco", MATCH_FALSE, ""}
 	ExpectThat(17, matcher)
 
-	assertEqInt(t, 1, len(internal.CurrentTest.FailureRecords))
+	assertEqInt(t, 1, len(currentlyRunningTest.FailureRecords))
 
-	record := internal.CurrentTest.FailureRecords[0]
+	record := currentlyRunningTest.FailureRecords[0]
 	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 145, record.LineNumber)
+	expectEqInt(t, 144, record.LineNumber)
 	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
 	expectEqStr(t, "", record.UserError)
 }
@@ -158,11 +157,11 @@ func TestMatchUndefinedWithoutMessages(t *testing.T) {
 	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, ""}
 	ExpectThat(17, matcher)
 
-	assertEqInt(t, 1, len(internal.CurrentTest.FailureRecords))
+	assertEqInt(t, 1, len(currentlyRunningTest.FailureRecords))
 
-	record := internal.CurrentTest.FailureRecords[0]
+	record := currentlyRunningTest.FailureRecords[0]
 	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 159, record.LineNumber)
+	expectEqInt(t, 158, record.LineNumber)
 	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
 	expectEqStr(t, "", record.UserError)
 }
@@ -172,8 +171,8 @@ func TestFailureWithMatcherMessage(t *testing.T) {
 	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, "which is foo"}
 	ExpectThat(17, matcher)
 
-	assertEqInt(t, 1, len(internal.CurrentTest.FailureRecords))
-	record := internal.CurrentTest.FailureRecords[0]
+	assertEqInt(t, 1, len(currentlyRunningTest.FailureRecords))
+	record := currentlyRunningTest.FailureRecords[0]
 
 	expectEqStr(t, "Expected: taco\nActual:   17, which is foo", record.GeneratedError)
 }
@@ -183,8 +182,8 @@ func TestFailureWithUserMessage(t *testing.T) {
 	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, ""}
 	ExpectThat(17, matcher, "Asd: %d %s", 19, "taco")
 
-	assertEqInt(t, 1, len(internal.CurrentTest.FailureRecords))
-	record := internal.CurrentTest.FailureRecords[0]
+	assertEqInt(t, 1, len(currentlyRunningTest.FailureRecords))
+	record := currentlyRunningTest.FailureRecords[0]
 
 	expectEqStr(t, "Asd: 19 taco", record.UserError)
 }
@@ -197,9 +196,9 @@ func TestAdditionalFailure(t *testing.T) {
 	ExpectThat(17, matcher, "taco")
 	ExpectThat(19, matcher, "burrito")
 
-	assertEqInt(t, 2, len(internal.CurrentTest.FailureRecords))
-	record1 := internal.CurrentTest.FailureRecords[0]
-	record2 := internal.CurrentTest.FailureRecords[1]
+	assertEqInt(t, 2, len(currentlyRunningTest.FailureRecords))
+	record1 := currentlyRunningTest.FailureRecords[0]
+	record2 := currentlyRunningTest.FailureRecords[1]
 
 	expectEqStr(t, "taco", record1.UserError)
 	expectEqStr(t, "burrito", record2.UserError)

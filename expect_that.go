@@ -18,7 +18,6 @@ package ogletest
 import (
 	"fmt"
 	"github.com/jacobsa/oglematchers"
-	"github.com/jacobsa/ogletest/internal"
 	"path"
 	"reflect"
 	"runtime"
@@ -54,7 +53,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	}
 
 	// Grab the current test state.
-	state := internal.CurrentTest
+	state := currentlyRunningTest
 	if state == nil {
 		panic("ExpectThat: no test state.")
 	}
@@ -77,7 +76,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 
 	// Form an appropriate failure message. Make sure that the expected and
 	// actual values align properly.
-	var record internal.FailureRecord
+	var record failureRecord
 	relativeClause := ""
 	if matcherErr != nil {
 		relativeClause = fmt.Sprintf(", %s", matcherErr.Error())

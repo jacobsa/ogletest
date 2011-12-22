@@ -18,7 +18,6 @@ package ogletest
 import (
 	"flag"
 	"fmt"
-	"github.com/jacobsa/ogletest/internal"
 	"path"
 	"reflect"
 	"regexp"
@@ -29,7 +28,7 @@ import (
 var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
 
 // runTest runs a single test, returning a slice of failure records for that test.
-func runTest(suite interface{}, method reflect.Method) (failures []internal.FailureRecord) {
+func runTest(suite interface{}, method reflect.Method) (failures []failureRecord) {
 	suiteValue := reflect.ValueOf(suite)
 	suiteType := suiteValue.Type()
 	suiteName := suiteType.Elem().Name()
@@ -37,12 +36,12 @@ func runTest(suite interface{}, method reflect.Method) (failures []internal.Fail
 	fmt.Printf("==== %s.%s\n", suiteName, method.Name)
 
 	// Set up a clean slate for this test.
-	internal.CurrentTest = internal.NewTestState()
+	currentlyRunningTest = newTestState()
 
 	defer func() {
 		// Return the failures the test recorded, whether it panics or not. If it
 		// panics, additionally return a failure for the panic.
-		failures = internal.CurrentTest.FailureRecords
+		failures = currentlyRunningTest.FailureRecords
 		if r := recover(); r != nil {
 			// The stack looks like this:
 			//
@@ -51,7 +50,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []internal.Fail
 			//     <function that called panic>
 			//
 			_, fileName, lineNumber, ok := runtime.Caller(2)
-			var panicRecord internal.FailureRecord
+			var panicRecord failureRecord
 			if ok {
 				panicRecord.FileName = path.Base(fileName)
 				panicRecord.LineNumber = lineNumber
@@ -62,7 +61,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []internal.Fail
 		}
 
 		// Reset the global CurrentTest state, so we don't accidentally use it elsewhere.
-		internal.CurrentTest = nil
+		currentlyRunningTest = nil
 	}()
 
 	// Create a receiver, and call it.

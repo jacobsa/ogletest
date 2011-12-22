@@ -13,16 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(jacobsa): Move this into the ogletest package and unexport. It was a
-// separate package initially to facilitate writing an ogletest tool, but that
-// probably won't happen now.
-package internal
+package ogletest
 
-import (
-)
-
-// FailureRecord represents a single failed expectation for a test.
-type FailureRecord struct {
+// failureRecord represents a single failed expectation for a test.
+type failureRecord struct {
 	// The file name within which the expectation failed, e.g. "foo_test.go".
 	FileName string
 
@@ -40,9 +34,9 @@ type FailureRecord struct {
 	UserError string
 }
 
-// TestState represents the state of a currently running or previously running
+// testState represents the state of a currently running or previously running
 // test.
-type TestState struct {
+type testState struct {
 	// The name of the test suite, for example "UserInfoTest".
 	SuiteName []string
 
@@ -51,13 +45,13 @@ type TestState struct {
 	TestName []string
 
 	// A set of failure records that the test has produced.
-	FailureRecords []FailureRecord
+	FailureRecords []failureRecord
 }
 
-// NewTestState creates a valid but empty TestState struct.
-func NewTestState() *TestState {
-	return &TestState{FailureRecords: make([]FailureRecord, 0)}
+// newTestState creates a valid but empty testState struct.
+func newTestState() *testState {
+	return &testState{FailureRecords: make([]failureRecord, 0)}
 }
 
-// CurrentTest is the state for the currently running test, if any.
-var CurrentTest *TestState
+// currentlyRunningTest is the state for the currently running test, if any.
+var currentlyRunningTest *testState
