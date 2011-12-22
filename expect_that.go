@@ -45,7 +45,7 @@ type ExpectationModifier interface {
 //     ExpectThat(userName, Equals("jacobsa"))
 //     ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
 //
-func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) {
+func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}) ExpectationModifier {
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)
 	if !ok {
@@ -74,7 +74,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	switch res {
 	// Return immediately on success.
 	case oglematchers.MATCH_TRUE:
-		return
+		return &expectationModifierImpl{}
 
 	// Handle errors below.
 	case oglematchers.MATCH_FALSE:
@@ -106,4 +106,16 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 
 	// Store the failure.
 	state.FailureRecords = append(state.FailureRecords, record)
+
+	return &expectationModifierImpl{&record}
+}
+
+type expectationModifierImpl struct {
+	// The failure record created by the expectation, or nil if none.
+	failureRecord *failureRecord
+}
+
+func (m *expectationModifierImpl) SetCaller(fileName string, lineNumber int) {
+	m.failureRecord.FileName = fileName
+	m.failureRecord.LineNumber = lineNumber
 }
