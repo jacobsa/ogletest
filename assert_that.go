@@ -31,5 +31,16 @@ func AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) ExpectationResult {
-	return nil
+  res := ExpectThat(x, m, errorParts)
+	if res.MatchResult() != oglematchers.MATCH_TRUE {
+		panic(&assertThatError{})
+	}
+
+	return res
+}
+
+// assertThatError is a sentinel type that is used in a conspiracy between
+// AssertThat and runTests. If runTests sees a *assertThatError as the value
+// given to a panic() call, it will avoid printing the panic error.
+type assertThatError struct {
 }
