@@ -42,9 +42,13 @@ func (t *PassingTest) SuccessfullMatches() {
 	ExpectThat(17, Equals(17.0))
 	ExpectThat(16.9, LessThan(17))
 	ExpectThat("taco", HasSubstr("ac"))
+
+	AssertThat(17, Equals(17.0))
+	AssertThat(16.9, LessThan(17))
+	AssertThat("taco", HasSubstr("ac"))
 }
 
-func (t *PassingTest) ExpectationAliases() {
+func (t *PassingTest) ExpectAliases() {
 	ExpectEq(17, 17.0)
 
 	ExpectLe(17, 17.0)
@@ -59,4 +63,21 @@ func (t *PassingTest) ExpectationAliases() {
 
 	ExpectTrue(true)
 	ExpectFalse(false)
+}
+
+func (t *PassingTest) AssertAliases() {
+	AssertEq(17, 17.0)
+
+	AssertLe(17, 17.0)
+	AssertLe(17, 18.0)
+	AssertLt(17, 18.0)
+
+	AssertGe(17, 17.0)
+	AssertGe(17, 16.0)
+	AssertGt(17, 16.0)
+
+	AssertNe(17, 18.0)
+
+	AssertTrue(true)
+	AssertFalse(false)
 }

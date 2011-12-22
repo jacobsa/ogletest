@@ -83,3 +83,48 @@ func (t FailingTest) ExpectationAliases() {
 	ExpectTrue(false)
 	ExpectTrue("taco")
 }
+
+func (t *FailingTest) AssertThatFailure() {
+	AssertThat(17, Equals(19))
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertEqFailure() {
+	AssertEq(19, 17)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertNeFailure() {
+	AssertNe(19, 19)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertLeFailure() {
+	AssertLe(19, 17)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertLtFailure() {
+	AssertLt(19, 17)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertGeFailure() {
+	AssertGe(17, 19)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertGtFailure() {
+	AssertGt(17, 19)
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertTrueFailure() {
+	AssertTrue("taco")
+	panic("Shouldn't get here.")
+}
+
+func (t *FailingTest) AssertFalseFailure() {
+	AssertFalse("taco")
+	panic("Shouldn't get here.")
+}
