@@ -144,7 +144,7 @@ func TestGoldenFiles(t *testing.T) {
 		}
 
 		// Check the status code. We assume all test cases fail except for passing_test.
-		shouldPass := caseName == "passint_test"
+		shouldPass := caseName == "passing_test"
 		didPass := exitCode == 0
 		if shouldPass != didPass {
 			t.Errorf("Bad exit code for test case %s: %d", caseName, exitCode)
