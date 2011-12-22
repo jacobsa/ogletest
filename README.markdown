@@ -37,7 +37,7 @@ and then use `godoc`:
     godoc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
-`[oglematchers][matcher-reference]` package. See that package's documentation
+[oglematchers][matcher-reference] package. See that package's documentation
 for information on the built-in matchers available, and check out the
 `oglematchers.Matcher` interface if you want to define your own.
 
