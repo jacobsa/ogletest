@@ -65,6 +65,26 @@ Expected: not(17)
 Actual:   taco, which is not numeric
 
 
+expect_aliases.go:59:
+Expected: false
+Actual:   true
+
+
+expect_aliases.go:59:
+Expected: false
+Actual:   taco, which is not a bool
+
+
+expect_aliases.go:54:
+Expected: true
+Actual:   false
+
+
+expect_aliases.go:54:
+Expected: true
+Actual:   taco, which is not a bool
+
+
 ==== FailingTest.HasSubstr
 failing_test.go:53:
 Expected: has substring "ac"

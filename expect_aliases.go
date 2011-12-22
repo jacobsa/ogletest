@@ -48,3 +48,13 @@ func ExpectGt(x, y interface{}) ExpectationModifier {
 func ExpectGe(x, y interface{}) ExpectationModifier {
 	return ExpectThat(x, oglematchers.GreaterOrEqual(y))
 }
+
+// ExpectTrue(b) is equivalent to ExpectThat(b, oglematchers.Equals(true)).
+func ExpectTrue(b interface{}) ExpectationModifier {
+	return ExpectThat(b, oglematchers.Equals(true))
+}
+
+// ExpectFalse(b) is equivalent to ExpectThat(b, oglematchers.Equals(false)).
+func ExpectFalse(b interface{}) ExpectationModifier {
+	return ExpectThat(b, oglematchers.Equals(false))
+}
