@@ -131,7 +131,7 @@ func RunTests(t *testing.T) {
 			for _, record := range failures {
 				t.Fail()
 				fmt.Printf(
-					"%s:%d:\n%s\n%s",
+					"%s:%d:\n%s\n%s\n\n",
 					record.FileName,
 					record.LineNumber,
 					record.GeneratedError,

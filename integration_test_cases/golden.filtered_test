@@ -7,10 +7,14 @@ gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6
 filtered_test.go:51:
 Expected: has substring "blah"
 Actual:   taco
+
+
 ==== FilteredTest.FilteredTestBaz
 filtered_test.go:55:
 Expected: less than 17
 Actual:   18
+
+
 ==== FilteredTest.PassingTestBar
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL

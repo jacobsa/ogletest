@@ -6,6 +6,8 @@ gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6
 ==== PanickingTest.PanickingTest
 panicking_test.go:39:
 panic: foobar
+
+
 ==== PanickingTest.ZzzSomeOtherTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
