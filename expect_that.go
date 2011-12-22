@@ -23,23 +23,6 @@ import (
 	"runtime"
 )
 
-// ExpectationResult is an interface returned by ExpectThat that allows callers
-// to get information about the result of the expectation and set their own
-// custom information. This is not useful to the average consumer, but may be
-// helpful if you're writing widely used test utility functions.
-type ExpectationResult interface {
-	// SetCaller updates the file name and line number associated with the
-	// expectation. This allows, for example, a utility function to express that
-	// *its* caller should have its line number printed if the expectation fails,
-	// instead of the line number of the ExpectThat call within the utility
-	// function.
-	SetCaller(fileName string, lineNumber int)
-
-	// MatchResult returns the result returned by the expectation's matcher for
-	// the supplied candidate.
-	MatchResult() oglematchers.MatchResult
-}
-
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
 // failure record to the currently running test if it does not. If additional
 // parameters are supplied, the first will be used as a format string for the
@@ -143,4 +126,21 @@ func (r *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
 
 func (r *expectationResultImpl) MatchResult() oglematchers.MatchResult {
 	return r.matchResult
+}
+
+// ExpectationResult is an interface returned by ExpectThat that allows callers
+// to get information about the result of the expectation and set their own
+// custom information. This is not useful to the average consumer, but may be
+// helpful if you're writing widely used test utility functions.
+type ExpectationResult interface {
+	// SetCaller updates the file name and line number associated with the
+	// expectation. This allows, for example, a utility function to express that
+	// *its* caller should have its line number printed if the expectation fails,
+	// instead of the line number of the ExpectThat call within the utility
+	// function.
+	SetCaller(fileName string, lineNumber int)
+
+	// MatchResult returns the result returned by the expectation's matcher for
+	// the supplied candidate.
+	MatchResult() oglematchers.MatchResult
 }
