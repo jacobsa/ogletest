@@ -37,7 +37,16 @@ var objDir string
 // buildPackage build a copy of the (possibly locally modified) package, and
 // return a path to an include path where it can be found.
 func buildPackage() (string, error) {
-	cmd := exec.Command("gomake")
+	// HACK(jacobsa): The gotest command reads the GCFLAGS environment variable,
+	// which allows us to give a -I flag to 6g to let it find the locally built
+	// package. However 6l cannot find it, and there is no linker flags
+	// environment variable. So we actually install the package here, instead of
+	// just building it locally.
+	//
+	// TODO(jacobsa): When the new 'go' tool comes out, check whether this still
+	// replies to its 'test' command. If so, file an issue to get a linker flags
+	// environment variable added.
+	cmd := exec.Command("gomake", "install")
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
