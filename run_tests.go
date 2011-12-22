@@ -21,6 +21,7 @@ import (
 	"github.com/jacobsa/ogletest/internal"
 	"path"
 	"reflect"
+	"regexp"
 	"runtime"
 	"testing"
 )
@@ -110,6 +111,17 @@ func RunTests(t *testing.T) {
 		for i := 0; i < typ.NumMethod(); i++ {
 			method := typ.Method(i)
 			if isSpecialMethod(method.Name) {
+				continue
+			}
+
+			// Should we skip this method?
+			fullName := fmt.Sprintf("%s.%s", suiteName, method.Name)
+			matched, err := regexp.MatchString(*testFilter, fullName)
+			if err != nil {
+				panic("Invalid value for --ogletest.run: " + err.Error())
+			}
+
+			if !matched {
 				continue
 			}
 

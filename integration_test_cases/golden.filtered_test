@@ -11,12 +11,7 @@ Actual:   taco
 filtered_test.go:55:
 Expected: less than 17
 Actual:   18
-==== FilteredTest.FilteredTestFoo
-filtered_test.go:47:
-Expected: less than 17
-Actual:   18
 ==== FilteredTest.PassingTestBar
-==== FilteredTest.PassingTestFoo
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
 gotest: "./6.out --ogletest.run=Test(Bar|Baz)" failed: exit status 1
