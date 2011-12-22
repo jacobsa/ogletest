@@ -67,14 +67,14 @@ import (
   "testing"
 )
 
+// Give ogletest a chance to run your tests when invoked by gotest.
+func TestOgletest(t *testing.T) { RunTests(t) }
+
 // Create a test suite, which groups together logically related test methods
 // (defined below). You can share common setup and teardown code here; see the
 // package docs for more info.
 type PeopleTest struct {}
 func init() { RegisterTestSuite(&PeopleTest{}) }
-
-// Give ogletest a chance to run your tests when invoked by gotest.
-func TestOgletest(t *testing.T) { RunTests(t) }
 
 func (t *PeopleTest) ReturnsCorrectNames() {
   // Call the function a few times, and make sure it never strays from the set
