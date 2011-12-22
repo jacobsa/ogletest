@@ -2,6 +2,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG = github.com/jacobsa/ogletest
 GOFILES = \
+	assert_that.go \
 	expect_aliases.go \
 	expect_that.go \
 	register_test_suite.go \
