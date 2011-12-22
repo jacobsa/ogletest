@@ -33,7 +33,7 @@ type ExpectationResult interface {
 	// *its* caller should have its line number printed if the expectation fails,
 	// instead of the line number of the ExpectThat call within the utility
 	// function.
-	SetCaller(fileName string, lineNumber int) ExpectationResult
+	SetCaller(fileName string, lineNumber int)
 
 	// MatchResult returns the result returned by the expectation's matcher for
 	// the supplied candidate.
@@ -121,13 +121,11 @@ type expectationResultImpl struct {
 	failureRecord *failureRecord
 }
 
-func (m *expectationResultImpl) SetCaller(fileName string, lineNumber int) ExpectationResult {
+func (m *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
 	if m.failureRecord == nil {
-		// Do nothing.
-		return m
+		return
 	}
 
 	m.failureRecord.FileName = fileName
 	m.failureRecord.LineNumber = lineNumber
-	return m
 }
