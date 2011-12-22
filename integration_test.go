@@ -154,8 +154,6 @@ func TestGoldenFiles(t *testing.T) {
 
 	// Run each test case.
 	for _, caseName := range caseNames {
-		t.Logf("Running test case: %s", caseName)
-
 		// Run the test case.
 		output, exitCode, err := runTestCase(caseName)
 		if err != nil {
