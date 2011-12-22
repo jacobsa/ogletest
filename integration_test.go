@@ -122,6 +122,16 @@ func runTestCase(name string) ([]byte, int, error) {
 	return output, exitError.ExitStatus(), nil
 }
 
+// checkGolden file checks the supplied actual output for the named test case
+// against the golden file for that case. If requested by the user, it rewrites
+// the golden file on failure.
+func checkAgainstGoldenFile(caseName string, output []byte) bool {
+	goldenFile := "golden." + caseName
+	goldenContents := readFileOrDie(path.Join("integration_test_cases", goldenFile))
+
+	return string(output) == string(goldenContents)
+}
+
 ////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////
@@ -138,7 +148,7 @@ func TestGoldenFiles(t *testing.T) {
 		t.Logf("Running test case: %s", caseName)
 
 		// Run the test case.
-		_, exitCode, err := runTestCase(caseName)
+		output, exitCode, err := runTestCase(caseName)
 		if err != nil {
 			t.Fatalf("Running test case %s: %v", caseName, err)
 		}
@@ -148,6 +158,11 @@ func TestGoldenFiles(t *testing.T) {
 		didPass := exitCode == 0
 		if shouldPass != didPass {
 			t.Errorf("Bad exit code for test case %s: %d", caseName, exitCode)
+		}
+
+		// Check the output against the golden file.
+		if !checkAgainstGoldenFile(caseName, output) {
+			t.Errorf("Output for test case %s doesn't match golden file.", caseName)
 		}
 	}
 }
