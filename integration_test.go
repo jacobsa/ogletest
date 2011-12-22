@@ -61,9 +61,10 @@ func getCaseNames() ([]string, error) {
 
 		// Store the name minus the extension.
 		result[resultLen] = name[:len(name) - 3]
+		resultLen++
 	}
 
-	return result, nil
+	return result[:resultLen], nil
 }
 
 func writeStringToFileOrDie(contents []byte, path string) {
