@@ -22,7 +22,7 @@ failing_test.go:48:
 Expected: less than "taco"
 Actual:   18, which is not comparable
 ==== FailingTest.ModifiedExpectation
-failing_test.go:57:
+foo.go:112:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 ==== FailingTest.PassingMethod

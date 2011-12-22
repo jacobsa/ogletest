@@ -45,12 +45,12 @@ type testState struct {
 	TestName []string
 
 	// A set of failure records that the test has produced.
-	FailureRecords []failureRecord
+	FailureRecords []*failureRecord
 }
 
 // newTestState creates a valid but empty testState struct.
 func newTestState() *testState {
-	return &testState{FailureRecords: make([]failureRecord, 0)}
+	return &testState{FailureRecords: make([]*failureRecord, 0)}
 }
 
 // currentlyRunningTest is the state for the currently running test, if any.

@@ -28,7 +28,7 @@ import (
 var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
 
 // runTest runs a single test, returning a slice of failure records for that test.
-func runTest(suite interface{}, method reflect.Method) (failures []failureRecord) {
+func runTest(suite interface{}, method reflect.Method) (failures []*failureRecord) {
 	suiteValue := reflect.ValueOf(suite)
 	suiteType := suiteValue.Type()
 	suiteName := suiteType.Elem().Name()
@@ -57,7 +57,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []failureRecord
 			}
 
 			panicRecord.GeneratedError = fmt.Sprintf("panic: %v", r)
-			failures = append(failures, panicRecord)
+			failures = append(failures, &panicRecord)
 		}
 
 		// Reset the global CurrentTest state, so we don't accidentally use it elsewhere.

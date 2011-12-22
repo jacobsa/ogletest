@@ -105,7 +105,7 @@ func ExpectThat(x interface{}, m oglematchers.Matcher, errorParts ...interface{}
 	record.UserError = userError
 
 	// Store the failure.
-	state.FailureRecords = append(state.FailureRecords, record)
+	state.FailureRecords = append(state.FailureRecords, &record)
 
 	return &expectationModifierImpl{&record}
 }
