@@ -34,6 +34,10 @@ type ExpectationResult interface {
 	// instead of the line number of the ExpectThat call within the utility
 	// function.
 	SetCaller(fileName string, lineNumber int) ExpectationResult
+
+	// MatchResult returns the result returned by the expectation's matcher for
+	// the supplied candidate.
+	MatchResult() oglematchers.MatchResult
 }
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
