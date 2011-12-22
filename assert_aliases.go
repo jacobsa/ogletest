@@ -17,61 +17,59 @@ package ogletest
 
 import (
 	"github.com/jacobsa/oglematchers"
-	"path"
-	"runtime"
 )
 
 // AssertEq(e, a) is equivalent to AssertThat(a, oglematchers.Equals(e)).
-func AssertEq(expected, actual interface{}) AssertationResult {
+func AssertEq(expected, actual interface{}) ExpectationResult {
 	res := AssertThat(actual, oglematchers.Equals(expected))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertNe(e, a) is equivalent to AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
-func AssertNe(expected, actual interface{}) AssertationResult {
+func AssertNe(expected, actual interface{}) ExpectationResult {
 	res := AssertThat(actual, oglematchers.Not(oglematchers.Equals(expected)))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertLt(x, y) is equivalent to AssertThat(x, oglematchers.LessThan(y)).
-func AssertLt(x, y interface{}) AssertationResult {
+func AssertLt(x, y interface{}) ExpectationResult {
 	res := AssertThat(x, oglematchers.LessThan(y))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertLe(x, y) is equivalent to AssertThat(x, oglematchers.LessOrEqual(y)).
-func AssertLe(x, y interface{}) AssertationResult {
+func AssertLe(x, y interface{}) ExpectationResult {
 	res := AssertThat(x, oglematchers.LessOrEqual(y))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertGt(x, y) is equivalent to AssertThat(x, oglematchers.GreaterThan(y)).
-func AssertGt(x, y interface{}) AssertationResult {
+func AssertGt(x, y interface{}) ExpectationResult {
 	res := AssertThat(x, oglematchers.GreaterThan(y))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertGe(x, y) is equivalent to AssertThat(x, oglematchers.GreaterOrEqual(y)).
-func AssertGe(x, y interface{}) AssertationResult {
+func AssertGe(x, y interface{}) ExpectationResult {
 	res := AssertThat(x, oglematchers.GreaterOrEqual(y))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertTrue(b) is equivalent to AssertThat(b, oglematchers.Equals(true)).
-func AssertTrue(b interface{}) AssertationResult {
+func AssertTrue(b interface{}) ExpectationResult {
 	res := AssertThat(b, oglematchers.Equals(true))
 	res.SetCaller(getCallerForAlias())
 	return res
 }
 
 // AssertFalse(b) is equivalent to AssertThat(b, oglematchers.Equals(false)).
-func AssertFalse(b interface{}) AssertationResult {
+func AssertFalse(b interface{}) ExpectationResult {
 	res := AssertThat(b, oglematchers.Equals(false))
 	res.SetCaller(getCallerForAlias())
 	return res
