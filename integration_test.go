@@ -116,7 +116,7 @@ func runTestCase(name string) ([]byte, int, error) {
 	}
 
 	cmd.Dir = tempDir
-	output, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 
 	// Did the process exist with zero code?
 	if err == nil {

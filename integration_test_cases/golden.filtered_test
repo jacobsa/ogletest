@@ -1,0 +1,18 @@
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+6g   -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 filtered_test.go 
+rm -f _test/github.com/jacobsa/ogletest/foobar.a
+gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+flag provided but not defined: -ogletest.run
+Usage of ./6.out:
+  -test.bench="": regular expression to select benchmarks to run
+  -test.benchtime=1: approximate run time for each benchmark, in seconds
+  -test.cpu="": comma-separated list of number of CPUs to use for each test
+  -test.cpuprofile="": write a cpu profile to the named file during execution
+  -test.memprofile="": write a memory profile to the named file after execution
+  -test.memprofilerate=0: if >=0, sets runtime.MemProfileRate
+  -test.parallel=1: maximum test parallelism
+  -test.run="": regular expression to select tests to run
+  -test.short=false: run smaller test suite to save time
+  -test.timeout=0: if > 0, sets time limit for tests in seconds
+  -test.v=false: verbose: print additional output
+gotest: "./6.out --ogletest.run=Test(Bar|Baz)" failed: exit status 2

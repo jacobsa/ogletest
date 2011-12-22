@@ -9,3 +9,4 @@ panic: foobar
 ==== PanickingTest.ZzzSomeOtherTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
+gotest: "./6.out" failed: exit status 1
