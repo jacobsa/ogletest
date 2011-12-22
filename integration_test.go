@@ -28,10 +28,29 @@ import (
 )
 
 var dumpNew = flag.Bool("dump_new", false, "Dump new golden files.")
+var objDir string
 
 ////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////
+
+// buildPackage build a copy of the (possibly locally modified) package, and
+// return a path to an include path where it can be found.
+func buildPackage() (string, error) {
+	cmd := exec.Command("gomake")
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("%v:\n%s", err, output))
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", errors.New("os.Getwd: " + err.Error())
+	}
+
+	return path.Join(wd, "_obj"), nil
+}
 
 // getCaseNames looks for integration test cases as files in the
 // integration_test_cases directory.
@@ -100,6 +119,7 @@ func runTestCase(name string) ([]byte, int, error) {
 	makefileContents := "include $(GOROOT)/src/Make.inc\n" +
 		"TARG = github.com/jacobsa/ogletest/foobar\n" +
 		"GOFILES = " + name + ".go\n" +
+		"GCFLAGS += -I" + objDir + "\n" +
 		"include $(GOROOT)/src/Make.pkg\n"
 
 	writeContentsToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
@@ -152,6 +172,12 @@ func checkAgainstGoldenFile(caseName string, output []byte) bool {
 ////////////////////////////////////////////////////////////
 
 func TestGoldenFiles(t *testing.T) {
+	// Ensure the local package is up to date, and get a path to it. This will
+	// prevent the test cases from using the installed version, which may be out
+	// of date.
+	var err error
+	objDir, err = buildPackage()
+
 	// We expect there to be at least one case.
 	caseNames, err := getCaseNames()
 	if err != nil || len(caseNames) == 0 {
