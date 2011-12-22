@@ -27,6 +27,11 @@ import (
 
 var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
 
+func isAssertThatError(x interface{}) bool {
+	_, ok := x.(*assertThatError)
+	return ok
+}
+
 // runTest runs a single test, returning a slice of failure records for that test.
 func runTest(suite interface{}, method reflect.Method) (failures []*failureRecord) {
 	suiteValue := reflect.ValueOf(suite)
@@ -40,9 +45,10 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 
 	defer func() {
 		// Return the failures the test recorded, whether it panics or not. If it
-		// panics, additionally return a failure for the panic.
+		// panics (and the panic is not due to an AssertThat failure), additionally
+		// return a failure for the panic.
 		failures = currentlyRunningTest.FailureRecords
-		if r := recover(); r != nil {
+		if r := recover(); r != nil && !isAssertThatError(r) {
 			// The stack looks like this:
 			//
 			//     <this deferred function>
@@ -60,7 +66,8 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 			failures = append(failures, &panicRecord)
 		}
 
-		// Reset the global CurrentTest state, so we don't accidentally use it elsewhere.
+		// Reset the global CurrentTest state, so we don't accidentally use it
+		// elsewhere.
 		currentlyRunningTest = nil
 	}()
 

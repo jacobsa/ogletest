@@ -3,7 +3,8 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
 ========= PassingTest
+==== PassingTest.AssertAliases
 ==== PassingTest.EmptyTestMethod
-==== PassingTest.ExpectationAliases
+==== PassingTest.ExpectAliases
 ==== PassingTest.SuccessfullMatches
 PASS
