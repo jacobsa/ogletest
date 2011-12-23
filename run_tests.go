@@ -42,13 +42,13 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	suiteType := suiteValue.Type()
 
 	// Set up a clean slate for this test.
-	currentlyRunningTest = newTestState()
+	currentlyRunningTest = newTestInfo()
 
 	defer func() {
 		// Return the failures the test recorded, whether it panics or not. If it
 		// panics (and the panic is not due to an AssertThat failure), additionally
 		// return a failure for the panic.
-		failures = currentlyRunningTest.FailureRecords
+		failures = currentlyRunningTest.failureRecords
 		if r := recover(); r != nil && !isAssertThatError(r) {
 			// The stack looks like this:
 			//

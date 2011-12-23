@@ -34,24 +34,17 @@ type failureRecord struct {
 	UserError string
 }
 
-// testState represents the state of a currently running or previously running
+// TestInfo represents information about a currently running or previously-run
 // test.
-type testState struct {
-	// The name of the test suite, for example "UserInfoTest".
-	SuiteName []string
-
-	// The name of the test function within the test suite, for example
-	// "ReturnsCorrectPhoneNumber".
-	TestName []string
-
+type TestInfo struct {
 	// A set of failure records that the test has produced.
-	FailureRecords []*failureRecord
+	failureRecords []*failureRecord
 }
 
-// newTestState creates a valid but empty testState struct.
-func newTestState() *testState {
-	return &testState{FailureRecords: make([]*failureRecord, 0)}
+// newTestInfo creates a valid but empty TestInfo struct.
+func newTestInfo() *TestInfo {
+	return &TestInfo{failureRecords: make([]*failureRecord, 0)}
 }
 
 // currentlyRunningTest is the state for the currently running test, if any.
-var currentlyRunningTest *testState
+var currentlyRunningTest *TestInfo

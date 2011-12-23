@@ -74,10 +74,10 @@ func ExpectThat(
 		userError = fmt.Sprintf(v.String(), errorParts[1:]...)
 	}
 
-	// Grab the current test state.
-	state := currentlyRunningTest
-	if state == nil {
-		panic("ExpectThat: no test state.")
+	// Grab the current test info.
+	info := currentlyRunningTest
+	if info == nil {
+		panic("ExpectThat: no test info.")
 	}
 
 	// Check whether the value matches.
@@ -118,7 +118,7 @@ func ExpectThat(
 	record.UserError = userError
 
 	// Store the failure.
-	state.FailureRecords = append(state.FailureRecords, &record)
+	info.failureRecords = append(info.failureRecords, &record)
 	res.failureRecord = &record
 
 	return res

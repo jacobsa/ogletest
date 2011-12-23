@@ -9,6 +9,6 @@ GOFILES = \
 	expect_that.go \
 	register_test_suite.go \
 	run_tests.go \
-	test_state.go \
+	test_info.go \
 
 include $(GOROOT)/src/Make.pkg
