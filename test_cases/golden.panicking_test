@@ -11,7 +11,7 @@ panic: foobar
 	com/jacobsa/ogletest._func_001: "panic: %v\n\n%s", r, debug.Stack())
 /Users/jacobsa/go/src/pkg/runtime/proc.c:1386 (0x12404)
 	panic: reflect·call(d->fn, d->args, d->siz);
-/private/var/folders/00/0mb18000h01000cxqpysvccm002jc5/T/ogletest_integration_test222285714/panicking_test.go:39 (0x18727)
+/private/tmp/dir/panicking_test.go:39 (0x18727)
 	(*PanickingTest).PanickingTest: panic("foobar")
 /Users/jacobsa/go/src/pkg/reflect/value.go:517 (0x61e13)
 	Value.call: call(fn, unsafe.Pointer(ptr), uint32(size))
@@ -29,7 +29,7 @@ panic: foobar
 	(*Once).Do: f()
 /Users/jacobsa/clients/ogletest/run_tests.go:105 (0x25394)
 	com/jacobsa/ogletest.RunTests: runTestsOnce.Do(func() { runTestsInternal(t) })
-/private/var/folders/00/0mb18000h01000cxqpysvccm002jc5/T/ogletest_integration_test222285714/panicking_test.go:32 (0x186db)
+/private/tmp/dir/panicking_test.go:32 (0x186db)
 	TestOgletest: func TestOgletest(t *testing.T) { RunTests(t) }
 /Users/jacobsa/go/src/pkg/testing/testing.go:189 (0x1aa95)
 	tRunner: test.F(t)
@@ -41,6 +41,6 @@ panic: foobar
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest
---- FAIL: oglematchers_test.TestOgletest (0.06 seconds)
+--- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1
