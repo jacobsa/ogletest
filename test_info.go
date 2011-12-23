@@ -39,7 +39,10 @@ var currentlyRunningTest *TestInfo
 
 // newTestInfo creates a valid but empty TestInfo struct.
 func newTestInfo() *TestInfo {
-	return &TestInfo{failureRecords: make([]*failureRecord, 0)}
+	info := &TestInfo{}
+	info.failureRecords = make([]*failureRecord, 0)
+	info.MockController = oglemock.NewController(&testInfoErrorReporter{info})
+	return info
 }
 
 // failureRecord represents a single failed expectation for a test.
@@ -59,4 +62,23 @@ type failureRecord struct {
 
 	// A user-specified string to print out with the error, if any.
 	UserError string
+}
+
+// testInfoErrorReporter is an oglemock.ErrorReporter that writes failure
+// records into a test info struct.
+type testInfoErrorReporter struct {
+	testInfo *TestInfo
+}
+
+func (r *testInfoErrorReporter) ReportError(
+	fileName string,
+	lineNumber int,
+	err error) {
+  record := &failureRecord{
+		FileName: fileName,
+		LineNumber: lineNumber,
+		GeneratedError: err.Error(),
+	}
+
+	r.testInfo.failureRecords = append(r.testInfo.failureRecords, record)
 }
