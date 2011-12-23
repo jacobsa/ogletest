@@ -158,6 +158,10 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
+	// HACK(jacobsa): Replace references to the temporary directory in the
+	// output, since they differ for each run.
+	output = []byte(strings.Replace(string(output), tempDir, "/tmp/dir", -1))
+
 	return output, exitError.ExitStatus(), nil
 }
 

@@ -22,6 +22,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"sync"
 	"testing"
 )
@@ -63,7 +64,8 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 				panicRecord.LineNumber = lineNumber
 			}
 
-			panicRecord.GeneratedError = fmt.Sprintf("panic: %v", r)
+			panicRecord.GeneratedError = fmt.Sprintf(
+				"panic: %v\n\n%s", r, debug.Stack())
 			failures = append(failures, &panicRecord)
 		}
 
