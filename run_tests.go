@@ -177,15 +177,38 @@ func runTestsInternal(t *testing.T) {
 	}
 }
 
-func runMethodIfExists(v reflect.Value, name string) {
+func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {
 	method := v.MethodByName(name)
 	if method.Kind() == reflect.Invalid {
 		return
 	}
 
-	// TODO(jacobsa): Panic (or print error?) if method doesn't have the right
-	// signature.
-	method.Call([]reflect.Value{})
+	if method.Type().NumIn() != len(args) {
+		panic(fmt.Sprintf(
+			"%s: expected %d args, actually %d.",
+			name,
+			len(args),
+			method.Type().NumIn()))
+	}
+
+	// Create a slice of reflect.Values to pass to the method. Simultaneously
+	// check types.
+	argVals := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		argVal := reflect.ValueOf(arg)
+
+		if argVal.Type() != method.Type().In(i) {
+			panic(fmt.Sprintf(
+				"%s: expected arg %d to have type %v.",
+				name,
+				i,
+				argVal.Type()))
+		}
+
+		argVals[i] = argVal
+	}
+
+	method.Call(argVals)
 }
 
 func isSpecialMethod(name string) bool {
