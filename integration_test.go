@@ -113,6 +113,17 @@ func readFileOrDie(path string) []byte {
 	return contents
 }
 
+// cleanOutput transforms the supplied output so that it no longer contains
+// information that changes from run to run, making the golden tests less
+// flaky.
+func cleanOutput(o []byte, tempDir string) []byte {
+	// HACK(jacobsa): Replace references to the temporary directory in the
+	// output, since they differ for each run.
+	o = []byte(strings.Replace(string(o), tempDir, "/tmp/dir", -1))
+
+	return o
+}
+
 // runTestCase runs the case with the supplied name (e.g. "passing_test"), and
 // returns its output and exit code.
 func runTestCase(name string) ([]byte, int, error) {
@@ -158,10 +169,7 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
-	// HACK(jacobsa): Replace references to the temporary directory in the
-	// output, since they differ for each run.
-	output = []byte(strings.Replace(string(output), tempDir, "/tmp/dir", -1))
-
+	output = cleanOutput(output, tempDir)
 	return output, exitError.ExitStatus(), nil
 }
 
