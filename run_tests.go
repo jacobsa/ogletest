@@ -40,10 +40,6 @@ func isAssertThatError(x interface{}) bool {
 func runTest(suite interface{}, method reflect.Method) (failures []*failureRecord) {
 	suiteValue := reflect.ValueOf(suite)
 	suiteType := suiteValue.Type()
-	suiteName := suiteType.Elem().Name()
-
-	// Print a banner for the start of this test.
-	fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
 
 	// Set up a clean slate for this test.
 	currentlyRunningTest = newTestState()
@@ -74,14 +70,6 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		// Reset the global CurrentTest state, so we don't accidentally use it
 		// elsewhere.
 		currentlyRunningTest = nil
-
-		// Print a banner for the end of the test.
-		bannerMessage := "[       OK ]"
-		if len(failures) != 0 {
-			bannerMessage = "[  FAILED  ]"
-		}
-
-		fmt.Printf("%s %s.%s\n", bannerMessage, suiteName, method.Name)
 	}()
 
 	// Create a receiver, and call it.
@@ -148,6 +136,10 @@ func runTestsInternal(t *testing.T) {
 				continue
 			}
 
+
+			// Print a banner for the start of this test.
+			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
+
 			// Run the test.
 			failures := runTest(suite, method)
 
@@ -166,6 +158,14 @@ func runTestsInternal(t *testing.T) {
 					record.GeneratedError,
 					userErrorSection)
 			}
+
+			// Print a banner for the end of the test.
+			bannerMessage := "[       OK ]"
+			if len(failures) != 0 {
+				bannerMessage = "[  FAILED  ]"
+			}
+
+			fmt.Printf("%s %s.%s\n", bannerMessage, suiteName, method.Name)
 		}
 
 		// Run the TearDownTestSuite method, if any.

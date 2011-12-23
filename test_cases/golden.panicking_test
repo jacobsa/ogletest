@@ -4,10 +4,10 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
-[  FAILED  ] PanickingTest.PanickingTest
 panicking_test.go:39:
 panic: foobar
 
+[  FAILED  ] PanickingTest.PanickingTest
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest

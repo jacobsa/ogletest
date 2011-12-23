@@ -4,11 +4,11 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
 [----------] Running tests from UnexportedTest
 [ RUN      ] UnexportedTest.SomeTest
-[  FAILED  ] UnexportedTest.SomeTest
 unexported_test.go:42:
 Expected: 4
 Actual:   3
 
+[  FAILED  ] UnexportedTest.SomeTest
 [----------] Finished with tests from UnexportedTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL

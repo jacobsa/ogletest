@@ -4,11 +4,11 @@ rm -f _test/github.com/jacobsa/ogletest/foobar.a
 gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
 [----------] Running tests from RunTwiceTest
 [ RUN      ] RunTwiceTest.FailingMethod
-[  FAILED  ] RunTwiceTest.FailingMethod
 run_twice_test.go:46:
 Expected: 17.5
 Actual:   17
 
+[  FAILED  ] RunTwiceTest.FailingMethod
 [ RUN      ] RunTwiceTest.PassingMethod
 [       OK ] RunTwiceTest.PassingMethod
 [----------] Finished with tests from RunTwiceTest
