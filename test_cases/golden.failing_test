@@ -57,6 +57,13 @@ Expected: true
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.AssertTrueFailure
+[ RUN      ] FailingTest.AssertWithUserErrorMessages
+assert_that.go:34:
+Expected: 19
+Actual:   17
+foo bar: 112
+
+[  FAILED  ] FailingTest.AssertWithUserErrorMessages
 [ RUN      ] FailingTest.Equals
 failing_test.go:42:
 Expected: 17.5
@@ -67,60 +74,107 @@ Expected: taco
 Actual:   17, which is not a string
 
 [  FAILED  ] FailingTest.Equals
+[ RUN      ] FailingTest.ExpectWithUserErrorMessages
+failing_test.go:57:
+Expected: 19
+Actual:   17
+foo bar: 112
+
+failing_test.go:58:
+Expected: 17
+Actual:   17.5
+foo bar: 112
+
+failing_test.go:59:
+Expected: less than or equal to 16.9
+Actual:   17
+foo bar: 112
+
+failing_test.go:60:
+Expected: less than 16.9
+Actual:   17
+foo bar: 112
+
+failing_test.go:61:
+Expected: greater than or equal to 17.1
+Actual:   17
+foo bar: 112
+
+failing_test.go:62:
+Expected: greater than "taco"
+Actual:   17, which is not comparable
+foo bar: 112
+
+failing_test.go:63:
+Expected: not(17)
+Actual:   17
+foo bar: 112
+
+failing_test.go:64:
+Expected: false
+Actual:   true
+foo bar: 112
+
+failing_test.go:65:
+Expected: true
+Actual:   false
+foo bar: 112
+
+[  FAILED  ] FailingTest.ExpectWithUserErrorMessages
 [ RUN      ] FailingTest.ExpectationAliases
-failing_test.go:66:
+failing_test.go:78:
 Expected: 17
 Actual:   17.5
 
-failing_test.go:67:
+failing_test.go:79:
 Expected: taco
 Actual:   17.5, which is not a string
 
-failing_test.go:69:
+failing_test.go:81:
 Expected: less than or equal to 16.9
 Actual:   17
 
-failing_test.go:70:
+failing_test.go:82:
 Expected: less than 16.9
 Actual:   17
 
-failing_test.go:71:
+failing_test.go:83:
 Expected: less than "taco"
 Actual:   17, which is not comparable
 
-failing_test.go:73:
+failing_test.go:85:
 Expected: greater than or equal to 17.1
 Actual:   17
 
-failing_test.go:74:
+failing_test.go:86:
 Expected: greater than 17.1
 Actual:   17
 
-failing_test.go:75:
+failing_test.go:87:
 Expected: greater than "taco"
 Actual:   17, which is not comparable
 
-failing_test.go:77:
+failing_test.go:89:
 Expected: not(17)
 Actual:   17
 
-failing_test.go:78:
+failing_test.go:90:
 Expected: not(17)
 Actual:   taco, which is not numeric
 
-failing_test.go:80:
+failing_test.go:92:
 Expected: false
 Actual:   true
 
-failing_test.go:81:
+failing_test.go:93:
 Expected: false
 Actual:   taco, which is not a bool
 
-failing_test.go:83:
+failing_test.go:95:
 Expected: true
 Actual:   false
 
-failing_test.go:84:
+failing_test.go:96:
 Expected: true
 Actual:   taco, which is not a bool
 
@@ -153,13 +207,6 @@ Actual:   19
 [  FAILED  ] FailingTest.ModifiedExpectation
 [ RUN      ] FailingTest.PassingMethod
 [       OK ] FailingTest.PassingMethod
-[ RUN      ] FailingTest.UserErrorMessage
-failing_test.go:57:
-Expected: 19
-Actual:   17
-foo bar
-
-[  FAILED  ] FailingTest.UserErrorMessage
 [----------] Finished with tests from FailingTest
 --- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
 FAIL
