@@ -15,6 +15,10 @@
 
 package ogletest
 
+import (
+	"github.com/jacobsa/oglemock"
+)
+
 // failureRecord represents a single failed expectation for a test.
 type failureRecord struct {
 	// The file name within which the expectation failed, e.g. "foo_test.go".
@@ -37,6 +41,12 @@ type failureRecord struct {
 // TestInfo represents information about a currently running or previously-run
 // test.
 type TestInfo struct {
+	// A mock controller that is set up to report errors to the ogletest test
+	// runner. This can be used for setting up mock expectations and handling
+	// mock calls. The Finish method should not be run by the user; ogletest will
+	// do that automatically after the test's TearDown method is run.
+	MockController oglemock.Controller
+
 	// A set of failure records that the test has produced.
 	failureRecords []*failureRecord
 }
