@@ -45,6 +45,8 @@ type TestInfo struct {
 	// runner. This can be used for setting up mock expectations and handling
 	// mock calls. The Finish method should not be run by the user; ogletest will
 	// do that automatically after the test's TearDown method is run.
+	//
+	// Note that this feature is still experimental, and is subject to change.
 	MockController oglemock.Controller
 
 	// A set of failure records that the test has produced.
