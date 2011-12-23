@@ -96,14 +96,5 @@ func (t *MockTest) MockExpectationNotSatisfied() {
 
 func (t *MockTest) UnexpectedCall() {
 	f := &mockFooer{t.controller}
-
-	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
-	// convenient ExpectCall function when one is available. See issue #8.
-	t.controller.ExpectCall(
-		f,
-		"DoFoo",
-		"blah_test.go",
-		117)(HasSubstr("taco")).WillOnce(oglemock.Return(17))
-
 	f.DoFoo("blah")
 }
