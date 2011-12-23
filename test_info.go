@@ -19,6 +19,29 @@ import (
 	"github.com/jacobsa/oglemock"
 )
 
+// TestInfo represents information about a currently running or previously-run
+// test.
+type TestInfo struct {
+	// A mock controller that is set up to report errors to the ogletest test
+	// runner. This can be used for setting up mock expectations and handling
+	// mock calls. The Finish method should not be run by the user; ogletest will
+	// do that automatically after the test's TearDown method is run.
+	//
+	// Note that this feature is still experimental, and is subject to change.
+	MockController oglemock.Controller
+
+	// A set of failure records that the test has produced.
+	failureRecords []*failureRecord
+}
+
+// currentlyRunningTest is the state for the currently running test, if any.
+var currentlyRunningTest *TestInfo
+
+// newTestInfo creates a valid but empty TestInfo struct.
+func newTestInfo() *TestInfo {
+	return &TestInfo{failureRecords: make([]*failureRecord, 0)}
+}
+
 // failureRecord represents a single failed expectation for a test.
 type failureRecord struct {
 	// The file name within which the expectation failed, e.g. "foo_test.go".
@@ -37,26 +60,3 @@ type failureRecord struct {
 	// A user-specified string to print out with the error, if any.
 	UserError string
 }
-
-// TestInfo represents information about a currently running or previously-run
-// test.
-type TestInfo struct {
-	// A mock controller that is set up to report errors to the ogletest test
-	// runner. This can be used for setting up mock expectations and handling
-	// mock calls. The Finish method should not be run by the user; ogletest will
-	// do that automatically after the test's TearDown method is run.
-	//
-	// Note that this feature is still experimental, and is subject to change.
-	MockController oglemock.Controller
-
-	// A set of failure records that the test has produced.
-	failureRecords []*failureRecord
-}
-
-// newTestInfo creates a valid but empty TestInfo struct.
-func newTestInfo() *TestInfo {
-	return &TestInfo{failureRecords: make([]*failureRecord, 0)}
-}
-
-// currentlyRunningTest is the state for the currently running test, if any.
-var currentlyRunningTest *TestInfo
