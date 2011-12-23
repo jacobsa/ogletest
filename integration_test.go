@@ -23,6 +23,7 @@ import (
 	"path"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -117,9 +118,13 @@ func readFileOrDie(path string) []byte {
 // information that changes from run to run, making the golden tests less
 // flaky.
 func cleanOutput(o []byte, tempDir string) []byte {
-	// HACK(jacobsa): Replace references to the temporary directory in the
-	// output, since they differ for each run.
+	// Replace references to the temporary directory.
 	o = []byte(strings.Replace(string(o), tempDir, "/tmp/dir", -1))
+
+	// Replace things that look like line numbers and process counters in stack
+	// traces.
+	stackFrameRe := regexp.MustCompile(`\S+\.go:\d+ \(0x[0-9a-f]+\)`)
+	o = stackFrameRe.ReplaceAll(o, []byte("some_file.go:0 (0x00000)"))
 
 	return o
 }
