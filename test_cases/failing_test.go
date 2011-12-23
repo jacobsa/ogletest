@@ -53,8 +53,20 @@ func (t *FailingTest) HasSubstr() {
 	ExpectThat(17, HasSubstr("ac"))
 }
 
-func (t *FailingTest) UserErrorMessage() {
-	ExpectThat(17, Equals(19), "foo bar")
+func (t *FailingTest) ExpectWithUserErrorMessages() {
+	ExpectThat(17, Equals(19), "foo bar: %d", 112)
+	ExpectEq(17, 17.5, "foo bar: %d", 112)
+	ExpectLe(17, 16.9, "foo bar: %d", 112)
+	ExpectLt(17, 16.9, "foo bar: %d", 112)
+	ExpectGe(17, 17.1, "foo bar: %d", 112)
+	ExpectGt(17, "taco", "foo bar: %d", 112)
+	ExpectNe(17, 17.0, "foo bar: %d", 112)
+	ExpectFalse(true, "foo bar: %d", 112)
+	ExpectTrue(false, "foo bar: %d", 112)
+}
+
+func (t *FailingTest) AssertWithUserErrorMessages() {
+	AssertThat(17, Equals(19), "foo bar: %d", 112)
 }
 
 func (t *FailingTest) ModifiedExpectation() {
