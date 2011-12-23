@@ -76,7 +76,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 
 	// Create a receiver, and call it.
 	suiteInstance := reflect.New(suiteType.Elem())
-	runMethodIfExists(suiteInstance, "SetUp")
+	runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
 	runMethodIfExists(suiteInstance, method.Name)
 	runMethodIfExists(suiteInstance, "TearDown")
 
