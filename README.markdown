@@ -102,6 +102,33 @@ directory:
 
     gotest
 
+Here's what the failure output of ogletest looks like, if your function's
+implementation is bad.
+
+    [----------] Running tests from PeopleTest
+    [ RUN      ] PeopleTest.FormatsPhoneNumbersCorrectly
+    people_test.go:32:
+    Expected: matches regexp "^\(\d{3}\) \d{3}-\d{4}$"
+    Actual:   +1 800 555 5555
+    
+    [  FAILED  ] PeopleTest.FormatsPhoneNumbersCorrectly
+    [ RUN      ] PeopleTest.ReturnsCorrectNames
+    people_test.go:23:
+    Expected: or(Tony, Dennis, Scott)
+    Actual:   Bart
+    
+    [  FAILED  ] PeopleTest.ReturnsCorrectNames
+    [----------] Finished with tests from PeopleTest
+
+And if the test passes:
+
+    [----------] Running tests from PeopleTest
+    [ RUN      ] PeopleTest.FormatsPhoneNumbersCorrectly
+    [       OK ] PeopleTest.FormatsPhoneNumbersCorrectly
+    [ RUN      ] PeopleTest.ReturnsCorrectNames
+    [       OK ] PeopleTest.ReturnsCorrectNames
+    [----------] Finished with tests from PeopleTest
+
 
 [reference]: http://gopkgdoc.appspot.com/pkg/github.com/jacobsa/ogletest
 [matcher-reference]: http://gopkgdoc.appspot.com/pkg/github.com/jacobsa/oglematchers
