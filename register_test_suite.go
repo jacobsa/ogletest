@@ -31,10 +31,11 @@ package ogletest
 //     clean up after any necessary global state shared by all of the test
 //     methods.
 //
-//  *  SetUp() -- called before each test method is invoked, with the same
-//     receiver as that test method. At the time this method is invoked, the
-//     receiver is a zero value for the test suite type. Use this method for
-//     common setup code that works on data not shared across tests.
+//  *  SetUp(testInfo) -- called before each test method is invoked, with the
+//     same receiver as that test method, and with a TestInfo arg. At the time
+//     this method is invoked, the receiver is a zero value for the test suite
+//     type. Use this method for common setup code that works on data not
+//     shared across tests.
 //
 //  *  TearDown() -- called after each test method is invoked, with the same
 //     receiver as that test method. Use this method for common cleanup code
