@@ -37,7 +37,7 @@ type ExpectationResult interface {
 
 	// MatchResult returns the result returned by the expectation's matcher for
 	// the supplied candidate.
-	MatchResult() oglematchers.MatchResult
+	MatchResult() (bool, error)
 }
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
@@ -83,19 +83,11 @@ func ExpectThat(
 	// Check whether the value matches.
 	matcherRes, matcherErr := m.Matches(x)
 	res.matchResult = matcherRes
+	res.matchError = matcherErr
 
-	switch matcherRes {
 	// Return immediately on success.
-	case oglematchers.MATCH_TRUE:
+	if matcherRes {
 		return res
-
-	// Handle errors below.
-	case oglematchers.MATCH_FALSE:
-	case oglematchers.MATCH_UNDEFINED:
-
-	// Panic for invalid results.
-	default:
-		panic(fmt.Sprintf("ExpectThat: invalid matcher result %v.", matcherRes))
 	}
 
 	// Form an appropriate failure message. Make sure that the expected and
@@ -129,7 +121,8 @@ type expectationResultImpl struct {
 	failureRecord *failureRecord
 
 	// The result of the matcher.
-	matchResult oglematchers.MatchResult
+	matchResult bool
+	matchError error
 }
 
 func (r *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
@@ -141,6 +134,6 @@ func (r *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
 	r.failureRecord.LineNumber = lineNumber
 }
 
-func (r *expectationResultImpl) MatchResult() oglematchers.MatchResult {
-	return r.matchResult
+func (r *expectationResultImpl) MatchResult() (bool, error) {
+	return r.matchResult, r.matchError
 }
