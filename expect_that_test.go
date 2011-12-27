@@ -32,17 +32,12 @@ func setUpCurrentTest() {
 
 type fakeExpectThatMatcher struct {
 	desc string
-	res  MatchResult
-	err  string
+	res  bool
+	err  error
 }
 
-func (m *fakeExpectThatMatcher) Matches(c interface{}) (MatchResult, error) {
-	var err error
-	if (m.err != "") {
-		err = errors.New(m.err)
-	}
-
-	return m.res, err
+func (m *fakeExpectThatMatcher) Matches(c interface{}) (bool, error) {
+	return m.res, m.err
 }
 
 func (m *fakeExpectThatMatcher) Description() string {
@@ -92,30 +87,10 @@ func TestNoCurrentTest(t *testing.T) {
 
 func TestNoFailure(t *testing.T) {
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"", MATCH_TRUE, ""}
+	matcher := &fakeExpectThatMatcher{"", true, nil}
 	ExpectThat(17, matcher)
 
 	assertEqInt(t, 0, len(currentlyRunningTest.failureRecords))
-}
-
-func TestInvalidMatcherResult(t *testing.T) {
-	panicked := false
-
-	defer func() {
-		if !panicked {
-			t.Errorf("Expected panic; got none.")
-		}
-	}()
-
-	defer func() {
-		if r := recover(); r != nil {
-			panicked = true
-		}
-	}()
-
-	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"", MatchResult(17), ""}
-	ExpectThat(17, matcher)
 }
 
 func TestInvalidFormatString(t *testing.T) {
@@ -134,41 +109,27 @@ func TestInvalidFormatString(t *testing.T) {
 	}()
 
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"", MATCH_FALSE, ""}
+	matcher := &fakeExpectThatMatcher{"", false, errors.New("")}
 	ExpectThat(17, matcher, 19, "blah")
 }
 
-func TestMatchFalseWithoutMessages(t *testing.T) {
+func TestNoMatchWithoutErrorText(t *testing.T) {
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"taco", MATCH_FALSE, ""}
+	matcher := &fakeExpectThatMatcher{"taco", false, errors.New("")}
 	ExpectThat(17, matcher)
 
 	assertEqInt(t, 1, len(currentlyRunningTest.failureRecords))
 
 	record := currentlyRunningTest.failureRecords[0]
 	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 144, record.LineNumber)
+	expectEqInt(t, 119, record.LineNumber)
 	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
 	expectEqStr(t, "", record.UserError)
 }
 
-func TestMatchUndefinedWithoutMessages(t *testing.T) {
+func TestNoMatchWithErrorTExt(t *testing.T) {
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, ""}
-	ExpectThat(17, matcher)
-
-	assertEqInt(t, 1, len(currentlyRunningTest.failureRecords))
-
-	record := currentlyRunningTest.failureRecords[0]
-	expectEqStr(t, "expect_that_test.go", record.FileName)
-	expectEqInt(t, 158, record.LineNumber)
-	expectEqStr(t, "Expected: taco\nActual:   17", record.GeneratedError)
-	expectEqStr(t, "", record.UserError)
-}
-
-func TestFailureWithMatcherMessage(t *testing.T) {
-	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, "which is foo"}
+	matcher := &fakeExpectThatMatcher{"taco", false, errors.New("which is foo")}
 	ExpectThat(17, matcher)
 
 	assertEqInt(t, 1, len(currentlyRunningTest.failureRecords))
@@ -179,7 +140,7 @@ func TestFailureWithMatcherMessage(t *testing.T) {
 
 func TestFailureWithUserMessage(t *testing.T) {
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"taco", MATCH_UNDEFINED, ""}
+	matcher := &fakeExpectThatMatcher{"taco", false, errors.New("")}
 	ExpectThat(17, matcher, "Asd: %d %s", 19, "taco")
 
 	assertEqInt(t, 1, len(currentlyRunningTest.failureRecords))
@@ -190,7 +151,7 @@ func TestFailureWithUserMessage(t *testing.T) {
 
 func TestAdditionalFailure(t *testing.T) {
 	setUpCurrentTest()
-	matcher := &fakeExpectThatMatcher{"", MATCH_UNDEFINED, ""}
+	matcher := &fakeExpectThatMatcher{"", false, errors.New("")}
 
 	// Fail twice.
 	ExpectThat(17, matcher, "taco")

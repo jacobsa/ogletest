@@ -31,8 +31,10 @@ func AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) ExpectationResult {
-  res := ExpectThat(x, m, errorParts...)
-	if res.MatchResult() != oglematchers.MATCH_TRUE {
+	res := ExpectThat(x, m, errorParts...)
+
+	passed, _ := res.MatchResult()
+	if !passed {
 		panic(&assertThatError{})
 	}
 
