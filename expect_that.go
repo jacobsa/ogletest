@@ -94,7 +94,7 @@ func ExpectThat(
 	// actual values align properly.
 	var record failureRecord
 	relativeClause := ""
-	if matcherErr != nil {
+	if matcherErr.Error() != "" {
 		relativeClause = fmt.Sprintf(", %s", matcherErr.Error())
 	}
 
