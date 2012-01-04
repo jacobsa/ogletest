@@ -10,6 +10,6 @@ Actual:   3
 
 [  FAILED  ] UnexportedTest.SomeTest
 [----------] Finished with tests from UnexportedTest
---- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
+--- FAIL: sometest (0.00 seconds)
 FAIL
 gotest: "./6.out" failed: exit status 1

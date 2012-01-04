@@ -18,6 +18,6 @@ Actual:   18
 [ RUN      ] FilteredTest.PassingTestBar
 [       OK ] FilteredTest.PassingTestBar
 [----------] Finished with tests from FilteredTest
---- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
+--- FAIL: sometest (0.00 seconds)
 FAIL
 gotest: "./6.out --ogletest.run=Test(Bar|Baz)" failed: exit status 1
