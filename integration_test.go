@@ -126,6 +126,10 @@ func cleanOutput(o []byte, tempDir string) []byte {
 	stackFrameRe := regexp.MustCompile(`\S+\.go:\d+ \(0x[0-9a-f]+\)`)
 	o = stackFrameRe.ReplaceAll(o, []byte("some_file.go:0 (0x00000)"))
 
+	// Replace unstable timings in gotest fail messages.
+	timingRe := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
+	o = timingRe.ReplaceAll(o, []byte("--- FAIL: sometest (0.00 seconds)"))
+
 	return o
 }
 
