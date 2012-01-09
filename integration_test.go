@@ -29,12 +29,27 @@ import (
 	"testing"
 )
 
+const ogletestPkg = "github.com/jacobsa/ogletest"
 var dumpNew = flag.Bool("dump_new", false, "Dump new golden files.")
 var objDir string
 
 ////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////
+
+// installLocalOgletest installs the possibly locally-modified copy of
+// ogletest, so that these integration tests run using the package currently
+// being worked on by the programmer.
+func installLocalOgletest() error {
+	cmd := exec.Command("go", "install", ogletestPkg)
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("%v:\n%s", err, output))
+	}
+
+	return nil
+}
 
 // getCaseNames looks for integration test cases as files in the test_cases
 // directory.
@@ -111,8 +126,6 @@ func cleanOutput(o []byte, testPkg string) []byte {
 // Create a temporary package directory somewhere that 'go test' can find, and
 // return the directory and package name.
 func createTempPackageDir(caseName string) (dir, pkg string) {
-	const ogletestPkg = "github.com/jacobsa/ogletest"
-
 	// Figure out where the local source code for ogletest is.
 	tree, _, err := build.FindTree(ogletestPkg)
 	if err != nil { panic("Finding ogletest tree: " + err.Error()) }
@@ -188,6 +201,13 @@ func checkAgainstGoldenFile(caseName string, output []byte) bool {
 ////////////////////////////////////////////////////////////
 
 func TestGoldenFiles(t *testing.T) {
+	// Ensure the local package is installed. This will prevent the test cases
+	// from using the installed version, which may be out of date.
+	err := installLocalOgletest()
+	if err != nil {
+		t.Fatalf("Error installing local ogletest: %v", err)
+	}
+
 	// We expect there to be at least one case.
 	caseNames, err := getCaseNames()
 	if err != nil || len(caseNames) == 0 {
