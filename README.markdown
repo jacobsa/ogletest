@@ -8,7 +8,7 @@
     [Google JS Test][google-js-test].
 
 It integrates with Go's built-in `testing` package, so it works with the
-`gotest` command, and even with other types of test within your package. Unlike
+`go test` command, and even with other types of test within your package. Unlike
 the `testing` package which offers only basic capabilities for signalling
 failures, it offers ways to express expectations and get nice failure messages
 automatically.
@@ -67,7 +67,7 @@ import (
   "testing"
 )
 
-// Give ogletest a chance to run your tests when invoked by gotest.
+// Give ogletest a chance to run your tests when invoked by 'go test'.
 func TestOgletest(t *testing.T) { RunTests(t) }
 
 // Create a test suite, which groups together logically related test methods
@@ -95,12 +95,10 @@ func (t *PeopleTest) FormatsPhoneNumbersCorrectly() {
 }
 ```
 
-If you save this test in a file whose name ends in `_test.go` and set up a
-makefile for your package as described in the [How to Write Go Code][howtowrite]
-docs, you can run your tests by simply invoking the following in your package
-directory:
+If you save this test in a file whose name ends in `_test.go`, you can run your
+tests by simply invoking the following in your package directory:
 
-    gotest
+    go test
 
 Here's what the failure output of ogletest looks like, if your function's
 implementation is bad.
