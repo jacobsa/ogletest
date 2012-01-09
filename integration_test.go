@@ -113,15 +113,17 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 	const ogletestPkg = "github.com/jacobsa/ogletest"
 
 	// Figure out where the local source code for ogletest is.
-	ogletestTree, _, err := build.FindTree(ogletestPkg)
-	if err != nil { panic("Finding ogletest package: " + err.Error()) }
+	tree, _, err := build.FindTree(ogletestPkg)
+	if err != nil { panic("Finding ogletest tree: " + err.Error()) }
 
 	// Create a temporary directory underneath this.
+	ogletestPkgDir := path.Join(tree.Path, "src", ogletestPkg)
 	prefix := fmt.Sprintf("tmp-%s", caseName)
-	dir, err = ioutil.TempDir(ogletestTree.Path, prefix)
+
+	dir, err = ioutil.TempDir(ogletestPkgDir, prefix)
 	if err != nil { panic("ioutil.TempDir: " + err.Error()) }
 
-	pkg = path.Join("github.com/jacobsa/ogletest", dir[len(ogletestTree.Path):])
+	pkg = path.Join("github.com/jacobsa/ogletest", dir[len(ogletestPkgDir):])
 	return
 }
 
