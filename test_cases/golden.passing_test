@@ -1,7 +1,4 @@
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 passing_test.go 
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+ok  	some/tmp/pkg
 [----------] Running tests from PassingTest
 [ RUN      ] PassingTest.AssertAliases
 [       OK ] PassingTest.AssertAliases

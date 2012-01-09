@@ -91,9 +91,9 @@ func readFileOrDie(path string) []byte {
 // cleanOutput transforms the supplied output so that it no longer contains
 // information that changes from run to run, making the golden tests less
 // flaky.
-func cleanOutput(o []byte, testDir string) []byte {
-	// Replace references to the test directory.
-	o = []byte(strings.Replace(string(o), testDir, "/tmp/dir", -1))
+func cleanOutput(o []byte, testPkg string) []byte {
+	// Replace references to the test package name.
+	o = []byte(strings.Replace(string(o), testPkg, "some/tmp/pkg", -1))
 
 	// Replace things that look like line numbers and process counters in stack
 	// traces.
@@ -139,14 +139,19 @@ func runTestCase(name string) ([]byte, int, error) {
 	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
 	writeContentsToFileOrDie(testContents, path.Join(testDir, sourceFile))
 
-	// Invoke 'go test'. Special case: pass a test filter to the filtered_test
-	// case.
-	cmd := exec.Command("go", "test", testPkg)
+	// Invoke 'go test'. Use the package directory as working dir instead of
+	// giving the package name as an argument so that 'go test' prints passing
+	// test output. Special case: pass a test filter to the filtered_test case.
+	cmd := exec.Command("go", "test")
 	if name == "filtered_test" {
 		cmd.Args = append(cmd.Args, "--ogletest.run=Test(Bar|Baz)")
 	}
 
+	cmd.Dir = testDir
 	output, err := cmd.CombinedOutput()
+
+	// Clean up the process's output.
+	output = cleanOutput(output, testPkg)
 
 	// Did the process exist with zero code?
 	if err == nil {
@@ -159,7 +164,6 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
-	output = cleanOutput(output, testDir)
 	return output, exitError.ExitStatus(), nil
 }
 

@@ -1,7 +1,4 @@
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 panicking_test.go 
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+FAIL	some/tmp/pkg
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
 panicking_test.go:39:
@@ -9,10 +6,10 @@ panic: foobar
 
 some_file.go:0 (0x00000)
 	com/jacobsa/ogletest._func_001: "panic: %v\n\n%s", r, debug.Stack())
-/Users/jacobsa/go/src/pkg/runtime/proc.c:1386 (0x12404)
+/Users/jacobsa/go/root/src/pkg/runtime/proc.c:1386 (0x10e69)
 	panic: reflect·call(d->fn, d->args, d->siz);
 some_file.go:0 (0x00000)
-	(*PanickingTest).PanickingTest: panic("foobar")
+	com/jacobsa/ogletest/tmp-panicking_test-740123162_test.(*PanickingTest).PanickingTest: panic("foobar")
 some_file.go:0 (0x00000)
 	Value.call: call(fn, unsafe.Pointer(ptr), uint32(size))
 some_file.go:0 (0x00000)
@@ -30,10 +27,10 @@ some_file.go:0 (0x00000)
 some_file.go:0 (0x00000)
 	com/jacobsa/ogletest.RunTests: runTestsOnce.Do(func() { runTestsInternal(t) })
 some_file.go:0 (0x00000)
-	TestOgletest: func TestOgletest(t *testing.T) { RunTests(t) }
+	com/jacobsa/ogletest/tmp-panicking_test-740123162_test.TestOgletest: func TestOgletest(t *testing.T) { RunTests(t) }
 some_file.go:0 (0x00000)
 	tRunner: test.F(t)
-/Users/jacobsa/go/src/pkg/runtime/proc.c:258 (0x105a6)
+/Users/jacobsa/go/root/src/pkg/runtime/proc.c:258 (0xf00b)
 	goexit: runtime·goexit(void)
 
 
@@ -43,4 +40,3 @@ some_file.go:0 (0x00000)
 [----------] Finished with tests from PanickingTest
 --- FAIL: sometest (0.00 seconds)
 FAIL
-gotest: "./6.out" failed: exit status 1
