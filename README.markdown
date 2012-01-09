@@ -62,26 +62,26 @@ for it as follows:
 package people
 
 import (
-  . "github.com/jacobsa/oglematchers"
-  . "github.com/jacobsa/ogletest"
+  "github.com/jacobsa/oglematchers"
+  "github.com/jacobsa/ogletest"
   "testing"
 )
 
 // Give ogletest a chance to run your tests when invoked by 'go test'.
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestOgletest(t *testing.T) { ogletest.RunTests(t) }
 
 // Create a test suite, which groups together logically related test methods
 // (defined below). You can share common setup and teardown code here; see the
 // package docs for more info.
 type PeopleTest struct {}
-func init() { RegisterTestSuite(&PeopleTest{}) }
+func init() { ogletest.RegisterTestSuite(&PeopleTest{}) }
 
 func (t *PeopleTest) ReturnsCorrectNames() {
   // Call the function a few times, and make sure it never strays from the set
   // of expected names.
   for i := 0; i < 25; i++ {
     name, _ := GetRandomPerson()
-    ExpectThat(name, AnyOf("Tony", "Dennis", "Scott"))
+    ogletest.ExpectThat(name, oglematchers.AnyOf("Tony", "Dennis", "Scott"))
   }
 }
 
@@ -90,12 +90,23 @@ func (t *PeopleTest) FormatsPhoneNumbersCorrectly() {
   // standard US format.
   for i := 0; i < 25; i++ {
     _, phone := GetRandomPerson()
-    ExpectThat(phone, MatchesRegexp(`^\(\d{3}\) \d{3}-\d{4}$`))
-  }
+    ogletest.ExpectThat(phone, oglematchers.MatchesRegexp(`^\(\d{3}\) \d{3}-\d{4}$`))
 }
 ```
 
-If you save this test in a file whose name ends in `_test.go`, you can run your
+Note that test control functions (`RunTests`, `ExpectThat`, and so on) are part
+of the `ogletest` package, whereas built-in matchers (`AnyOf`, `MatchesRegexp`,
+and more) are part of the [oglematchers][] library. You can of course use dot
+imports so that you don't need to prefix each function with its package name:
+
+```go
+import (
+  . "github.com/jacobsa/oglematchers"
+  . "github.com/jacobsa/ogletest"
+)
+```
+
+If you save the test in a file whose name ends in `_test.go`, you can run your
 tests by simply invoking the following in your package directory:
 
     go test
@@ -134,3 +145,4 @@ And if the test passes:
 [googletest]: http://code.google.com/p/googletest/
 [google-js-test]: http://code.google.com/p/google-js-test/
 [howtowrite]: http://golang.org/doc/code.html
+[oglematchers]: https://github.com/jacobsa/oglematchers
