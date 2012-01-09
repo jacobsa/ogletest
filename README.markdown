@@ -32,9 +32,9 @@ Documentation
 
 See [here][reference] for package documentation hosted on GoPkgDoc containing an
 exhaustive list of exported symbols. Alternatively, you can install the package
-and then use `godoc`:
+and then use `go doc`:
 
-    godoc github.com/jacobsa/oglematchers
+    go doc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
 [`oglematchers`][matcher-reference] package. See that package's documentation
