@@ -1,4 +1,4 @@
-FAIL	some/tmp/pkg
+FAIL	github.com/jacobsa/ogletest/somepkg
 [----------] Running tests from RunTwiceTest
 [ RUN      ] RunTwiceTest.FailingMethod
 run_twice_test.go:46:

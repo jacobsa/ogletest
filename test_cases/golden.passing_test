@@ -1,4 +1,4 @@
-ok  	some/tmp/pkg
+ok  	github.com/jacobsa/ogletest/somepkg
 [----------] Running tests from PassingTest
 [ RUN      ] PassingTest.AssertAliases
 [       OK ] PassingTest.AssertAliases

@@ -1,4 +1,4 @@
-FAIL	some/tmp/pkg
+FAIL	github.com/jacobsa/ogletest/somepkg
 [----------] Running tests from UnexportedTest
 [ RUN      ] UnexportedTest.SomeTest
 unexported_test.go:42:

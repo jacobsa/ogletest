@@ -92,13 +92,14 @@ func readFileOrDie(path string) []byte {
 // information that changes from run to run, making the golden tests less
 // flaky.
 func cleanOutput(o []byte, testPkg string) []byte {
-	// Replace references to the test package name.
-	o = []byte(strings.Replace(string(o), testPkg, "some/tmp/pkg", -1))
+	// Replace references to the last component of the test package name, which
+	// contains a unique number.
+	o = []byte(strings.Replace(string(o), path.Base(testPkg), "somepkg", -1))
 
 	// Replace things that look like line numbers and process counters in stack
 	// traces.
-	stackFrameRe := regexp.MustCompile(`\S+\.go:\d+ \(0x[0-9a-f]+\)`)
-	o = stackFrameRe.ReplaceAll(o, []byte("some_file.go:0 (0x00000)"))
+	stackFrameRe := regexp.MustCompile(`\S+\.(c|go):\d+ \(0x[0-9a-f]+\)`)
+	o = stackFrameRe.ReplaceAll(o, []byte("some_file.txt:0 (0x00000)"))
 
 	// Replace unstable timings in gotest fail messages.
 	timingRe := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
