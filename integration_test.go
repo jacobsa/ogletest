@@ -19,6 +19,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"go/build"
 	"io/ioutil"
 	"path"
 	"os"
@@ -28,6 +29,7 @@ import (
 	"testing"
 )
 
+const ogletestPkg = "github.com/jacobsa/ogletest"
 var dumpNew = flag.Bool("dump_new", false, "Dump new golden files.")
 var objDir string
 
@@ -35,31 +37,18 @@ var objDir string
 // Helpers
 ////////////////////////////////////////////////////////////
 
-// buildPackage build a copy of the (possibly locally modified) package, and
-// return a path to an include path where it can be found.
-func buildPackage() (string, error) {
-	// HACK(jacobsa): The gotest command reads the GCFLAGS environment variable,
-	// which allows us to give a -I flag to 6g to let it find the locally built
-	// package. However 6l cannot find it, and there is no linker flags
-	// environment variable. So we actually install the package here, instead of
-	// just building it locally.
-	//
-	// TODO(jacobsa): When the new 'go' tool comes out, check whether this still
-	// replies to its 'test' command. If so, file an issue to get a linker flags
-	// environment variable added.
-	cmd := exec.Command("gomake", "install")
+// installLocalOgletest installs the possibly locally-modified copy of
+// ogletest, so that these integration tests run using the package currently
+// being worked on by the programmer.
+func installLocalOgletest() error {
+	cmd := exec.Command("go", "install", ogletestPkg)
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("%v:\n%s", err, output))
+		return errors.New(fmt.Sprintf("%v:\n%s", err, output))
 	}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", errors.New("os.Getwd: " + err.Error())
-	}
-
-	return path.Join(wd, "_obj"), nil
+	return nil
 }
 
 // getCaseNames looks for integration test cases as files in the test_cases
@@ -101,14 +90,14 @@ func getCaseNames() ([]string, error) {
 
 func writeContentsToFileOrDie(contents []byte, path string) {
 	if err := ioutil.WriteFile(path, contents, 0600); err != nil {
-		panic("iotuil.WriteFile: " + err.Error())
+		panic("ioutil.WriteFile: " + err.Error())
 	}
 }
 
 func readFileOrDie(path string) []byte {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic("iotuil.ReadFile: " + err.Error())
+		panic("ioutil.ReadFile: " + err.Error())
 	}
 
 	return contents
@@ -117,14 +106,15 @@ func readFileOrDie(path string) []byte {
 // cleanOutput transforms the supplied output so that it no longer contains
 // information that changes from run to run, making the golden tests less
 // flaky.
-func cleanOutput(o []byte, tempDir string) []byte {
-	// Replace references to the temporary directory.
-	o = []byte(strings.Replace(string(o), tempDir, "/tmp/dir", -1))
+func cleanOutput(o []byte, testPkg string) []byte {
+	// Replace references to the last component of the test package name, which
+	// contains a unique number.
+	o = []byte(strings.Replace(string(o), path.Base(testPkg), "somepkg", -1))
 
 	// Replace things that look like line numbers and process counters in stack
 	// traces.
-	stackFrameRe := regexp.MustCompile(`\S+\.go:\d+ \(0x[0-9a-f]+\)`)
-	o = stackFrameRe.ReplaceAll(o, []byte("some_file.go:0 (0x00000)"))
+	stackFrameRe := regexp.MustCompile(`\S+\.(c|go):\d+ \(0x[0-9a-f]+\)`)
+	o = stackFrameRe.ReplaceAll(o, []byte("some_file.txt:0 (0x00000)"))
 
 	// Replace unstable timings in gotest fail messages.
 	timingRe := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
@@ -133,39 +123,49 @@ func cleanOutput(o []byte, tempDir string) []byte {
 	return o
 }
 
+// Create a temporary package directory somewhere that 'go test' can find, and
+// return the directory and package name.
+func createTempPackageDir(caseName string) (dir, pkg string) {
+	// Figure out where the local source code for ogletest is.
+	tree, _, err := build.FindTree(ogletestPkg)
+	if err != nil { panic("Finding ogletest tree: " + err.Error()) }
+
+	// Create a temporary directory underneath this.
+	ogletestPkgDir := path.Join(tree.Path, "src", ogletestPkg)
+	prefix := fmt.Sprintf("tmp-%s-", caseName)
+
+	dir, err = ioutil.TempDir(ogletestPkgDir, prefix)
+	if err != nil { panic("ioutil.TempDir: " + err.Error()) }
+
+	pkg = path.Join("github.com/jacobsa/ogletest", dir[len(ogletestPkgDir):])
+	return
+}
+
 // runTestCase runs the case with the supplied name (e.g. "passing_test"), and
 // returns its output and exit code.
 func runTestCase(name string) ([]byte, int, error) {
 	// Create a temporary directory for the test files.
-	tempDir, err := ioutil.TempDir("", "ogletest_integration_test")
-	if err != nil {
-		return nil, 0, errors.New("ioutil.TempDir: " + err.Error())
-	}
-
-	defer os.RemoveAll(tempDir)
-
-	// Create a makefile within the directory.
-	makefileContents := "include $(GOROOT)/src/Make.inc\n" +
-		"TARG = github.com/jacobsa/ogletest/foobar\n" +
-		"GOFILES = " + name + ".go\n" +
-		"GCFLAGS += -I" + objDir + "\n" +
-		"include $(GOROOT)/src/Make.pkg\n"
-
-	writeContentsToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
+	testDir, testPkg := createTempPackageDir(name)
+	 defer os.RemoveAll(testDir)
 
 	// Create the test source file.
 	sourceFile := name + ".go"
 	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
-	writeContentsToFileOrDie(testContents, path.Join(tempDir, sourceFile))
+	writeContentsToFileOrDie(testContents, path.Join(testDir, sourceFile))
 
-	// Invoke gotest. Special case: pass a test filter to the filtered_test case.
-	cmd := exec.Command("gotest")
+	// Invoke 'go test'. Use the package directory as working dir instead of
+	// giving the package name as an argument so that 'go test' prints passing
+	// test output. Special case: pass a test filter to the filtered_test case.
+	cmd := exec.Command("go", "test")
 	if name == "filtered_test" {
 		cmd.Args = append(cmd.Args, "--ogletest.run=Test(Bar|Baz)")
 	}
 
-	cmd.Dir = tempDir
+	cmd.Dir = testDir
 	output, err := cmd.CombinedOutput()
+
+	// Clean up the process's output.
+	output = cleanOutput(output, testPkg)
 
 	// Did the process exist with zero code?
 	if err == nil {
@@ -178,7 +178,6 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
-	output = cleanOutput(output, tempDir)
 	return output, exitError.ExitStatus(), nil
 }
 
@@ -202,11 +201,12 @@ func checkAgainstGoldenFile(caseName string, output []byte) bool {
 ////////////////////////////////////////////////////////////
 
 func TestGoldenFiles(t *testing.T) {
-	// Ensure the local package is up to date, and get a path to it. This will
-	// prevent the test cases from using the installed version, which may be out
-	// of date.
-	var err error
-	objDir, err = buildPackage()
+	// Ensure the local package is installed. This will prevent the test cases
+	// from using the installed version, which may be out of date.
+	err := installLocalOgletest()
+	if err != nil {
+		t.Fatalf("Error installing local ogletest: %v", err)
+	}
 
 	// We expect there to be at least one case.
 	caseNames, err := getCaseNames()
@@ -222,7 +222,8 @@ func TestGoldenFiles(t *testing.T) {
 			t.Fatalf("Running test case %s: %v", caseName, err)
 		}
 
-		// Check the status code. We assume all test cases fail except for passing_test.
+		// Check the status code. We assume all test cases fail except for
+		// passing_test.
 		shouldPass := caseName == "passing_test"
 		didPass := exitCode == 0
 		if shouldPass != didPass {

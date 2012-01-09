@@ -8,7 +8,7 @@
     [Google JS Test][google-js-test].
 
 It integrates with Go's built-in `testing` package, so it works with the
-`gotest` command, and even with other types of test within your package. Unlike
+`go test` command, and even with other types of test within your package. Unlike
 the `testing` package which offers only basic capabilities for signalling
 failures, it offers ways to express expectations and get nice failure messages
 automatically.
@@ -18,7 +18,7 @@ Installation
 ------------
 
 First, make sure you have installed a version of the Go tools at least as new as
-`weekly/weekly.2011-12-14`. See [here][golang-install] for instructions. Until
+`weekly/weekly.2011-12-22`. See [here][golang-install] for instructions. Until
 release `r61` comes out, this involes using the `weekly` tag.
 
 Use the following command to install `ogletest` and its dependencies, and to
@@ -32,9 +32,9 @@ Documentation
 
 See [here][reference] for package documentation hosted on GoPkgDoc containing an
 exhaustive list of exported symbols. Alternatively, you can install the package
-and then use `godoc`:
+and then use `go doc`:
 
-    godoc github.com/jacobsa/oglematchers
+    go doc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
 [`oglematchers`][matcher-reference] package. See that package's documentation
@@ -67,7 +67,7 @@ import (
   "testing"
 )
 
-// Give ogletest a chance to run your tests when invoked by gotest.
+// Give ogletest a chance to run your tests when invoked by 'go test'.
 func TestOgletest(t *testing.T) { RunTests(t) }
 
 // Create a test suite, which groups together logically related test methods
@@ -95,12 +95,10 @@ func (t *PeopleTest) FormatsPhoneNumbersCorrectly() {
 }
 ```
 
-If you save this test in a file whose name ends in `_test.go` and set up a
-makefile for your package as described in the [How to Write Go Code][howtowrite]
-docs, you can run your tests by simply invoking the following in your package
-directory:
+If you save this test in a file whose name ends in `_test.go`, you can run your
+tests by simply invoking the following in your package directory:
 
-    gotest
+    go test
 
 Here's what the failure output of ogletest looks like, if your function's
 implementation is bad.
