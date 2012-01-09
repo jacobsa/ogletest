@@ -37,7 +37,7 @@ and then use `go doc`:
     go doc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
-[`oglematchers`][matcher-reference] package. See that package's documentation
+[oglematchers][matcher-reference] package. See that package's documentation
 for information on the built-in matchers available, and check out the
 `oglematchers.Matcher` interface if you want to define your own.
 
@@ -96,8 +96,9 @@ func (t *PeopleTest) FormatsPhoneNumbersCorrectly() {
 
 Note that test control functions (`RunTests`, `ExpectThat`, and so on) are part
 of the `ogletest` package, whereas built-in matchers (`AnyOf`, `MatchesRegexp`,
-and more) are part of the [oglematchers][] library. You can of course use dot
-imports so that you don't need to prefix each function with its package name:
+and more) are part of the [oglematchers][matcher-reference] library. You can of
+course use dot imports so that you don't need to prefix each function with its
+package name:
 
 ```go
 import (
@@ -145,4 +146,3 @@ And if the test passes:
 [googletest]: http://code.google.com/p/googletest/
 [google-js-test]: http://code.google.com/p/google-js-test/
 [howtowrite]: http://golang.org/doc/code.html
-[oglematchers]: https://github.com/jacobsa/oglematchers
