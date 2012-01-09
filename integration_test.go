@@ -118,7 +118,7 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 
 	// Create a temporary directory underneath this.
 	ogletestPkgDir := path.Join(tree.Path, "src", ogletestPkg)
-	prefix := fmt.Sprintf("tmp-%s", caseName)
+	prefix := fmt.Sprintf("tmp-%s-", caseName)
 
 	dir, err = ioutil.TempDir(ogletestPkgDir, prefix)
 	if err != nil { panic("ioutil.TempDir: " + err.Error()) }
@@ -132,9 +132,7 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 func runTestCase(name string) ([]byte, int, error) {
 	// Create a temporary directory for the test files.
 	testDir, testPkg := createTempPackageDir(name)
-
-	// TODO
-	// defer os.RemoveAll(testDir)
+	 defer os.RemoveAll(testDir)
 
 	// Create the test source file.
 	sourceFile := name + ".go"
