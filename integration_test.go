@@ -91,9 +91,9 @@ func readFileOrDie(path string) []byte {
 // cleanOutput transforms the supplied output so that it no longer contains
 // information that changes from run to run, making the golden tests less
 // flaky.
-func cleanOutput(o []byte, tempDir string) []byte {
-	// Replace references to the temporary directory.
-	o = []byte(strings.Replace(string(o), tempDir, "/tmp/dir", -1))
+func cleanOutput(o []byte, testDir string) []byte {
+	// Replace references to the test directory.
+	o = []byte(strings.Replace(string(o), testDir, "/tmp/dir", -1))
 
 	// Replace things that look like line numbers and process counters in stack
 	// traces.
@@ -129,34 +129,23 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 // returns its output and exit code.
 func runTestCase(name string) ([]byte, int, error) {
 	// Create a temporary directory for the test files.
-	tempDir, err := ioutil.TempDir("", "ogletest_integration_test")
-	if err != nil {
-		return nil, 0, errors.New("ioutil.TempDir: " + err.Error())
-	}
+	testDir, testPkg := createTempPackageDir(name)
 
-	defer os.RemoveAll(tempDir)
-
-	// Create a makefile within the directory.
-	makefileContents := "include $(GOROOT)/src/Make.inc\n" +
-		"TARG = github.com/jacobsa/ogletest/foobar\n" +
-		"GOFILES = " + name + ".go\n" +
-		"GCFLAGS += -I" + objDir + "\n" +
-		"include $(GOROOT)/src/Make.pkg\n"
-
-	writeContentsToFileOrDie([]byte(makefileContents), path.Join(tempDir, "Makefile"))
+	// TODO
+	// defer os.RemoveAll(testDir)
 
 	// Create the test source file.
 	sourceFile := name + ".go"
 	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
-	writeContentsToFileOrDie(testContents, path.Join(tempDir, sourceFile))
+	writeContentsToFileOrDie(testContents, path.Join(testDir, sourceFile))
 
-	// Invoke gotest. Special case: pass a test filter to the filtered_test case.
-	cmd := exec.Command("gotest")
+	// Invoke 'go test'. Special case: pass a test filter to the filtered_test
+	// case.
+	cmd := exec.Command("go", "test", testPkg)
 	if name == "filtered_test" {
 		cmd.Args = append(cmd.Args, "--ogletest.run=Test(Bar|Baz)")
 	}
 
-	cmd.Dir = tempDir
 	output, err := cmd.CombinedOutput()
 
 	// Did the process exist with zero code?
@@ -170,7 +159,7 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
-	output = cleanOutput(output, tempDir)
+	output = cleanOutput(output, testDir)
 	return output, exitError.ExitStatus(), nil
 }
 
