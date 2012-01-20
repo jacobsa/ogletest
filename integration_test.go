@@ -76,12 +76,12 @@ func getCaseNames() ([]string, error) {
 		}
 
 		// Check for the right format.
-		if !strings.HasSuffix(name, "_test.go") {
+		if !strings.HasSuffix(name, ".test.go") {
 			return nil, errors.New(fmt.Sprintf("Unexpected file: %s", name))
 		}
 
 		// Store the name minus the extension.
-		result[resultLen] = name[:len(name) - 3]
+		result[resultLen] = name[:len(name) - 8]
 		resultLen++
 	}
 
@@ -141,7 +141,7 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 	return
 }
 
-// runTestCase runs the case with the supplied name (e.g. "passing_test"), and
+// runTestCase runs the case with the supplied name (e.g. "passing"), and
 // returns its output and exit code.
 func runTestCase(name string) ([]byte, int, error) {
 	// Create a temporary directory for the test files.
@@ -149,9 +149,9 @@ func runTestCase(name string) ([]byte, int, error) {
 	 defer os.RemoveAll(testDir)
 
 	// Create the test source file.
-	sourceFile := name + ".go"
+	sourceFile := name + ".test.go"
 	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
-	writeContentsToFileOrDie(testContents, path.Join(testDir, sourceFile))
+	writeContentsToFileOrDie(testContents, path.Join(testDir, name + "_test.go"))
 
 	// Invoke 'go test'. Use the package directory as working dir instead of
 	// giving the package name as an argument so that 'go test' prints passing
@@ -185,7 +185,7 @@ func runTestCase(name string) ([]byte, int, error) {
 // against the golden file for that case. If requested by the user, it rewrites
 // the golden file on failure.
 func checkAgainstGoldenFile(caseName string, output []byte) bool {
-	goldenFile := path.Join("test_cases", "golden." + caseName)
+	goldenFile := path.Join("test_cases", "golden." + caseName + "_test")
 	goldenContents := readFileOrDie(goldenFile)
 
 	result := string(output) == string(goldenContents)
