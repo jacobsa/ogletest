@@ -1,4 +1,4 @@
-FAIL	github.com/jacobsa/ogletest/somepkg
+FAIL somepkg 1.234s
 [----------] Running tests from UnexportedTest
 [ RUN      ] UnexportedTest.SomeTest
 unexported_test.go:42:
@@ -7,5 +7,5 @@ Actual:   3
 
 [  FAILED  ] UnexportedTest.SomeTest
 [----------] Finished with tests from UnexportedTest
---- FAIL: sometest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL

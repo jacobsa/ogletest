@@ -117,8 +117,14 @@ func cleanOutput(o []byte, testPkg string) []byte {
 	o = stackFrameRe.ReplaceAll(o, []byte("some_file.txt:0 (0x00000)"))
 
 	// Replace unstable timings in gotest fail messages.
-	timingRe := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
-	o = timingRe.ReplaceAll(o, []byte("--- FAIL: sometest (0.00 seconds)"))
+	timingRe1 := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
+	o = timingRe1.ReplaceAll(o, []byte("--- FAIL: sometest (1.23 seconds)"))
+
+	timingRe2 := regexp.MustCompile(`FAIL.*somepkg\s*\d\.\d{2,}s`)
+	o = timingRe2.ReplaceAll(o, []byte("FAIL somepkg 1.234s"))
+
+	timingRe3 := regexp.MustCompile(`ok.*somepkg\s*\d\.\d{2,}s`)
+	o = timingRe3.ReplaceAll(o, []byte("ok somepkg 1.234s"))
 
 	return o
 }

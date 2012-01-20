@@ -1,4 +1,4 @@
-FAIL	github.com/jacobsa/ogletest/somepkg
+FAIL somepkg 1.234s
 [----------] Running tests from FilteredTest
 [ RUN      ] FilteredTest.FilteredTestBar
 filtered_test.go:51:
@@ -15,5 +15,5 @@ Actual:   18
 [ RUN      ] FilteredTest.PassingTestBar
 [       OK ] FilteredTest.PassingTestBar
 [----------] Finished with tests from FilteredTest
---- FAIL: sometest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL

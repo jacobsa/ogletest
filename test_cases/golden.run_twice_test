@@ -1,4 +1,4 @@
-FAIL	github.com/jacobsa/ogletest/somepkg
+FAIL somepkg 1.234s
 [----------] Running tests from RunTwiceTest
 [ RUN      ] RunTwiceTest.FailingMethod
 run_twice_test.go:46:
@@ -9,5 +9,5 @@ Actual:   17
 [ RUN      ] RunTwiceTest.PassingMethod
 [       OK ] RunTwiceTest.PassingMethod
 [----------] Finished with tests from RunTwiceTest
---- FAIL: sometest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL

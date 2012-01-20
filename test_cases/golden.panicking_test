@@ -1,4 +1,4 @@
-FAIL	github.com/jacobsa/ogletest/somepkg
+FAIL somepkg 1.234s
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
 panicking_test.go:39:
@@ -38,5 +38,5 @@ some_file.txt:0 (0x00000)
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest
---- FAIL: sometest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL
