@@ -19,9 +19,9 @@ import (
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"github.com/jacobsa/oglemock"
-	"reflect"
+	"github.com/jacobsa/ogletest/test_cases/mock_image"
+	"image/color"
 	"testing"
-	"unsafe"
 )
 
 ////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ import (
 
 type MockTest struct {
 	controller oglemock.Controller
+	image mock_image.MockImage
 }
 
 func init()                     { RegisterTestSuite(&MockTest{}) }
@@ -37,31 +38,7 @@ func TestOgletest(t *testing.T) { RunTests(t) }
 
 func (t *MockTest) SetUp(i *TestInfo) {
 	t.controller = i.MockController
-}
-
-// TODO(jacobsa): Replace this with an auto-generated mock class when oglemock
-// supoorts it.
-type mockFooer struct {
-	controller oglemock.Controller
-}
-
-func (f *mockFooer) Oglemock_Id() uintptr {
-	return uintptr(unsafe.Pointer(f))
-}
-
-func (f *mockFooer) Oglemock_Description() string {
-	return "some mockFooer"
-}
-
-func (f *mockFooer) DoFoo(s string) int {
-	retVals := f.controller.HandleMethodCall(
-		f,
-		"DoFoo",
-		"blah.go",
-		112,
-		[]interface{}{s})
-
-	return int(reflect.ValueOf(retVals[0]).Int())
+	t.image = mock_image.NewMockImage(t.controller, "some mock image")
 }
 
 ////////////////////////////////////////////////////////////
@@ -69,32 +46,27 @@ func (f *mockFooer) DoFoo(s string) int {
 ////////////////////////////////////////////////////////////
 
 func (t *MockTest) ExpectationSatisfied() {
-	f := &mockFooer{t.controller}
-
 	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
 	// convenient ExpectCall function when one is available. See issue #8.
 	t.controller.ExpectCall(
-		f,
-		"DoFoo",
+		t.image,
+		"At",
 		"blah_test.go",
-		117)(HasSubstr("taco")).WillOnce(oglemock.Return(17))
+		117)(11, GreaterThan(19)).WillOnce(oglemock.Return(color.Gray{0}))
 
-	ExpectEq(17, f.DoFoo("burritos and tacos"))
+	ExpectEq(17, t.image.At(11, 23))
 }
 
 func (t *MockTest) MockExpectationNotSatisfied() {
-	f := &mockFooer{t.controller}
-
 	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
 	// convenient ExpectCall function when one is available. See issue #8.
 	t.controller.ExpectCall(
-		f,
-		"DoFoo",
+		t.image,
+		"At",
 		"blah_test.go",
-		117)(HasSubstr("taco"))
+		117)(11, GreaterThan(19))
 }
 
 func (t *MockTest) UnexpectedCall() {
-	f := &mockFooer{t.controller}
-	f.DoFoo("blah")
+	t.image.At(11, 23)
 }

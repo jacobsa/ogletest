@@ -77,7 +77,7 @@ func getCaseNames() ([]string, error) {
 
 		// Check for the right format.
 		if !strings.HasSuffix(name, ".test.go") {
-			return nil, errors.New(fmt.Sprintf("Unexpected file: %s", name))
+			continue
 		}
 
 		// Store the name minus the extension.
