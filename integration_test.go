@@ -118,7 +118,7 @@ func cleanOutput(o []byte, testPkg string) []byte {
 
 	// Replace unstable timings in gotest fail messages.
 	timingRe1 := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)
-	o = timingRe1.ReplaceAll(o, []byte("--- FAIL: sometest (1.23 seconds)"))
+	o = timingRe1.ReplaceAll(o, []byte("--- FAIL: somepkg (1.23 seconds)"))
 
 	timingRe2 := regexp.MustCompile(`FAIL.*somepkg\s*\d\.\d{2,}s`)
 	o = timingRe2.ReplaceAll(o, []byte("FAIL somepkg 1.234s"))

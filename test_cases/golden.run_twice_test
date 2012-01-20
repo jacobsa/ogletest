@@ -9,5 +9,5 @@ Actual:   17
 [ RUN      ] RunTwiceTest.PassingMethod
 [       OK ] RunTwiceTest.PassingMethod
 [----------] Finished with tests from RunTwiceTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL

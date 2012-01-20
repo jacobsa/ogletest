@@ -205,5 +205,5 @@ Actual:   19
 [ RUN      ] FailingTest.PassingMethod
 [       OK ] FailingTest.PassingMethod
 [----------] Finished with tests from FailingTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL

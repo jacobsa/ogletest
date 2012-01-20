@@ -13,5 +13,5 @@ Unexpected call to DoFoo with args: [blah]
 
 [  FAILED  ] MockTest.UnexpectedCall
 [----------] Finished with tests from MockTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL

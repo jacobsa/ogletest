@@ -15,5 +15,5 @@ Actual:   18
 [ RUN      ] FilteredTest.PassingTestBar
 [       OK ] FilteredTest.PassingTestBar
 [----------] Finished with tests from FilteredTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL

@@ -7,5 +7,5 @@ Actual:   3
 
 [  FAILED  ] UnexportedTest.SomeTest
 [----------] Finished with tests from UnexportedTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL
