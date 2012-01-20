@@ -155,9 +155,9 @@ func runTestCase(name string) ([]byte, int, error) {
 
 	// Invoke 'go test'. Use the package directory as working dir instead of
 	// giving the package name as an argument so that 'go test' prints passing
-	// test output. Special case: pass a test filter to the filtered_test case.
+	// test output. Special case: pass a test filter to the filtered case.
 	cmd := exec.Command("go", "test")
-	if name == "filtered_test" {
+	if name == "filtered" {
 		cmd.Args = append(cmd.Args, "--ogletest.run=Test(Bar|Baz)")
 	}
 
@@ -222,9 +222,9 @@ func TestGoldenFiles(t *testing.T) {
 			t.Fatalf("Running test case %s: %v", caseName, err)
 		}
 
-		// Check the status code. We assume all test cases fail except for
-		// passing_test.
-		shouldPass := caseName == "passing_test"
+		// Check the status code. We assume all test cases fail except for the
+		// passing one.
+		shouldPass := caseName == "passing"
 		didPass := exitCode == 0
 		if shouldPass != didPass {
 			t.Errorf("Bad exit code for test case %s: %d", caseName, exitCode)
