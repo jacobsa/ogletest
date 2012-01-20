@@ -1,7 +1,4 @@
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 mock_test.go 
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+FAIL somepkg 1.234s
 [----------] Running tests from MockTest
 [ RUN      ] MockTest.ExpectationSatisfied
 [       OK ] MockTest.ExpectationSatisfied
@@ -16,6 +13,5 @@ Unexpected call to DoFoo with args: [blah]
 
 [  FAILED  ] MockTest.UnexpectedCall
 [----------] Finished with tests from MockTest
---- FAIL: oglematchers_test.TestOgletest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL
-gotest: "./6.out" failed: exit status 1
