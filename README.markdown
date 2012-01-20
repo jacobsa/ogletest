@@ -8,7 +8,7 @@
     [Google JS Test][google-js-test].
 
 It integrates with Go's built-in `testing` package, so it works with the
-`gotest` command, and even with other types of test within your package. Unlike
+`go test` command, and even with other types of test within your package. Unlike
 the `testing` package which offers only basic capabilities for signalling
 failures, it offers ways to express expectations and get nice failure messages
 automatically.
@@ -18,7 +18,7 @@ Installation
 ------------
 
 First, make sure you have installed a version of the Go tools at least as new as
-`weekly/weekly.2011-12-14`. See [here][golang-install] for instructions. Until
+`weekly/weekly.2011-12-22`. See [here][golang-install] for instructions. Until
 release `r61` comes out, this involes using the `weekly` tag.
 
 Use the following command to install `ogletest` and its dependencies, and to
@@ -32,12 +32,12 @@ Documentation
 
 See [here][reference] for package documentation hosted on GoPkgDoc containing an
 exhaustive list of exported symbols. Alternatively, you can install the package
-and then use `godoc`:
+and then use `go doc`:
 
-    godoc github.com/jacobsa/oglematchers
+    go doc github.com/jacobsa/oglematchers
 
 An important part of `ogletest` is its use of matchers provided by the
-[`oglematchers`][matcher-reference] package. See that package's documentation
+[oglematchers][matcher-reference] package. See that package's documentation
 for information on the built-in matchers available, and check out the
 `oglematchers.Matcher` interface if you want to define your own.
 
@@ -62,26 +62,26 @@ for it as follows:
 package people
 
 import (
-  . "github.com/jacobsa/oglematchers"
-  . "github.com/jacobsa/ogletest"
+  "github.com/jacobsa/oglematchers"
+  "github.com/jacobsa/ogletest"
   "testing"
 )
 
-// Give ogletest a chance to run your tests when invoked by gotest.
-func TestOgletest(t *testing.T) { RunTests(t) }
+// Give ogletest a chance to run your tests when invoked by 'go test'.
+func TestOgletest(t *testing.T) { ogletest.RunTests(t) }
 
 // Create a test suite, which groups together logically related test methods
 // (defined below). You can share common setup and teardown code here; see the
 // package docs for more info.
 type PeopleTest struct {}
-func init() { RegisterTestSuite(&PeopleTest{}) }
+func init() { ogletest.RegisterTestSuite(&PeopleTest{}) }
 
 func (t *PeopleTest) ReturnsCorrectNames() {
   // Call the function a few times, and make sure it never strays from the set
   // of expected names.
   for i := 0; i < 25; i++ {
     name, _ := GetRandomPerson()
-    ExpectThat(name, AnyOf("Tony", "Dennis", "Scott"))
+    ogletest.ExpectThat(name, oglematchers.AnyOf("Tony", "Dennis", "Scott"))
   }
 }
 
@@ -90,17 +90,27 @@ func (t *PeopleTest) FormatsPhoneNumbersCorrectly() {
   // standard US format.
   for i := 0; i < 25; i++ {
     _, phone := GetRandomPerson()
-    ExpectThat(phone, MatchesRegexp(`^\(\d{3}\) \d{3}-\d{4}$`))
-  }
+    ogletest.ExpectThat(phone, oglematchers.MatchesRegexp(`^\(\d{3}\) \d{3}-\d{4}$`))
 }
 ```
 
-If you save this test in a file whose name ends in `_test.go` and set up a
-makefile for your package as described in the [How to Write Go Code][howtowrite]
-docs, you can run your tests by simply invoking the following in your package
-directory:
+Note that test control functions (`RunTests`, `ExpectThat`, and so on) are part
+of the `ogletest` package, whereas built-in matchers (`AnyOf`, `MatchesRegexp`,
+and more) are part of the [oglematchers][matcher-reference] library. You can of
+course use dot imports so that you don't need to prefix each function with its
+package name:
 
-    gotest
+```go
+import (
+  . "github.com/jacobsa/oglematchers"
+  . "github.com/jacobsa/ogletest"
+)
+```
+
+If you save the test in a file whose name ends in `_test.go`, you can run your
+tests by simply invoking the following in your package directory:
+
+    go test
 
 Here's what the failure output of ogletest looks like, if your function's
 implementation is bad.

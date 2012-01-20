@@ -1,7 +1,4 @@
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-6g -I/Users/jacobsa/clients/ogletest/_obj  -p github.com/jacobsa/ogletest/foobar -o _gotest_.6 filtered_test.go 
-rm -f _test/github.com/jacobsa/ogletest/foobar.a
-gopack grc _test/github.com/jacobsa/ogletest/foobar.a _gotest_.6 
+FAIL somepkg 1.234s
 [----------] Running tests from FilteredTest
 [ RUN      ] FilteredTest.FilteredTestBar
 filtered_test.go:51:
@@ -18,6 +15,5 @@ Actual:   18
 [ RUN      ] FilteredTest.PassingTestBar
 [       OK ] FilteredTest.PassingTestBar
 [----------] Finished with tests from FilteredTest
---- FAIL: sometest (0.00 seconds)
+--- FAIL: sometest (1.23 seconds)
 FAIL
-gotest: "./6.out --ogletest.run=Test(Bar|Baz)" failed: exit status 1
