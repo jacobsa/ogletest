@@ -82,3 +82,11 @@ func (r *testInfoErrorReporter) ReportError(
 
 	r.testInfo.failureRecords = append(r.testInfo.failureRecords, record)
 }
+
+func (r *testInfoErrorReporter) ReportFatalError(
+	fileName string,
+	lineNumber int,
+	err error) {
+	r.ReportError(fileName, lineNumber, err)
+	panic(&assertThatError{})
+}
