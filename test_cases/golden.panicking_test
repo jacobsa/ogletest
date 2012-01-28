@@ -4,34 +4,30 @@ FAIL somepkg 1.234s
 panicking_test.go:39:
 panic: foobar
 
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest._func_001: "panic: %v\n\n%s", r, debug.Stack())
-some_file.txt:0 (0x00000)
-	panic: reflect·call(d->fn, d->args, d->siz);
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest: panic("foobar")
-some_file.txt:0 (0x00000)
-	Value.call: call(fn, unsafe.Pointer(ptr), uint32(size))
-some_file.txt:0 (0x00000)
-	Value.Call: return v.call("Call", in)
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest.runMethodIfExists: method.Call(argVals)
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest.runTest: runMethodIfExists(suiteInstance, method.Name)
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest.runTestsInternal: failures := runTest(suite, method)
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest._func_002: runTestsOnce.Do(func() { runTestsInternal(t) })
-some_file.txt:0 (0x00000)
-	(*Once).Do: f()
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest.RunTests: runTestsOnce.Do(func() { runTestsInternal(t) })
-some_file.txt:0 (0x00000)
-	com/jacobsa/ogletest/somepkg_test.TestOgletest: func TestOgletest(t *testing.T) { RunTests(t) }
-some_file.txt:0 (0x00000)
-	tRunner: test.F(t)
-some_file.txt:0 (0x00000)
-	goexit: runtime·goexit(void)
+github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest
+	some_file.txt:0
+reflect.Value.call
+	some_file.txt:0
+reflect.Value.Call
+	some_file.txt:0
+github.com/jacobsa/ogletest.runMethodIfExists
+	some_file.txt:0
+github.com/jacobsa/ogletest.runTest
+	some_file.txt:0
+github.com/jacobsa/ogletest.runTestsInternal
+	some_file.txt:0
+github.com/jacobsa/ogletest._func_002
+	some_file.txt:0
+sync.(*Once).Do
+	some_file.txt:0
+github.com/jacobsa/ogletest.RunTests
+	some_file.txt:0
+github.com/jacobsa/ogletest/somepkg_test.TestOgletest
+	some_file.txt:0
+testing.tRunner
+	some_file.txt:0
+runtime.goexit
+	some_file.txt:0
 
 
 [  FAILED  ] PanickingTest.PanickingTest
