@@ -37,7 +37,7 @@ type ExpectationResult interface {
 
 	// MatchResult returns the result returned by the expectation's matcher for
 	// the supplied candidate.
-	MatchResult() (bool, error)
+	MatchResult() error
 }
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
@@ -81,12 +81,11 @@ func ExpectThat(
 	}
 
 	// Check whether the value matches.
-	matcherRes, matcherErr := m.Matches(x)
-	res.matchResult = matcherRes
+	matcherErr := m.Matches(x)
 	res.matchError = matcherErr
 
 	// Return immediately on success.
-	if matcherRes {
+	if matcherErr == nil {
 		return res
 	}
 
@@ -121,7 +120,6 @@ type expectationResultImpl struct {
 	failureRecord *failureRecord
 
 	// The result of the matcher.
-	matchResult bool
 	matchError error
 }
 
@@ -134,6 +132,6 @@ func (r *expectationResultImpl) SetCaller(fileName string, lineNumber int) {
 	r.failureRecord.LineNumber = lineNumber
 }
 
-func (r *expectationResultImpl) MatchResult() (bool, error) {
-	return r.matchResult, r.matchError
+func (r *expectationResultImpl) MatchResult() error {
+	return r.matchError
 }

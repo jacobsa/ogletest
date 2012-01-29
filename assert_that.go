@@ -33,8 +33,8 @@ func AssertThat(
 	errorParts ...interface{}) ExpectationResult {
 	res := ExpectThat(x, m, errorParts...)
 
-	passed, _ := res.MatchResult()
-	if !passed {
+	matcherErr := res.MatchResult()
+	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
 
