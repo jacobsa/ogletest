@@ -113,8 +113,8 @@ func cleanOutput(o []byte, testPkg string) []byte {
 
 	// Replace things that look like line numbers and process counters in stack
 	// traces.
-	stackFrameRe := regexp.MustCompile(`\S+\.(c|go):\d+ \(0x[0-9a-f]+\)`)
-	o = stackFrameRe.ReplaceAll(o, []byte("some_file.txt:0 (0x00000)"))
+	stackFrameRe := regexp.MustCompile(`\t\S+\.(c|go):\d+`)
+	o = stackFrameRe.ReplaceAll(o, []byte("\tsome_file.txt:0"))
 
 	// Replace unstable timings in gotest fail messages.
 	timingRe1 := regexp.MustCompile(`--- FAIL: .* \(\d\.\d{2} seconds\)`)

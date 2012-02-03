@@ -16,13 +16,13 @@
 package ogletest
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"path"
 	"reflect"
 	"regexp"
 	"runtime"
-	"runtime/debug"
 	"sync"
 	"testing"
 )
@@ -65,7 +65,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 			}
 
 			panicRecord.GeneratedError = fmt.Sprintf(
-				"panic: %v\n\n%s", r, debug.Stack())
+				"panic: %v\n\n%s", r, formatPanicStack())
 			failures = append(failures, &panicRecord)
 		}
 
@@ -213,6 +213,34 @@ func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {
 	}
 
 	method.Call(argVals)
+}
+
+func formatPanicStack() string {
+	buf := new(bytes.Buffer)
+
+	// By the time we get here, the stack looks like this:
+	//
+	//     <this function>
+	//     <deferred recover function>
+	//     panic(r)
+	//     <function that called panic>
+	//
+	// We want to skip those first three frames.
+	for i := 3; ; i++ {
+		pc, file, line, ok := runtime.Caller(i)
+		if !ok {
+			break
+		}
+
+		funcName := "(unknown)"
+		if f := runtime.FuncForPC(pc); f != nil {
+			funcName = f.Name()
+		}
+
+		fmt.Fprintf(buf, "%s\n\t%s:%d\n", funcName, file, line)
+	}
+
+	return buf.String()
 }
 
 func isSpecialMethod(name string) bool {
