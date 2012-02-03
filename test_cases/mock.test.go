@@ -52,9 +52,10 @@ func (t *MockTest) ExpectationSatisfied() {
 		t.image,
 		"At",
 		"blah_test.go",
-		117)(11, GreaterThan(19)).WillOnce(oglemock.Return(color.Gray{0}))
+		117)(11, GreaterThan(19)).WillOnce(
+			oglemock.Return(color.Gray{0}))
 
-	ExpectEq(17, t.image.At(11, 23))
+	ExpectThat(t.image.At(11, 23), IdenticalTo(color.Gray{0}))
 }
 
 func (t *MockTest) MockExpectationNotSatisfied() {

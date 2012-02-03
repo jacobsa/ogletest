@@ -4,12 +4,12 @@ FAIL somepkg 1.234s
 [       OK ] MockTest.ExpectationSatisfied
 [ RUN      ] MockTest.MockExpectationNotSatisfied
 blah_test.go:117:
-Unsatisfied expectation; expected DoFoo to be called at least 1 times; called 0 times.
+Unsatisfied expectation; expected At to be called at least 1 times; called 0 times.
 
 [  FAILED  ] MockTest.MockExpectationNotSatisfied
 [ RUN      ] MockTest.UnexpectedCall
-blah.go:112:
-Unexpected call to DoFoo with args: [blah]
+/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:72:
+Unexpected call to At with args: [11 23]
 
 [  FAILED  ] MockTest.UnexpectedCall
 [----------] Finished with tests from MockTest
