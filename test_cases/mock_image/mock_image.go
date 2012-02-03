@@ -11,7 +11,6 @@ import (
 	fmt "fmt"
 	image "image"
 	oglemock "github.com/jacobsa/oglemock"
-	reflect "reflect"
 	runtime "runtime"
 	unsafe "unsafe"
 )
@@ -26,7 +25,8 @@ type mockImage struct {
 	description	string
 }
 
-func NewMockImage(c oglemock.Controller,
+func NewMockImage(
+	c oglemock.Controller,
 	desc string) MockImage {
 	return &mockImage{
 		controller:	c,
@@ -58,14 +58,10 @@ func (m *mockImage) At(p0 int, p1 int) (o0 color.Color) {
 		panic(fmt.Sprintf("mockImage.At: invalid return values: %v", retVals))
 	}
 
-	var v reflect.Value
-
 	// o0 color.Color
-	v = reflect.ValueOf(retVals[0])
-	if v.Type() != reflect.TypeOf(o0) {
-		panic(fmt.Sprintf("mockImage.Color: invalid return value 0: %v", v))
+	if retVals[0] != nil {
+		o0 = retVals[0].(color.Color)
 	}
-	o0 = v.Interface().(color.Color)
 
 	return
 }
@@ -86,14 +82,10 @@ func (m *mockImage) Bounds() (o0 image.Rectangle) {
 		panic(fmt.Sprintf("mockImage.Bounds: invalid return values: %v", retVals))
 	}
 
-	var v reflect.Value
-
 	// o0 image.Rectangle
-	v = reflect.ValueOf(retVals[0])
-	if v.Type() != reflect.TypeOf(o0) {
-		panic(fmt.Sprintf("mockImage.Rectangle: invalid return value 0: %v", v))
+	if retVals[0] != nil {
+		o0 = retVals[0].(image.Rectangle)
 	}
-	o0 = v.Interface().(image.Rectangle)
 
 	return
 }
@@ -114,14 +106,10 @@ func (m *mockImage) ColorModel() (o0 color.Model) {
 		panic(fmt.Sprintf("mockImage.ColorModel: invalid return values: %v", retVals))
 	}
 
-	var v reflect.Value
-
 	// o0 color.Model
-	v = reflect.ValueOf(retVals[0])
-	if v.Type() != reflect.TypeOf(o0) {
-		panic(fmt.Sprintf("mockImage.Model: invalid return value 0: %v", v))
+	if retVals[0] != nil {
+		o0 = retVals[0].(color.Model)
 	}
-	o0 = v.Interface().(color.Model)
 
 	return
 }
