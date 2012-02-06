@@ -33,7 +33,8 @@ import (
 //
 // This is a shortcut for calling i.MockController.ExpectCall, where i is the
 // TestInfo struct for the currently-running test. Unlike that direct approach,
-// this function automatically sets the correct file name and line number.
+// this function automatically sets the correct file name and line number for
+// the expectation.
 func ExpectCall(o oglemock.MockObject, method string) oglemock.PartialExpecation {
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)
