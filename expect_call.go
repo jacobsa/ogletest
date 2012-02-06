@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"github.com/jacobsa/oglemock"
+	"runtime"
 )
 
 // ExpectCall expresses an expectation that the method of the given name
@@ -34,6 +35,24 @@ import (
 // TestInfo struct for the currently-running test. Unlike that direct approach,
 // this function automatically sets the correct file name and line number.
 func ExpectCall(o oglemock.MockObject, methodName string) oglemock.PartialExpecation {
-	// TODO
-	return nil
+	// Get information about the call site.
+	_, file, lineNumber, ok := runtime.Caller(1)
+	if !ok {
+		panic("ExpectCall: runtime.Caller")
+	}
+
+	// Grab the current test info.
+	info := currentlyRunningTest
+	if info == nil {
+		panic("ExpectCall: no test info.")
+	}
+
+	// Grab the mock controller.
+	controller := currentlyRunningTest.MockController
+	if controller == nil {
+		panic("ExpectCall: no mock controller.")
+	}
+
+	// Report the expectation.
+	return controller.ExpectCall(o, methodName, file, lineNumber)
 }
