@@ -54,5 +54,5 @@ func ExpectCall(o oglemock.MockObject, method string) oglemock.PartialExpecation
 	}
 
 	// Report the expectation.
-	return controller.ExpectCall(o, methodName, file, lineNumber)
+	return controller.ExpectCall(o, method, file, lineNumber)
 }
