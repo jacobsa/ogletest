@@ -46,36 +46,19 @@ func (t *MockTest) SetUp(i *TestInfo) {
 ////////////////////////////////////////////////////////////
 
 func (t *MockTest) ExpectationSatisfied() {
-	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
-	// convenient ExpectCall function when one is available. See issue #8.
-	t.controller.ExpectCall(
-		t.image,
-		"At",
-		"blah_test.go",
-		117)(11, GreaterThan(19)).WillOnce(
-			oglemock.Return(color.Gray{0}))
+	ExpectCall(t.image, "At")(11, GreaterThan(19)).
+		WillOnce(oglemock.Return(color.Gray{0}))
 
 	ExpectThat(t.image.At(11, 23), IdenticalTo(color.Gray{0}))
 }
 
 func (t *MockTest) MockExpectationNotSatisfied() {
-	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
-	// convenient ExpectCall function when one is available. See issue #8.
-	t.controller.ExpectCall(
-		t.image,
-		"At",
-		"blah_test.go",
-		117)(11, GreaterThan(19))
+	ExpectCall(t.image, "At")(11, GreaterThan(19)).
+		WillOnce(oglemock.Return(color.Gray{0}))
 }
 
 func (t *MockTest) ExpectCallForUnknownMethod() {
-	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
-	// convenient ExpectCall function when one is available. See issue #8.
-	t.controller.ExpectCall(
-		t.image,
-		"FooBar",
-		"blah_test.go",
-		117)(11)
+	ExpectCall(t.image, "FooBar")(11);
 }
 
 func (t *MockTest) UnexpectedCall() {
