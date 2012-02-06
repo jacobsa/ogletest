@@ -68,6 +68,16 @@ func (t *MockTest) MockExpectationNotSatisfied() {
 		117)(11, GreaterThan(19))
 }
 
+func (t *MockTest) ExpectCallForUnknownMethod() {
+	// TODO(jacobsa): Replace this hand-spun expectation with a call to a more
+	// convenient ExpectCall function when one is available. See issue #8.
+	t.controller.ExpectCall(
+		t.image,
+		"FooBar",
+		"blah_test.go",
+		117)(11)
+}
+
 func (t *MockTest) UnexpectedCall() {
 	t.image.At(11, 23)
 }
