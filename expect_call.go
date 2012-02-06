@@ -28,7 +28,7 @@ import (
 // For example:
 //
 //     mockWriter := [...]
-//     ogletest.ExpectCall(mockWriter, "Write")(ElementsAre(0x1))
+//     ogletest.ExpectCall(mockWriter, "Write")(oglematchers.ElementsAre(0x1))
 //         .WillOnce(oglemock.Return(1, nil))
 //
 // This is a shortcut for calling i.MockController.ExpectCall, where i is the
