@@ -16,6 +16,7 @@
 package ogletest
 
 import (
+	"github.com/jacobsa/oglemock"
 )
 
 // ExpectCall expresses an expectation that the method of the given name
