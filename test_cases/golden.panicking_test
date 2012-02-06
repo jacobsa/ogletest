@@ -34,5 +34,5 @@ runtime.goexit
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest
---- FAIL: sometest (1.23 seconds)
+--- FAIL: somepkg (1.23 seconds)
 FAIL

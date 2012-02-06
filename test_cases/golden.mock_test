@@ -1,0 +1,22 @@
+FAIL somepkg 1.234s
+[----------] Running tests from MockTest
+[ RUN      ] MockTest.ExpectCallForUnknownMethod
+/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:61:
+Unknown method: FooBar
+
+[  FAILED  ] MockTest.ExpectCallForUnknownMethod
+[ RUN      ] MockTest.ExpectationSatisfied
+[       OK ] MockTest.ExpectationSatisfied
+[ RUN      ] MockTest.MockExpectationNotSatisfied
+/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:56:
+Unsatisfied expectation; expected At to be called at least 1 times; called 0 times.
+
+[  FAILED  ] MockTest.MockExpectationNotSatisfied
+[ RUN      ] MockTest.UnexpectedCall
+/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:65:
+Unexpected call to At with args: [11 23]
+
+[  FAILED  ] MockTest.UnexpectedCall
+[----------] Finished with tests from MockTest
+--- FAIL: somepkg (1.23 seconds)
+FAIL

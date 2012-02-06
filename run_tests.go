@@ -80,6 +80,10 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	runMethodIfExists(suiteInstance, method.Name)
 	runMethodIfExists(suiteInstance, "TearDown")
 
+	// Tell the mock controller for the tests to report any errors it's sitting
+	// on.
+	currentlyRunningTest.MockController.Finish()
+
 	// The return value is set in the deferred function above.
 	return
 }

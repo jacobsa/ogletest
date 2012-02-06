@@ -15,9 +15,21 @@
 
 package ogletest
 
+import (
+	"github.com/jacobsa/oglemock"
+)
+
 // TestInfo represents information about a currently running or previously-run
 // test.
 type TestInfo struct {
+	// A mock controller that is set up to report errors to the ogletest test
+	// runner. This can be used for setting up mock expectations and handling
+	// mock calls. The Finish method should not be run by the user; ogletest will
+	// do that automatically after the test's TearDown method is run.
+	//
+	// Note that this feature is still experimental, and is subject to change.
+	MockController oglemock.Controller
+
 	// A set of failure records that the test has produced.
 	failureRecords []*failureRecord
 }
@@ -29,6 +41,7 @@ var currentlyRunningTest *TestInfo
 func newTestInfo() *TestInfo {
 	info := &TestInfo{}
 	info.failureRecords = make([]*failureRecord, 0)
+	info.MockController = oglemock.NewController(&testInfoErrorReporter{info})
 	return info
 }
 
@@ -49,4 +62,31 @@ type failureRecord struct {
 
 	// A user-specified string to print out with the error, if any.
 	UserError string
+}
+
+// testInfoErrorReporter is an oglemock.ErrorReporter that writes failure
+// records into a test info struct.
+type testInfoErrorReporter struct {
+	testInfo *TestInfo
+}
+
+func (r *testInfoErrorReporter) ReportError(
+	fileName string,
+	lineNumber int,
+	err error) {
+  record := &failureRecord{
+		FileName: fileName,
+		LineNumber: lineNumber,
+		GeneratedError: err.Error(),
+	}
+
+	r.testInfo.failureRecords = append(r.testInfo.failureRecords, record)
+}
+
+func (r *testInfoErrorReporter) ReportFatalError(
+	fileName string,
+	lineNumber int,
+	err error) {
+	r.ReportError(fileName, lineNumber, err)
+	panic(&assertThatError{})
 }
