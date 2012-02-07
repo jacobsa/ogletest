@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"github.com/jacobsa/oglemock"
+	"sync"
 )
 
 // TestInfo represents information about a currently running or previously-run
@@ -30,8 +31,11 @@ type TestInfo struct {
 	// Note that this feature is still experimental, and is subject to change.
 	MockController oglemock.Controller
 
+	// A mutex protecting shared state.
+	mutex sync.RWMutex
+
 	// A set of failure records that the test has produced.
-	failureRecords []*failureRecord
+	failureRecords []*failureRecord  // Protected by mutex
 }
 
 // currentlyRunningTest is the state for the currently running test, if any.
@@ -74,6 +78,9 @@ func (r *testInfoErrorReporter) ReportError(
 	fileName string,
 	lineNumber int,
 	err error) {
+	r.testInfo.mutex.Lock()
+	defer r.testInfo.mutex.Unlock()
+
   record := &failureRecord{
 		FileName: fileName,
 		LineNumber: lineNumber,

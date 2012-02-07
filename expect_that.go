@@ -109,6 +109,9 @@ func ExpectThat(
 	record.UserError = userError
 
 	// Store the failure.
+	info.mutex.Lock()
+	defer info.mutex.Unlock()
+
 	info.failureRecords = append(info.failureRecords, &record)
 	res.failureRecord = &record
 

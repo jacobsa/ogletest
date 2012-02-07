@@ -46,6 +46,9 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	currentlyRunningTest = newTestInfo()
 
 	defer func() {
+		currentlyRunningTest.mutex.Lock()
+		defer currentlyRunningTest.mutex.Unlock()
+
 		// Return the failures the test recorded, whether it panics or not. If it
 		// panics (and the panic is not due to an AssertThat failure), additionally
 		// return a failure for the panic.
