@@ -37,11 +37,19 @@ var objDir string
 // Helpers
 ////////////////////////////////////////////////////////////
 
-// installLocalOgletest installs the possibly locally-modified copy of
-// ogletest, so that these integration tests run using the package currently
-// being worked on by the programmer.
-func installLocalOgletest() error {
-	cmd := exec.Command("go", "install", ogletestPkg)
+// Install the possibly locally-modified copy of ogletest, so that these
+// integration tests run using the package currently being worked on by the
+// programmer. Also install other dependencies needed by the test cases, so
+// that `go test` complaining about non-up-to-date packages doesn't make it
+// into the golden files.
+func installLocalPackages() error {
+	cmd := exec.Command(
+		"go",
+		"install",
+		ogletestPkg,
+		"github.com/jacobsa/oglemock",
+	  "github.com/jacobsa/ogletest/test_cases/mock_image")
+
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -209,7 +217,7 @@ func checkAgainstGoldenFile(caseName string, output []byte) bool {
 func TestGoldenFiles(t *testing.T) {
 	// Ensure the local package is installed. This will prevent the test cases
 	// from using the installed version, which may be out of date.
-	err := installLocalOgletest()
+	err := installLocalPackages()
 	if err != nil {
 		t.Fatalf("Error installing local ogletest: %v", err)
 	}
