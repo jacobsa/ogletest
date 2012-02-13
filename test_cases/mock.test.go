@@ -64,3 +64,19 @@ func (t *MockTest) ExpectCallForUnknownMethod() {
 func (t *MockTest) UnexpectedCall() {
 	t.image.At(11, 23)
 }
+
+func (t *MockTest) InvokeFunction() {
+	var suppliedX, suppliedY int
+	f := func(x, y int) color.Color {
+		suppliedX = x
+		suppliedY = y
+		return color.Gray{17}
+	}
+
+	ExpectCall(t.image, "At")(Any(), Any()).
+		WillOnce(oglemock.Invoke(f))
+
+	ExpectThat(t.image.At(-1, 12), IdenticalTo(color.Gray{17}))
+	ExpectEq(-1, suppliedX)
+	ExpectEq(12, suppliedY)
+}

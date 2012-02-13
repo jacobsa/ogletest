@@ -6,6 +6,8 @@ Unknown method: FooBar
 [  FAILED  ] MockTest.ExpectCallForUnknownMethod
 [ RUN      ] MockTest.ExpectationSatisfied
 [       OK ] MockTest.ExpectationSatisfied
+[ RUN      ] MockTest.InvokeFunction
+[       OK ] MockTest.InvokeFunction
 [ RUN      ] MockTest.MockExpectationNotSatisfied
 /Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:56:
 Unsatisfied expectation; expected At to be called at least 1 times; called 0 times.
