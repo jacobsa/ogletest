@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from UnexportedTest
 [ RUN      ] UnexportedTest.SomeTest
 unexported_test.go:42:
@@ -9,3 +8,5 @@ Actual:   3
 [----------] Finished with tests from UnexportedTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s

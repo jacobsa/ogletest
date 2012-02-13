@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from MockTest
 [ RUN      ] MockTest.ExpectCallForUnknownMethod
 /Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:61:
@@ -20,3 +19,5 @@ Unexpected call to At with args: [11 23]
 [----------] Finished with tests from MockTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s

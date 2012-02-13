@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from RunTwiceTest
 [ RUN      ] RunTwiceTest.FailingMethod
 run_twice_test.go:46:
@@ -11,3 +10,5 @@ Actual:   17
 [----------] Finished with tests from RunTwiceTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s

@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
 panicking_test.go:39:
@@ -36,3 +35,5 @@ runtime.goexit
 [----------] Finished with tests from PanickingTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s

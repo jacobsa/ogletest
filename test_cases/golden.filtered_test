@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from FilteredTest
 [ RUN      ] FilteredTest.FilteredTestBar
 filtered_test.go:51:
@@ -17,3 +16,5 @@ Actual:   18
 [----------] Finished with tests from FilteredTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s

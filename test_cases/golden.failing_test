@@ -1,4 +1,3 @@
-FAIL somepkg 1.234s
 [----------] Running tests from FailingTest
 [ RUN      ] FailingTest.AssertEqFailure
 assert_that.go:34:
@@ -207,3 +206,5 @@ Actual:   19
 [----------] Finished with tests from FailingTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
+exit status 1
+FAIL somepkg 1.234s
