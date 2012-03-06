@@ -26,6 +26,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"syscall"
 	"testing"
 )
 
@@ -141,11 +142,11 @@ func cleanOutput(o []byte, testPkg string) []byte {
 // return the directory and package name.
 func createTempPackageDir(caseName string) (dir, pkg string) {
 	// Figure out where the local source code for ogletest is.
-	tree, _, err := build.FindTree(ogletestPkg)
+	buildPkg, err := build.Import(ogletestPkg, "", build.FindOnly)
 	if err != nil { panic("Finding ogletest tree: " + err.Error()) }
 
 	// Create a temporary directory underneath this.
-	ogletestPkgDir := path.Join(tree.Path, "src", ogletestPkg)
+	ogletestPkgDir := buildPkg.Dir
 	prefix := fmt.Sprintf("tmp-%s-", caseName)
 
 	dir, err = ioutil.TempDir(ogletestPkgDir, prefix)
@@ -192,7 +193,7 @@ func runTestCase(name string) ([]byte, int, error) {
 		return nil, 0, errors.New("exec.Command.Output: " + err.Error())
 	}
 
-	return output, exitError.ExitStatus(), nil
+	return output, exitError.Sys().(syscall.WaitStatus).ExitStatus(), nil
 }
 
 // checkGolden file checks the supplied actual output for the named test case
