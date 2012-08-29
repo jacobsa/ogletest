@@ -29,7 +29,7 @@ type UnexportedTest struct {
 }
 
 func init()                     { RegisterTestSuite(&UnexportedTest{}) }
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestUnexportedTest(t *testing.T) { RunTests(t) }
 
 func (t *UnexportedTest) someUnexportedMethod() {
 }

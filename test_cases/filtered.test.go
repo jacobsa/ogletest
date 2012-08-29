@@ -29,7 +29,7 @@ type FilteredTest struct {
 }
 
 func init()                     { RegisterTestSuite(&FilteredTest{}) }
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestFilteredTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////
 // Tests

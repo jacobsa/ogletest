@@ -29,7 +29,7 @@ type FailingTest struct {
 }
 
 func init()                     { RegisterTestSuite(&FailingTest{}) }
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestFailingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////
 // Tests

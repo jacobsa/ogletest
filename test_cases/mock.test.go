@@ -34,7 +34,7 @@ type MockTest struct {
 }
 
 func init()                     { RegisterTestSuite(&MockTest{}) }
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestMockTest(t *testing.T) { RunTests(t) }
 
 func (t *MockTest) SetUp(i *TestInfo) {
 	t.controller = i.MockController

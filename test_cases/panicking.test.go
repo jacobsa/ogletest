@@ -29,7 +29,7 @@ type PanickingTest struct {
 }
 
 func init()                     { RegisterTestSuite(&PanickingTest{}) }
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestPanickingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////
 // Tests
