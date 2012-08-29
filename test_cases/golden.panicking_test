@@ -21,7 +21,7 @@ sync.(*Once).Do
 	some_file.txt:0
 github.com/jacobsa/ogletest.RunTests
 	some_file.txt:0
-github.com/jacobsa/ogletest/somepkg_test.TestOgletest
+github.com/jacobsa/ogletest/somepkg_test.TestPanickingTest
 	some_file.txt:0
 testing.tRunner
 	some_file.txt:0
