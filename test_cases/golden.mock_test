@@ -1,6 +1,6 @@
 [----------] Running tests from MockTest
 [ RUN      ] MockTest.ExpectCallForUnknownMethod
-/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:61:
+/some/path/mock_test.go:61:
 Unknown method: FooBar
 
 [  FAILED  ] MockTest.ExpectCallForUnknownMethod
@@ -9,12 +9,12 @@ Unknown method: FooBar
 [ RUN      ] MockTest.InvokeFunction
 [       OK ] MockTest.InvokeFunction
 [ RUN      ] MockTest.MockExpectationNotSatisfied
-/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:56:
+/some/path/mock_test.go:56:
 Unsatisfied expectation; expected At to be called at least 1 times; called 0 times.
 
 [  FAILED  ] MockTest.MockExpectationNotSatisfied
 [ RUN      ] MockTest.UnexpectedCall
-/Users/jacobsa/go/clients/src/github.com/jacobsa/ogletest/somepkg/mock_test.go:65:
+/some/path/mock_test.go:65:
 Unexpected call to At with args: [11 23]
 
 [  FAILED  ] MockTest.UnexpectedCall
