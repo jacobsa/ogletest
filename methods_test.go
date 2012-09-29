@@ -34,6 +34,18 @@ func init() { RegisterTestSuite(&MethodsTest{}) }
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *MethodsTest) DoesFoo() {
+func (t *MethodsTest) NoMethods() {
+	ExpectEq("TODO", "")
+}
+
+func (t *MethodsTest) OneMethod() {
+	ExpectEq("TODO", "")
+}
+
+func (t *MethodsTest) MultipleMethods() {
+	ExpectEq("TODO", "")
+}
+
+func (t *MethodsTest) MultipleMethodsOnSingleLine() {
 	ExpectEq("TODO", "")
 }
