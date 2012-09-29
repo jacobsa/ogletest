@@ -17,17 +17,50 @@
 package ogletest
 
 import (
+	"fmt"
 	"reflect"
+	"runtime"
+	"sort"
 )
+
+func getLine(m reflect.Method) int {
+	pc := m.Func.Pointer()
+
+	f := runtime.FuncForPC(pc)
+	if f != nil {
+		panic(fmt.Sprintf("Couldn't get runtime func for method: %v", m))
+	}
+
+	_, line := f.FileLine(pc)
+	return line
+}
+
+type sortableMethodSet []reflect.Method
+
+func (s sortableMethodSet) Len() int {
+	return len(s)
+}
+
+func (s sortableMethodSet) Less(i, j int) bool {
+	return getLine(s[i]) < getLine(s[j])
+}
+
+func (s sortableMethodSet) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
 
 // Given a type t, return all of the methods of t sorted such that source file
 // order is preserved. Order across files is undefined. Order within lines is
 // undefined.
 func getMethodsInSourceOrder(t reflect.Type) []reflect.Method {
-	methods := []reflect.Method{}
+	// Build the list of methods.
+	methods := sortableMethodSet{}
 	for i := 0; i < t.NumMethod(); i++ {
 		methods = append(methods, t.Method(i))
 	}
+
+	// Sort it.
+	sort.Sort(methods)
 
 	return methods
 }
