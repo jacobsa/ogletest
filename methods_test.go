@@ -72,5 +72,14 @@ func (t *MethodsTest) MultipleMethods() {
 }
 
 func (t *MethodsTest) MultipleMethodsOnSingleLine() {
-	ExpectEq("TODO", "")
+	methods := getMethodsInSourceOrder(reflect.TypeOf(SingleLineType(17)))
+	AssertThat(methods, ElementsAre(Any(), Any(), Any(), Any()))
+
+	ExpectThat(methods[0].Name, AnyOf("Foo", "Bar"))
+	ExpectThat(methods[1].Name, AnyOf("Foo", "Bar"))
+	ExpectNe(methods[0].Name, methods[1].Name)
+
+	ExpectThat(methods[2].Name, AnyOf("Baz", "Qux"))
+	ExpectThat(methods[3].Name, AnyOf("Baz", "Qux"))
+	ExpectNe(methods[2].Name, methods[3].Name)
 }
