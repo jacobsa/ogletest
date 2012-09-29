@@ -1,42 +1,42 @@
 [----------] Running tests from FailingTest
 [ RUN      ] FailingTest.AssertEqFailure
-assert_that.go:34:
+failing_test.go:105:
 Expected: 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertEqFailure
 [ RUN      ] FailingTest.AssertFalseFailure
-assert_that.go:34:
+failing_test.go:140:
 Expected: false
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.AssertFalseFailure
 [ RUN      ] FailingTest.AssertGeFailure
-assert_that.go:34:
+failing_test.go:125:
 Expected: greater than or equal to 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGeFailure
 [ RUN      ] FailingTest.AssertGtFailure
-assert_that.go:34:
+failing_test.go:130:
 Expected: greater than 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGtFailure
 [ RUN      ] FailingTest.AssertLeFailure
-assert_that.go:34:
+failing_test.go:115:
 Expected: less than or equal to 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLeFailure
 [ RUN      ] FailingTest.AssertLtFailure
-assert_that.go:34:
+failing_test.go:120:
 Expected: less than 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLtFailure
 [ RUN      ] FailingTest.AssertNeFailure
-assert_that.go:34:
+failing_test.go:110:
 Expected: not(19)
 Actual:   19
 
@@ -48,7 +48,7 @@ Actual:   17
 
 [  FAILED  ] FailingTest.AssertThatFailure
 [ RUN      ] FailingTest.AssertTrueFailure
-assert_that.go:34:
+failing_test.go:135:
 Expected: true
 Actual:   taco, which is not a bool
 
