@@ -28,7 +28,7 @@ func getLine(m reflect.Method) int {
 
 	f := runtime.FuncForPC(pc)
 	if f != nil {
-		panic(fmt.Sprintf("Couldn't get runtime func for method: %v", m))
+		panic(fmt.Sprintf("Couldn't get runtime func for method (pc=%d): %v", pc, m))
 	}
 
 	_, line := f.FileLine(pc)
