@@ -27,7 +27,7 @@ func getLine(m reflect.Method) int {
 	pc := m.Func.Pointer()
 
 	f := runtime.FuncForPC(pc)
-	if f != nil {
+	if f == nil {
 		panic(fmt.Sprintf("Couldn't get runtime func for method (pc=%d): %v", pc, m))
 	}
 
