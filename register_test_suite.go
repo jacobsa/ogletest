@@ -74,7 +74,10 @@ package ogletest
 //     }
 //
 func RegisterTestSuite(p interface{}) {
-	// TODO(jacobsa): Panic if p is nil.
+	if p == nil {
+		panic("RegisterTestSuite called with nil suite.")
+	}
+
 	testSuites = append(testSuites, p)
 }
 
