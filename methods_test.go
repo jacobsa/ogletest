@@ -37,7 +37,10 @@ func init() { RegisterTestSuite(&MethodsTest{}) }
 ////////////////////////////////////////////////////////////////////////
 
 func (t *MethodsTest) NoMethods() {
-	ExpectEq("TODO", "")
+	type foo int
+	methods := getMethodsInSourceOrder(reflect.TypeOf(foo(17)))
+
+	ExpectThat(methods, ElementsAre())
 }
 
 func (t *MethodsTest) OneMethod() {
