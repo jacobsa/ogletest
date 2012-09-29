@@ -35,6 +35,15 @@ func init() { RegisterTestSuite(&MethodsTest{}) }
 type OneMethodType int
 func (x OneMethodType) Foo() {}
 
+type MultipleMethodsType int
+func (x MultipleMethodsType) Foo() {}
+func (x MultipleMethodsType) Bar() {}
+func (x MultipleMethodsType) Baz() {}
+
+type SingleLineType int
+func (x SingleLineType) Foo() {}; func (x SingleLineType) Bar() {}
+func (x SingleLineType) Baz() {}; func (x SingleLineType) Qux() {}
+
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
@@ -54,7 +63,12 @@ func (t *MethodsTest) OneMethod() {
 }
 
 func (t *MethodsTest) MultipleMethods() {
-	ExpectEq("TODO", "")
+	methods := getMethodsInSourceOrder(reflect.TypeOf(MultipleMethodsType(17)))
+	AssertThat(methods, ElementsAre(Any(), Any(), Any()))
+
+	ExpectEq("Foo", methods[0].Name)
+	ExpectEq("Bar", methods[1].Name)
+	ExpectEq("Baz", methods[2].Name)
 }
 
 func (t *MethodsTest) MultipleMethodsOnSingleLine() {
