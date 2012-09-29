@@ -24,5 +24,10 @@ import (
 // order is preserved. Order across files is undefined. Order within lines is
 // undefined.
 func getMethodsInSourceOrder(t reflect.Type) []reflect.Method {
-	return nil
+	methods := []reflect.Method{}
+	for i := 0; i < t.NumMethod(); i++ {
+		methods = append(methods, t.Method(i))
+	}
+
+	return methods
 }
