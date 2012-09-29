@@ -38,13 +38,19 @@ func init() { RegisterTestSuite(&MethodsTest{}) }
 
 func (t *MethodsTest) NoMethods() {
 	type foo int
-	methods := getMethodsInSourceOrder(reflect.TypeOf(foo(17)))
 
+	methods := getMethodsInSourceOrder(reflect.TypeOf(foo(17)))
 	ExpectThat(methods, ElementsAre())
 }
 
 func (t *MethodsTest) OneMethod() {
-	ExpectEq("TODO", "")
+	type foo int
+	func (f foo) Foo() {}
+
+	methods := getMethodsInSourceOrder(reflect.TypeOf(foo(17)))
+	AssertThat(methods, ElementsAre(Any()))
+
+	ExpectEq("foo", methods[0].Name)
 }
 
 func (t *MethodsTest) MultipleMethods() {
