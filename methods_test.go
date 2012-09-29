@@ -36,20 +36,6 @@ func init() { RegisterTestSuite(&MethodsTest{}) }
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *MethodsTest) InvalidType() {
-	typ := reflect.TypeOf(nil)
-	f := func() { getMethodsInSourceOrder(typ) }
-
-	ExpectThat(f, Panics(HasSubstr("struct")))
-}
-
-func (t *MethodsTest) NonStruct() {
-	typ := reflect.TypeOf(17)
-	f := func() { getMethodsInSourceOrder(typ) }
-
-	ExpectThat(f, Panics(HasSubstr("struct")))
-}
-
 func (t *MethodsTest) NoMethods() {
 	ExpectEq("TODO", "")
 }

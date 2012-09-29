@@ -20,9 +20,9 @@ import (
 	"reflect"
 )
 
-// Given a struct type t, return all of the methods of t sorted such that
-// source file order is preserved. Order across files is undefined. Order
-// within lines is undefined.
+// Given a type t, return all of the methods of t sorted such that source file
+// order is preserved. Order across files is undefined. Order within lines is
+// undefined.
 func getMethodsInSourceOrder(t reflect.Type) []reflect.Method {
 	return nil
 }
