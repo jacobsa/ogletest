@@ -75,6 +75,15 @@ func (t *MethodsTest) MultipleMethodsOnSingleLine() {
 	methods := getMethodsInSourceOrder(reflect.TypeOf(SingleLineType(17)))
 	AssertThat(methods, ElementsAre(Any(), Any(), Any(), Any()))
 
+	// TODO(jacobsa): Delete this block of code when the following issue is
+	// resolved:
+	//     http://code.google.com/p/go/issues/detail?id=4174
+	ExpectThat(methods, Contains("Foo"))
+	ExpectThat(methods, Contains("Bar"))
+	ExpectThat(methods, Contains("Baz"))
+	ExpectThat(methods, Contains("Qux"))
+	return
+
 	ExpectThat(methods[0].Name, AnyOf("Foo", "Bar"))
 	ExpectThat(methods[1].Name, AnyOf("Foo", "Bar"))
 	ExpectNe(methods[0].Name, methods[1].Name)
