@@ -16,6 +16,7 @@
 package ogletest
 
 import (
+	"fmt"
 	. "github.com/jacobsa/oglematchers"
 	"reflect"
 	"testing"
@@ -43,6 +44,31 @@ func (x MultipleMethodsType) Baz() {}
 type SingleLineType int
 func (x SingleLineType) Foo() {}; func (x SingleLineType) Bar() {}
 func (x SingleLineType) Baz() {}; func (x SingleLineType) Qux() {}
+
+type methodNameMatcher struct {
+	expected string
+}
+
+func (m *methodNameMatcher) Description() string {
+	return fmt.Sprintf("method named %s", m.expected)
+}
+
+func (m *methodNameMatcher) Matches(x interface{}) error {
+	method, ok := x.(reflect.Method)
+	if !ok {
+		panic("Invalid argument.")
+	}
+
+	if method.Name != m.expected {
+		return fmt.Errorf("whose name is %s", method.Name)
+	}
+
+	return nil
+}
+
+func NameIs(name string) Matcher {
+	return &methodNameMatcher{name}
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Tests
@@ -78,10 +104,10 @@ func (t *MethodsTest) MultipleMethodsOnSingleLine() {
 	// TODO(jacobsa): Delete this block of code when the following issue is
 	// resolved:
 	//     http://code.google.com/p/go/issues/detail?id=4174
-	ExpectThat(methods, Contains("Foo"))
-	ExpectThat(methods, Contains("Bar"))
-	ExpectThat(methods, Contains("Baz"))
-	ExpectThat(methods, Contains("Qux"))
+	ExpectThat(methods, Contains(NameIs("Foo")))
+	ExpectThat(methods, Contains(NameIs("Bar")))
+	ExpectThat(methods, Contains(NameIs("Baz")))
+	ExpectThat(methods, Contains(NameIs("Qux")))
 	return
 
 	ExpectThat(methods[0].Name, AnyOf("Foo", "Bar"))
