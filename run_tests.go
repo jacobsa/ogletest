@@ -126,9 +126,7 @@ func runTestsInternal(t *testing.T) {
 		runMethodIfExists(val, "SetUpTestSuite")
 
 		// Run each method.
-		for i := 0; i < typ.NumMethod(); i++ {
-			method := typ.Method(i)
-
+		for _, method := range getMethodsInSourceOrder(typ) {
 			// Skip setup/teardown and unexported methods.
 			if isSpecialMethod(method.Name) || !isExportedMethod(method.Name) {
 				continue
