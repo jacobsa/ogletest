@@ -83,14 +83,22 @@ func (t *MethodsTest) NoMethods() {
 
 func (t *MethodsTest) OneMethod() {
 	methods := getMethodsInSourceOrder(reflect.TypeOf(OneMethodType(17)))
-	AssertThat(methods, ElementsAre(Any()))
-
-	ExpectEq("Foo", methods[0].Name)
+	ExpectThat(
+		methods,
+		ElementsAre(
+			NameIs("Foo"),
+		))
 }
 
 func (t *MethodsTest) MultipleMethods() {
 	methods := getMethodsInSourceOrder(reflect.TypeOf(MultipleMethodsType(17)))
-	AssertThat(methods, ElementsAre(Any(), Any(), Any()))
+	ExpectThat(
+		methods,
+		ElementsAre(
+			NameIs("Foo"),
+			NameIs("Bar"),
+			NameIs("Baz"),
+		))
 
 	ExpectEq("Foo", methods[0].Name)
 	ExpectEq("Bar", methods[1].Name)
