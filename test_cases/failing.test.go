@@ -74,7 +74,7 @@ func (t *FailingTest) ModifiedExpectation() {
 	ExpectEq(17, 19).SetCaller("bar.go", 117)
 }
 
-func (t FailingTest) ExpectationAliases() {
+func (t *FailingTest) ExpectationAliases() {
 	ExpectEq(17, 17.5)
 	ExpectEq("taco", 17.5)
 
