@@ -1,4 +1,6 @@
 [----------] Running tests from FilteredTest
+[ RUN      ] FilteredTest.PassingTestBar
+[       OK ] FilteredTest.PassingTestBar
 [ RUN      ] FilteredTest.FilteredTestBar
 filtered_test.go:51:
 Expected: has substring "blah"
@@ -11,8 +13,6 @@ Expected: less than 17
 Actual:   18
 
 [  FAILED  ] FilteredTest.FilteredTestBaz
-[ RUN      ] FilteredTest.PassingTestBar
-[       OK ] FilteredTest.PassingTestBar
 [----------] Finished with tests from FilteredTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL

@@ -1,65 +1,6 @@
 [----------] Running tests from FailingTest
-[ RUN      ] FailingTest.AssertEqFailure
-failing_test.go:105:
-Expected: 19
-Actual:   17
-
-[  FAILED  ] FailingTest.AssertEqFailure
-[ RUN      ] FailingTest.AssertFalseFailure
-failing_test.go:140:
-Expected: false
-Actual:   taco, which is not a bool
-
-[  FAILED  ] FailingTest.AssertFalseFailure
-[ RUN      ] FailingTest.AssertGeFailure
-failing_test.go:125:
-Expected: greater than or equal to 19
-Actual:   17
-
-[  FAILED  ] FailingTest.AssertGeFailure
-[ RUN      ] FailingTest.AssertGtFailure
-failing_test.go:130:
-Expected: greater than 19
-Actual:   17
-
-[  FAILED  ] FailingTest.AssertGtFailure
-[ RUN      ] FailingTest.AssertLeFailure
-failing_test.go:115:
-Expected: less than or equal to 17
-Actual:   19
-
-[  FAILED  ] FailingTest.AssertLeFailure
-[ RUN      ] FailingTest.AssertLtFailure
-failing_test.go:120:
-Expected: less than 17
-Actual:   19
-
-[  FAILED  ] FailingTest.AssertLtFailure
-[ RUN      ] FailingTest.AssertNeFailure
-failing_test.go:110:
-Expected: not(19)
-Actual:   19
-
-[  FAILED  ] FailingTest.AssertNeFailure
-[ RUN      ] FailingTest.AssertThatFailure
-assert_that.go:34:
-Expected: 19
-Actual:   17
-
-[  FAILED  ] FailingTest.AssertThatFailure
-[ RUN      ] FailingTest.AssertTrueFailure
-failing_test.go:135:
-Expected: true
-Actual:   taco, which is not a bool
-
-[  FAILED  ] FailingTest.AssertTrueFailure
-[ RUN      ] FailingTest.AssertWithUserErrorMessages
-assert_that.go:34:
-Expected: 19
-Actual:   17
-foo bar: 112
-
-[  FAILED  ] FailingTest.AssertWithUserErrorMessages
+[ RUN      ] FailingTest.PassingMethod
+[       OK ] FailingTest.PassingMethod
 [ RUN      ] FailingTest.Equals
 failing_test.go:42:
 Expected: 17.5
@@ -70,6 +11,22 @@ Expected: taco
 Actual:   17, which is not a string
 
 [  FAILED  ] FailingTest.Equals
+[ RUN      ] FailingTest.LessThan
+failing_test.go:47:
+Expected: less than 17
+Actual:   18
+
+failing_test.go:48:
+Expected: less than "taco"
+Actual:   18, which is not comparable
+
+[  FAILED  ] FailingTest.LessThan
+[ RUN      ] FailingTest.HasSubstr
+failing_test.go:53:
+Expected: has substring "ac"
+Actual:   17, which is not a string
+
+[  FAILED  ] FailingTest.HasSubstr
 [ RUN      ] FailingTest.ExpectWithUserErrorMessages
 failing_test.go:57:
 Expected: 19
@@ -117,6 +74,23 @@ Actual:   false
 foo bar: 112
 
 [  FAILED  ] FailingTest.ExpectWithUserErrorMessages
+[ RUN      ] FailingTest.AssertWithUserErrorMessages
+assert_that.go:34:
+Expected: 19
+Actual:   17
+foo bar: 112
+
+[  FAILED  ] FailingTest.AssertWithUserErrorMessages
+[ RUN      ] FailingTest.ModifiedExpectation
+foo.go:112:
+Expected: has substring "ac"
+Actual:   17, which is not a string
+
+bar.go:117:
+Expected: 17
+Actual:   19
+
+[  FAILED  ] FailingTest.ModifiedExpectation
 [ RUN      ] FailingTest.ExpectationAliases
 failing_test.go:78:
 Expected: 17
@@ -175,34 +149,60 @@ Expected: true
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.ExpectationAliases
-[ RUN      ] FailingTest.HasSubstr
-failing_test.go:53:
-Expected: has substring "ac"
-Actual:   17, which is not a string
+[ RUN      ] FailingTest.AssertThatFailure
+assert_that.go:34:
+Expected: 19
+Actual:   17
 
-[  FAILED  ] FailingTest.HasSubstr
-[ RUN      ] FailingTest.LessThan
-failing_test.go:47:
-Expected: less than 17
-Actual:   18
+[  FAILED  ] FailingTest.AssertThatFailure
+[ RUN      ] FailingTest.AssertEqFailure
+failing_test.go:105:
+Expected: 19
+Actual:   17
 
-failing_test.go:48:
-Expected: less than "taco"
-Actual:   18, which is not comparable
-
-[  FAILED  ] FailingTest.LessThan
-[ RUN      ] FailingTest.ModifiedExpectation
-foo.go:112:
-Expected: has substring "ac"
-Actual:   17, which is not a string
-
-bar.go:117:
-Expected: 17
+[  FAILED  ] FailingTest.AssertEqFailure
+[ RUN      ] FailingTest.AssertNeFailure
+failing_test.go:110:
+Expected: not(19)
 Actual:   19
 
-[  FAILED  ] FailingTest.ModifiedExpectation
-[ RUN      ] FailingTest.PassingMethod
-[       OK ] FailingTest.PassingMethod
+[  FAILED  ] FailingTest.AssertNeFailure
+[ RUN      ] FailingTest.AssertLeFailure
+failing_test.go:115:
+Expected: less than or equal to 17
+Actual:   19
+
+[  FAILED  ] FailingTest.AssertLeFailure
+[ RUN      ] FailingTest.AssertLtFailure
+failing_test.go:120:
+Expected: less than 17
+Actual:   19
+
+[  FAILED  ] FailingTest.AssertLtFailure
+[ RUN      ] FailingTest.AssertGeFailure
+failing_test.go:125:
+Expected: greater than or equal to 19
+Actual:   17
+
+[  FAILED  ] FailingTest.AssertGeFailure
+[ RUN      ] FailingTest.AssertGtFailure
+failing_test.go:130:
+Expected: greater than 19
+Actual:   17
+
+[  FAILED  ] FailingTest.AssertGtFailure
+[ RUN      ] FailingTest.AssertTrueFailure
+failing_test.go:135:
+Expected: true
+Actual:   taco, which is not a bool
+
+[  FAILED  ] FailingTest.AssertTrueFailure
+[ RUN      ] FailingTest.AssertFalseFailure
+failing_test.go:140:
+Expected: false
+Actual:   taco, which is not a bool
+
+[  FAILED  ] FailingTest.AssertFalseFailure
 [----------] Finished with tests from FailingTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL

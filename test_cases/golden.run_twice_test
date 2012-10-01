@@ -1,12 +1,12 @@
 [----------] Running tests from RunTwiceTest
+[ RUN      ] RunTwiceTest.PassingMethod
+[       OK ] RunTwiceTest.PassingMethod
 [ RUN      ] RunTwiceTest.FailingMethod
 run_twice_test.go:46:
 Expected: 17.5
 Actual:   17
 
 [  FAILED  ] RunTwiceTest.FailingMethod
-[ RUN      ] RunTwiceTest.PassingMethod
-[       OK ] RunTwiceTest.PassingMethod
 [----------] Finished with tests from RunTwiceTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL

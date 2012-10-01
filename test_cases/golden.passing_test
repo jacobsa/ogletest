@@ -1,12 +1,12 @@
 [----------] Running tests from PassingTest
-[ RUN      ] PassingTest.AssertAliases
-[       OK ] PassingTest.AssertAliases
 [ RUN      ] PassingTest.EmptyTestMethod
 [       OK ] PassingTest.EmptyTestMethod
-[ RUN      ] PassingTest.ExpectAliases
-[       OK ] PassingTest.ExpectAliases
 [ RUN      ] PassingTest.SuccessfullMatches
 [       OK ] PassingTest.SuccessfullMatches
+[ RUN      ] PassingTest.ExpectAliases
+[       OK ] PassingTest.ExpectAliases
+[ RUN      ] PassingTest.AssertAliases
+[       OK ] PassingTest.AssertAliases
 [----------] Finished with tests from PassingTest
 PASS
 ok somepkg 1.234s
