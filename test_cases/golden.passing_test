@@ -7,6 +7,8 @@
 [       OK ] PassingTest.ExpectAliases
 [ RUN      ] PassingTest.AssertAliases
 [       OK ] PassingTest.AssertAliases
+[ RUN      ] PassingTest.SlowTest
+[       OK ] PassingTest.SlowTest (1234ms)
 [----------] Finished with tests from PassingTest
 PASS
 ok somepkg 1.234s

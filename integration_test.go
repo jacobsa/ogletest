@@ -139,6 +139,9 @@ func cleanOutput(o []byte, testPkg string) []byte {
 	timingRe3 := regexp.MustCompile(`ok.*somepkg\s*\d\.\d{2,}s`)
 	o = timingRe3.ReplaceAll(o, []byte("ok somepkg 1.234s"))
 
+	timingRe4 := regexp.MustCompile(`SlowTest \([0-9.]+ms\)`)
+	o = timingRe4.ReplaceAll(o, []byte("SlowTest (1234ms)"))
+
 	return o
 }
 

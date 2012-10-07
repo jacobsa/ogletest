@@ -25,6 +25,7 @@ import (
 	"runtime"
 	"sync"
 	"testing"
+	"time"
 )
 
 var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
@@ -148,7 +149,9 @@ func runTestsInternal(t *testing.T) {
 			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
 
 			// Run the test.
+			startTime := time.Now()
 			failures := runTest(suite, method)
+			runDuration := time.Since(startTime)
 
 			// Print any failures, and mark the test as having failed if there are any.
 			for _, record := range failures {
@@ -172,7 +175,18 @@ func runTestsInternal(t *testing.T) {
 				bannerMessage = "[  FAILED  ]"
 			}
 
-			fmt.Printf("%s %s.%s\n", bannerMessage, suiteName, method.Name)
+			// Print a summary of the time taken, if long enough.
+			var timeMessage string
+			if runDuration >= 25 * time.Millisecond {
+				timeMessage = fmt.Sprintf(" (%s)", runDuration.String())
+			}
+
+			fmt.Printf(
+				"%s %s.%s%s\n",
+				bannerMessage,
+				suiteName,
+				method.Name,
+				timeMessage)
 		}
 
 		// Run the TearDownTestSuite method, if any.

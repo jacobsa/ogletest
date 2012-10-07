@@ -19,6 +19,7 @@ import (
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
+	"time"
 )
 
 ////////////////////////////////////////////////////////////
@@ -80,4 +81,8 @@ func (t *PassingTest) AssertAliases() {
 
 	AssertTrue(true)
 	AssertFalse(false)
+}
+
+func (t *PassingTest) SlowTest() {
+	time.Sleep(37 * time.Millisecond)
 }
