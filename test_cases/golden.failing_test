@@ -75,7 +75,7 @@ foo bar: 112
 
 [  FAILED  ] FailingTest.ExpectWithUserErrorMessages
 [ RUN      ] FailingTest.AssertWithUserErrorMessages
-assert_that.go:34:
+failing_test.go:69:
 Expected: 19
 Actual:   17
 foo bar: 112
@@ -150,7 +150,7 @@ Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.ExpectationAliases
 [ RUN      ] FailingTest.AssertThatFailure
-assert_that.go:34:
+failing_test.go:100:
 Expected: 19
 Actual:   17
 
