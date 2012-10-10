@@ -16,6 +16,7 @@
 package oglematchers_test
 
 import (
+	"fmt"
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
@@ -60,6 +61,14 @@ type CompletelyFilteredTest struct {
 }
 
 func init() { RegisterTestSuite(&CompletelyFilteredTest{}) }
+
+func (t *CompletelyFilteredTest) SetUpTestSuite() {
+	fmt.Println("SetUpTestSuite run!")
+}
+
+func (t *CompletelyFilteredTest) TearDownTestSuite() {
+	fmt.Println("TearDownTestSuite run!")
+}
 
 func (t *PartiallyFilteredTest) SomePassingTest() {
 	ExpectThat(19, Equals(19))
