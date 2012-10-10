@@ -28,7 +28,7 @@ import (
 type FailingTest struct {
 }
 
-func init()                     { RegisterTestSuite(&FailingTest{}) }
+func init()                        { RegisterTestSuite(&FailingTest{}) }
 func TestFailingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////

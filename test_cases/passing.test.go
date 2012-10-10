@@ -29,7 +29,7 @@ import (
 type PassingTest struct {
 }
 
-func init()                     { RegisterTestSuite(&PassingTest{}) }
+func init()                        { RegisterTestSuite(&PassingTest{}) }
 func TestPassingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////

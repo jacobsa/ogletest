@@ -7,10 +7,10 @@
 package mock_image
 
 import (
-	color "image/color"
 	fmt "fmt"
-	image "image"
 	oglemock "github.com/jacobsa/oglemock"
+	image "image"
+	color "image/color"
 	runtime "runtime"
 	unsafe "unsafe"
 )
@@ -21,16 +21,16 @@ type MockImage interface {
 }
 
 type mockImage struct {
-	controller	oglemock.Controller
-	description	string
+	controller  oglemock.Controller
+	description string
 }
 
 func NewMockImage(
 	c oglemock.Controller,
 	desc string) MockImage {
 	return &mockImage{
-		controller:	c,
-		description:	desc,
+		controller:  c,
+		description: desc,
 	}
 }
 

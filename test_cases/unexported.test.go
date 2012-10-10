@@ -28,7 +28,7 @@ import (
 type UnexportedTest struct {
 }
 
-func init()                     { RegisterTestSuite(&UnexportedTest{}) }
+func init()                           { RegisterTestSuite(&UnexportedTest{}) }
 func TestUnexportedTest(t *testing.T) { RunTests(t) }
 
 func (t *UnexportedTest) someUnexportedMethod() {

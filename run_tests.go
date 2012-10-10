@@ -144,7 +144,6 @@ func runTestsInternal(t *testing.T) {
 				continue
 			}
 
-
 			// Print a banner for the start of this test.
 			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
 
@@ -177,7 +176,7 @@ func runTestsInternal(t *testing.T) {
 
 			// Print a summary of the time taken, if long enough.
 			var timeMessage string
-			if runDuration >= 25 * time.Millisecond {
+			if runDuration >= 25*time.Millisecond {
 				timeMessage = fmt.Sprintf(" (%s)", runDuration.String())
 			}
 

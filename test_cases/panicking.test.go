@@ -28,7 +28,7 @@ import (
 type PanickingTest struct {
 }
 
-func init()                     { RegisterTestSuite(&PanickingTest{}) }
+func init()                          { RegisterTestSuite(&PanickingTest{}) }
 func TestPanickingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////

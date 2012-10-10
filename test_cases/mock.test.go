@@ -17,8 +17,8 @@ package oglematchers_test
 
 import (
 	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
 	"github.com/jacobsa/oglemock"
+	. "github.com/jacobsa/ogletest"
 	"github.com/jacobsa/ogletest/test_cases/mock_image"
 	"image/color"
 	"testing"
@@ -30,7 +30,7 @@ import (
 
 type MockTest struct {
 	controller oglemock.Controller
-	image mock_image.MockImage
+	image      mock_image.MockImage
 }
 
 func init()                     { RegisterTestSuite(&MockTest{}) }
@@ -58,7 +58,7 @@ func (t *MockTest) MockExpectationNotSatisfied() {
 }
 
 func (t *MockTest) ExpectCallForUnknownMethod() {
-	ExpectCall(t.image, "FooBar")(11);
+	ExpectCall(t.image, "FooBar")(11)
 }
 
 func (t *MockTest) UnexpectedCall() {

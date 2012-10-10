@@ -34,16 +34,14 @@ type MethodsTest struct {
 func init() { RegisterTestSuite(&MethodsTest{}) }
 
 type OneMethodType int
+
 func (x OneMethodType) Foo() {}
 
 type MultipleMethodsType int
+
 func (x MultipleMethodsType) Foo() {}
 func (x MultipleMethodsType) Bar() {}
 func (x MultipleMethodsType) Baz() {}
-
-type SingleLineType int
-func (x SingleLineType) Foo() {}; func (x SingleLineType) Bar() {}
-func (x SingleLineType) Baz() {}; func (x SingleLineType) Qux() {}
 
 type methodNameMatcher struct {
 	expected string
@@ -103,26 +101,4 @@ func (t *MethodsTest) MultipleMethods() {
 	ExpectEq("Foo", methods[0].Name)
 	ExpectEq("Bar", methods[1].Name)
 	ExpectEq("Baz", methods[2].Name)
-}
-
-func (t *MethodsTest) MultipleMethodsOnSingleLine() {
-	methods := getMethodsInSourceOrder(reflect.TypeOf(SingleLineType(17)))
-	AssertThat(methods, ElementsAre(Any(), Any(), Any(), Any()))
-
-	// TODO(jacobsa): Delete this block of code when the following issue is
-	// resolved:
-	//     http://code.google.com/p/go/issues/detail?id=4174
-	ExpectThat(methods, Contains(NameIs("Foo")))
-	ExpectThat(methods, Contains(NameIs("Bar")))
-	ExpectThat(methods, Contains(NameIs("Baz")))
-	ExpectThat(methods, Contains(NameIs("Qux")))
-	return
-
-	ExpectThat(methods[0].Name, AnyOf("Foo", "Bar"))
-	ExpectThat(methods[1].Name, AnyOf("Foo", "Bar"))
-	ExpectNe(methods[0].Name, methods[1].Name)
-
-	ExpectThat(methods[2].Name, AnyOf("Baz", "Qux"))
-	ExpectThat(methods[3].Name, AnyOf("Baz", "Qux"))
-	ExpectNe(methods[2].Name, methods[3].Name)
 }

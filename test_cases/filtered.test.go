@@ -28,7 +28,7 @@ import (
 type FilteredTest struct {
 }
 
-func init()                     { RegisterTestSuite(&FilteredTest{}) }
+func init()                         { RegisterTestSuite(&FilteredTest{}) }
 func TestFilteredTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////

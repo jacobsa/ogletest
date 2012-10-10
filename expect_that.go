@@ -55,7 +55,7 @@ func ExpectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) ExpectationResult {
-  res := &expectationResultImpl{}
+	res := &expectationResultImpl{}
 
 	// Get information about the call site.
 	_, file, lineNumber, ok := runtime.Caller(1)

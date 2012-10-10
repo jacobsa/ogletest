@@ -35,7 +35,7 @@ type TestInfo struct {
 	mutex sync.RWMutex
 
 	// A set of failure records that the test has produced.
-	failureRecords []*failureRecord  // Protected by mutex
+	failureRecords []*failureRecord // Protected by mutex
 }
 
 // currentlyRunningTest is the state for the currently running test, if any.
@@ -81,9 +81,9 @@ func (r *testInfoErrorReporter) ReportError(
 	r.testInfo.mutex.Lock()
 	defer r.testInfo.mutex.Unlock()
 
-  record := &failureRecord{
-		FileName: fileName,
-		LineNumber: lineNumber,
+	record := &failureRecord{
+		FileName:       fileName,
+		LineNumber:     lineNumber,
 		GeneratedError: err.Error(),
 	}
 

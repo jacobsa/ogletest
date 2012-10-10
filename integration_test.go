@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"go/build"
 	"io/ioutil"
-	"path"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"strings"
 	"syscall"
@@ -31,6 +31,7 @@ import (
 )
 
 const ogletestPkg = "github.com/jacobsa/ogletest"
+
 var dumpNew = flag.Bool("dump_new", false, "Dump new golden files.")
 var objDir string
 
@@ -49,7 +50,7 @@ func installLocalPackages() error {
 		"install",
 		ogletestPkg,
 		"github.com/jacobsa/oglemock",
-	  "github.com/jacobsa/ogletest/test_cases/mock_image")
+		"github.com/jacobsa/ogletest/test_cases/mock_image")
 
 	output, err := cmd.CombinedOutput()
 
@@ -90,7 +91,7 @@ func getCaseNames() ([]string, error) {
 		}
 
 		// Store the name minus the extension.
-		result[resultLen] = name[:len(name) - 8]
+		result[resultLen] = name[:len(name)-8]
 		resultLen++
 	}
 
@@ -150,14 +151,18 @@ func cleanOutput(o []byte, testPkg string) []byte {
 func createTempPackageDir(caseName string) (dir, pkg string) {
 	// Figure out where the local source code for ogletest is.
 	buildPkg, err := build.Import(ogletestPkg, "", build.FindOnly)
-	if err != nil { panic("Finding ogletest tree: " + err.Error()) }
+	if err != nil {
+		panic("Finding ogletest tree: " + err.Error())
+	}
 
 	// Create a temporary directory underneath this.
 	ogletestPkgDir := buildPkg.Dir
 	prefix := fmt.Sprintf("tmp-%s-", caseName)
 
 	dir, err = ioutil.TempDir(ogletestPkgDir, prefix)
-	if err != nil { panic("ioutil.TempDir: " + err.Error()) }
+	if err != nil {
+		panic("ioutil.TempDir: " + err.Error())
+	}
 
 	pkg = path.Join("github.com/jacobsa/ogletest", dir[len(ogletestPkgDir):])
 	return
@@ -168,12 +173,12 @@ func createTempPackageDir(caseName string) (dir, pkg string) {
 func runTestCase(name string) ([]byte, int, error) {
 	// Create a temporary directory for the test files.
 	testDir, testPkg := createTempPackageDir(name)
-	 defer os.RemoveAll(testDir)
+	defer os.RemoveAll(testDir)
 
 	// Create the test source file.
 	sourceFile := name + ".test.go"
 	testContents := readFileOrDie(path.Join("test_cases", sourceFile))
-	writeContentsToFileOrDie(testContents, path.Join(testDir, name + "_test.go"))
+	writeContentsToFileOrDie(testContents, path.Join(testDir, name+"_test.go"))
 
 	// Invoke 'go test'. Use the package directory as working dir instead of
 	// giving the package name as an argument so that 'go test' prints passing
@@ -207,7 +212,7 @@ func runTestCase(name string) ([]byte, int, error) {
 // against the golden file for that case. If requested by the user, it rewrites
 // the golden file on failure.
 func checkAgainstGoldenFile(caseName string, output []byte) bool {
-	goldenFile := path.Join("test_cases", "golden." + caseName + "_test")
+	goldenFile := path.Join("test_cases", "golden."+caseName+"_test")
 	goldenContents := readFileOrDie(goldenFile)
 
 	result := string(output) == string(goldenContents)

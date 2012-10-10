@@ -28,11 +28,11 @@ import (
 type RunTwiceTest struct {
 }
 
-func init()                     { RegisterTestSuite(&RunTwiceTest{}) }
+func init() { RegisterTestSuite(&RunTwiceTest{}) }
 
 // Set up two helpers that call RunTests. The test should still only be run
 // once.
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestOgletest(t *testing.T)  { RunTests(t) }
 func TestOgletest2(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////
