@@ -16,41 +16,64 @@
 package oglematchers_test
 
 import (
+	"fmt"
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
 )
 
+func TestFiltered(t *testing.T) { RunTests(t) }
+
 ////////////////////////////////////////////////////////////
-// Helpers
+// Partially filtered out
 ////////////////////////////////////////////////////////////
 
-type FilteredTest struct {
+type PartiallyFilteredTest struct {
 }
 
-func init()                         { RegisterTestSuite(&FilteredTest{}) }
-func TestFilteredTest(t *testing.T) { RunTests(t) }
+func init() { RegisterTestSuite(&PartiallyFilteredTest{}) }
 
-////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////
-
-func (t *FilteredTest) PassingTestFoo() {
+func (t *PartiallyFilteredTest) PassingTestFoo() {
 	ExpectThat(19, Equals(19))
 }
 
-func (t *FilteredTest) PassingTestBar() {
+func (t *PartiallyFilteredTest) PassingTestBar() {
 	ExpectThat(17, Equals(17))
 }
 
-func (t *FilteredTest) FilteredTestFoo() {
+func (t *PartiallyFilteredTest) PartiallyFilteredTestFoo() {
 	ExpectThat(18, LessThan(17))
 }
 
-func (t *FilteredTest) FilteredTestBar() {
+func (t *PartiallyFilteredTest) PartiallyFilteredTestBar() {
 	ExpectThat("taco", HasSubstr("blah"))
 }
 
-func (t *FilteredTest) FilteredTestBaz() {
+func (t *PartiallyFilteredTest) PartiallyFilteredTestBaz() {
 	ExpectThat(18, LessThan(17))
+}
+
+////////////////////////////////////////////////////////////
+// Completely filtered out
+////////////////////////////////////////////////////////////
+
+type CompletelyFilteredTest struct {
+}
+
+func init() { RegisterTestSuite(&CompletelyFilteredTest{}) }
+
+func (t *CompletelyFilteredTest) SetUpTestSuite() {
+	fmt.Println("SetUpTestSuite run!")
+}
+
+func (t *CompletelyFilteredTest) TearDownTestSuite() {
+	fmt.Println("TearDownTestSuite run!")
+}
+
+func (t *PartiallyFilteredTest) SomePassingTest() {
+	ExpectThat(19, Equals(19))
+}
+
+func (t *PartiallyFilteredTest) SomeFailingTest() {
+	ExpectThat(19, Equals(17))
 }

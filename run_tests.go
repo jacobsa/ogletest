@@ -116,10 +116,20 @@ func RunTests(t *testing.T) {
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
 // sync.Once.
 func runTestsInternal(t *testing.T) {
+	// Process each registered suite.
 	for _, suite := range testSuites {
 		val := reflect.ValueOf(suite)
 		typ := val.Type()
 		suiteName := typ.Elem().Name()
+
+		// Grab methods for the suite, filtering them to just the ones that we
+		// don't need to skip.
+		testMethods := filterMethods(suiteName, getMethodsInSourceOrder(typ))
+
+		// Is there anything left to do?
+		if len(testMethods) == 0 {
+			continue
+		}
 
 		fmt.Printf("[----------] Running tests from %s\n", suiteName)
 
@@ -127,23 +137,7 @@ func runTestsInternal(t *testing.T) {
 		runMethodIfExists(val, "SetUpTestSuite")
 
 		// Run each method.
-		for _, method := range getMethodsInSourceOrder(typ) {
-			// Skip setup/teardown and unexported methods.
-			if isSpecialMethod(method.Name) || !isExportedMethod(method.Name) {
-				continue
-			}
-
-			// Should we skip this method?
-			fullName := fmt.Sprintf("%s.%s", suiteName, method.Name)
-			matched, err := regexp.MatchString(*testFilter, fullName)
-			if err != nil {
-				panic("Invalid value for --ogletest.run: " + err.Error())
-			}
-
-			if !matched {
-				continue
-			}
-
+		for _, method := range testMethods {
 			// Print a banner for the start of this test.
 			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
 
@@ -255,6 +249,30 @@ func formatPanicStack() string {
 	}
 
 	return buf.String()
+}
+
+func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method) {
+	for _, m := range in {
+		// Skip set up, tear down, and unexported methods.
+		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
+			continue
+		}
+
+		// Has the user told us to skip this method?
+		fullName := fmt.Sprintf("%s.%s", suiteName, m.Name)
+		matched, err := regexp.MatchString(*testFilter, fullName)
+		if err != nil {
+			panic("Invalid value for --ogletest.run: " + err.Error())
+		}
+
+		if !matched {
+			continue
+		}
+
+		out = append(out, m)
+	}
+
+	return
 }
 
 func isSpecialMethod(name string) bool {
