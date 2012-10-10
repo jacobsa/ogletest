@@ -14,8 +14,6 @@ Actual:   18
 
 [  FAILED  ] PartiallyFilteredTest.PartiallyFilteredTestBaz
 [----------] Finished with tests from PartiallyFilteredTest
-[----------] Running tests from CompletelyFilteredTest
-[----------] Finished with tests from CompletelyFilteredTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
 exit status 1
