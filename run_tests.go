@@ -50,9 +50,10 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		currentlyRunningTest = nil
 	}()
 
-	// Create a receiver, and call it.
+	// Create a receiver.
 	suiteInstance := reflect.New(suiteType.Elem())
 
+	// Run the SetUp method, paying attention to whether it panics.
 	runWithProtection(
 		func () {
 			runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)

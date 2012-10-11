@@ -233,7 +233,6 @@ Actual:   true
 [----------] Finished with tests from ExpectFailDuringSetUpTest
 [----------] Running tests from AssertFailDuringSetUpTest
 [ RUN      ] AssertFailDuringSetUpTest.PassingMethod
-Method running.
 TearDown running.
 failing_test.go:177:
 Expected: false
