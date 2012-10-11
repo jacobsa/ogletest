@@ -251,6 +251,16 @@ Actual:   true
 
 [  FAILED  ] ExpectFailDuringTearDownTest.PassingMethod
 [----------] Finished with tests from ExpectFailDuringTearDownTest
+[----------] Running tests from AssertFailDuringTearDownTest
+[ RUN      ] AssertFailDuringTearDownTest.PassingMethod
+SetUp running.
+Method running.
+failing_test.go:223:
+Expected: false
+Actual:   true
+
+[  FAILED  ] AssertFailDuringTearDownTest.PassingMethod
+[----------] Finished with tests from AssertFailDuringTearDownTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
 exit status 1
