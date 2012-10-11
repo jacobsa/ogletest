@@ -16,6 +16,7 @@
 package oglematchers_test
 
 import (
+	"fmt"
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
@@ -30,6 +31,10 @@ type PanickingTest struct {
 
 func init()                          { RegisterTestSuite(&PanickingTest{}) }
 func TestPanickingTest(t *testing.T) { RunTests(t) }
+
+func (t *PanickingTest) TearDown() {
+	fmt.Println("TearDown running.")
+}
 
 ////////////////////////////////////////////////////////////
 // Tests

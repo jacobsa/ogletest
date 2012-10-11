@@ -1,6 +1,6 @@
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
-panicking_test.go:39:
+panicking_test.go:44:
 panic: foobar
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest
@@ -31,6 +31,7 @@ runtime.goexit
 
 [  FAILED  ] PanickingTest.PanickingTest
 [ RUN      ] PanickingTest.ZzzSomeOtherTest
+TearDown running.
 [       OK ] PanickingTest.ZzzSomeOtherTest
 [----------] Finished with tests from PanickingTest
 --- FAIL: somepkg (1.23 seconds)

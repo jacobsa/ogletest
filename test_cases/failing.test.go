@@ -16,6 +16,7 @@
 package oglematchers_test
 
 import (
+	"fmt"
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 	"testing"
@@ -30,6 +31,10 @@ type FailingTest struct {
 
 func init()                        { RegisterTestSuite(&FailingTest{}) }
 func TestFailingTest(t *testing.T) { RunTests(t) }
+
+func (t *FailingTest) TearDown() {
+	fmt.Println("TearDown running.")
+}
 
 ////////////////////////////////////////////////////////////
 // Tests
