@@ -142,3 +142,23 @@ func (t *FailingTest) AssertFalseFailure() {
 	AssertFalse("taco")
 	panic("Shouldn't get here.")
 }
+
+////////////////////////////////////////////////////////////////////////
+// Expectation failure during SetUp
+////////////////////////////////////////////////////////////////////////
+
+type ExpectFailDuringSetUpTest struct {
+}
+
+func init() { RegisterTestSuite(&ExpectFailDuringSetUpTest{}) }
+
+func (t *ExpectFailDuringSetUpTest) SetUp(i *TestInfo) {
+	ExpectFalse(true)
+}
+
+func (t *ExpectFailDuringSetUpTest) TearDown() {
+	fmt.Println("TearDown running.")
+}
+
+func (t *ExpectFailDuringSetUpTest) PassingMethod() {
+}
