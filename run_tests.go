@@ -50,46 +50,32 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		currentlyRunningTest = nil
 	}()
 
-	defer func() {
-		currentlyRunningTest.mutex.Lock()
-		defer currentlyRunningTest.mutex.Unlock()
-
-		// Return the failures the test recorded, whether it panics or not. If it
-		// panics (and the panic is not due to an AssertThat failure), additionally
-		// return a failure for the panic.
-		failures = currentlyRunningTest.failureRecords
-		if r := recover(); r != nil && !isAssertThatError(r) {
-			// The stack looks like this:
-			//
-			//     <this deferred function>
-			//     panic(r)
-			//     <function that called panic>
-			//
-			_, fileName, lineNumber, ok := runtime.Caller(2)
-			var panicRecord failureRecord
-			if ok {
-				panicRecord.FileName = path.Base(fileName)
-				panicRecord.LineNumber = lineNumber
-			}
-
-			panicRecord.GeneratedError = fmt.Sprintf(
-				"panic: %v\n\n%s", r, formatPanicStack())
-			failures = append(failures, &panicRecord)
-		}
-	}()
-
 	// Create a receiver, and call it.
 	suiteInstance := reflect.New(suiteType.Elem())
-	runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
-	runMethodIfExists(suiteInstance, method.Name)
-	runMethodIfExists(suiteInstance, "TearDown")
+
+	runWithProtection(
+		func () {
+			runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
+		},
+	)
+
+	runWithProtection(
+		func () {
+			runMethodIfExists(suiteInstance, method.Name)
+		},
+	)
+
+	runWithProtection(
+		func () {
+			runMethodIfExists(suiteInstance, "TearDown")
+		},
+	)
 
 	// Tell the mock controller for the tests to report any errors it's sitting
 	// on.
 	currentlyRunningTest.MockController.Finish()
 
-	// The return value is set in the deferred function above.
-	return
+	return currentlyRunningTest.failureRecords
 }
 
 // RunTests runs the test suites registered with ogletest, communicating
@@ -187,6 +173,52 @@ func runTestsInternal(t *testing.T) {
 
 		fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
 	}
+}
+
+// Run the supplied function, catching panics (including AssertThat errors) and
+// reporting them to the currently-running test as appropriate. Return true iff
+// the function panicked.
+func runWithProtection(f func()) (panicked bool) {
+	defer func() {
+		// If the test didn't panic, we're done.
+		r := recover()
+		if r == nil {
+			return
+		}
+
+		panicked = true
+
+		// We modify the currently running test below.
+		currentlyRunningTest.mutex.Lock()
+		defer currentlyRunningTest.mutex.Unlock()
+
+		// If the function panicked (and the panic was not due to an AssertThat
+		// failure), add a failure for the panic.
+		if !isAssertThatError(r) {
+			// The stack looks like this:
+			//
+			//     <this deferred function>
+			//     panic(r)
+			//     <function that called panic>
+			//
+			_, fileName, lineNumber, ok := runtime.Caller(2)
+			var panicRecord failureRecord
+			if ok {
+				panicRecord.FileName = path.Base(fileName)
+				panicRecord.LineNumber = lineNumber
+			}
+
+			panicRecord.GeneratedError = fmt.Sprintf(
+				"panic: %v\n\n%s", r, formatPanicStack())
+
+			currentlyRunningTest.failureRecords = append(
+				currentlyRunningTest.failureRecords,
+				&panicRecord)
+		}
+	}()
+
+	f()
+	return
 }
 
 func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {

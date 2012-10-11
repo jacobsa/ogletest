@@ -80,6 +80,7 @@ foo bar: 112
 
 [  FAILED  ] FailingTest.ExpectWithUserErrorMessages
 [ RUN      ] FailingTest.AssertWithUserErrorMessages
+TearDown running.
 failing_test.go:74:
 Expected: 19
 Actual:   17
@@ -157,54 +158,63 @@ Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.ExpectationAliases
 [ RUN      ] FailingTest.AssertThatFailure
+TearDown running.
 failing_test.go:105:
 Expected: 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertThatFailure
 [ RUN      ] FailingTest.AssertEqFailure
+TearDown running.
 failing_test.go:110:
 Expected: 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertEqFailure
 [ RUN      ] FailingTest.AssertNeFailure
+TearDown running.
 failing_test.go:115:
 Expected: not(19)
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertNeFailure
 [ RUN      ] FailingTest.AssertLeFailure
+TearDown running.
 failing_test.go:120:
 Expected: less than or equal to 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLeFailure
 [ RUN      ] FailingTest.AssertLtFailure
+TearDown running.
 failing_test.go:125:
 Expected: less than 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLtFailure
 [ RUN      ] FailingTest.AssertGeFailure
+TearDown running.
 failing_test.go:130:
 Expected: greater than or equal to 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGeFailure
 [ RUN      ] FailingTest.AssertGtFailure
+TearDown running.
 failing_test.go:135:
 Expected: greater than 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGtFailure
 [ RUN      ] FailingTest.AssertTrueFailure
+TearDown running.
 failing_test.go:140:
 Expected: true
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.AssertTrueFailure
 [ RUN      ] FailingTest.AssertFalseFailure
+TearDown running.
 failing_test.go:145:
 Expected: false
 Actual:   taco, which is not a bool

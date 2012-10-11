@@ -1,8 +1,17 @@
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.PanickingTest
+TearDown running.
 panicking_test.go:44:
 panic: foobar
 
+runtime.Caller
+	some_file.txt:0
+github.com/jacobsa/ogletest.formatPanicStack
+	some_file.txt:0
+github.com/jacobsa/ogletest._func_006
+	some_file.txt:0
+runtime.panic
+	some_file.txt:0
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest
 	some_file.txt:0
 reflect.Value.call
@@ -11,11 +20,15 @@ reflect.Value.Call
 	some_file.txt:0
 github.com/jacobsa/ogletest.runMethodIfExists
 	some_file.txt:0
+github.com/jacobsa/ogletest._func_003
+	some_file.txt:0
+github.com/jacobsa/ogletest.runWithProtection
+	some_file.txt:0
 github.com/jacobsa/ogletest.runTest
 	some_file.txt:0
 github.com/jacobsa/ogletest.runTestsInternal
 	some_file.txt:0
-github.com/jacobsa/ogletest._func_003
+github.com/jacobsa/ogletest._func_005
 	some_file.txt:0
 sync.(*Once).Do
 	some_file.txt:0
