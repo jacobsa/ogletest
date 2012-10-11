@@ -223,6 +223,7 @@ Actual:   taco, which is not a bool
 [----------] Finished with tests from FailingTest
 [----------] Running tests from ExpectFailDuringSetUpTest
 [ RUN      ] ExpectFailDuringSetUpTest.PassingMethod
+Method running.
 TearDown running.
 failing_test.go:156:
 Expected: false
@@ -230,6 +231,16 @@ Actual:   true
 
 [  FAILED  ] ExpectFailDuringSetUpTest.PassingMethod
 [----------] Finished with tests from ExpectFailDuringSetUpTest
+[----------] Running tests from AssertFailDuringSetUpTest
+[ RUN      ] AssertFailDuringSetUpTest.PassingMethod
+Method running.
+TearDown running.
+failing_test.go:177:
+Expected: false
+Actual:   true
+
+[  FAILED  ] AssertFailDuringSetUpTest.PassingMethod
+[----------] Finished with tests from AssertFailDuringSetUpTest
 --- FAIL: somepkg (1.23 seconds)
 FAIL
 exit status 1

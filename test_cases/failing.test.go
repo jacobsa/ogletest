@@ -161,4 +161,26 @@ func (t *ExpectFailDuringSetUpTest) TearDown() {
 }
 
 func (t *ExpectFailDuringSetUpTest) PassingMethod() {
+	fmt.Println("Method running.")
+}
+
+////////////////////////////////////////////////////////////////////////
+// Assertion failure during SetUp
+////////////////////////////////////////////////////////////////////////
+
+type AssertFailDuringSetUpTest struct {
+}
+
+func init() { RegisterTestSuite(&AssertFailDuringSetUpTest{}) }
+
+func (t *AssertFailDuringSetUpTest) SetUp(i *TestInfo) {
+	AssertFalse(true)
+}
+
+func (t *AssertFailDuringSetUpTest) TearDown() {
+	fmt.Println("TearDown running.")
+}
+
+func (t *AssertFailDuringSetUpTest) PassingMethod() {
+	fmt.Println("Method running.")
 }
