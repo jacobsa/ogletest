@@ -282,6 +282,11 @@ func formatPanicStack() string {
 			continue
 		}
 
+		// Stop if we've gotten as far as the test runner code.
+		if funcName == "github.com/jacobsa/ogletest.runMethodIfExists" {
+			break
+		}
+
 		// Add an entry for this frame.
 		fmt.Fprintf(buf, "%s\n\t%s:%d\n", funcName, file, line)
 	}

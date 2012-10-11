@@ -10,28 +10,6 @@ reflect.Value.call
 	some_file.txt:0
 reflect.Value.Call
 	some_file.txt:0
-github.com/jacobsa/ogletest.runMethodIfExists
-	some_file.txt:0
-github.com/jacobsa/ogletest._func_003
-	some_file.txt:0
-github.com/jacobsa/ogletest.runWithProtection
-	some_file.txt:0
-github.com/jacobsa/ogletest.runTest
-	some_file.txt:0
-github.com/jacobsa/ogletest.runTestsInternal
-	some_file.txt:0
-github.com/jacobsa/ogletest._func_005
-	some_file.txt:0
-sync.(*Once).Do
-	some_file.txt:0
-github.com/jacobsa/ogletest.RunTests
-	some_file.txt:0
-github.com/jacobsa/ogletest/somepkg_test.TestPanickingTest
-	some_file.txt:0
-testing.tRunner
-	some_file.txt:0
-runtime.goexit
-	some_file.txt:0
 
 
 [  FAILED  ] PanickingTest.PanickingTest
