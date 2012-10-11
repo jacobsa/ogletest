@@ -4,14 +4,6 @@ TearDown running.
 panicking_test.go:44:
 panic: foobar
 
-runtime.Caller
-	some_file.txt:0
-github.com/jacobsa/ogletest.formatPanicStack
-	some_file.txt:0
-github.com/jacobsa/ogletest._func_006
-	some_file.txt:0
-runtime.panic
-	some_file.txt:0
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest
 	some_file.txt:0
 reflect.Value.call

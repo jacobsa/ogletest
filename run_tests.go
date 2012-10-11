@@ -258,25 +258,31 @@ func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {
 func formatPanicStack() string {
 	buf := new(bytes.Buffer)
 
-	// By the time we get here, the stack looks like this:
-	//
-	//     <this function>
-	//     <deferred recover function>
-	//     panic(r)
-	//     <function that called panic>
-	//
-	// We want to skip those first three frames.
-	for i := 3; ; i++ {
+	// Walk the stack from top to bottom.
+	panicPassed := false
+	for i := 0; ; i++ {
 		pc, file, line, ok := runtime.Caller(i)
 		if !ok {
 			break
 		}
 
+		// Choose a function name to display.
 		funcName := "(unknown)"
 		if f := runtime.FuncForPC(pc); f != nil {
 			funcName = f.Name()
 		}
 
+		// Avoid stack frames at panic and above.
+		if funcName == "runtime.panic" {
+			panicPassed = true
+			continue
+		}
+
+		if !panicPassed {
+			continue
+		}
+
+		// Add an entry for this frame.
 		fmt.Fprintf(buf, "%s\n\t%s:%d\n", funcName, file, line)
 	}
 
