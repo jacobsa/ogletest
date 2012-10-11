@@ -54,18 +54,23 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	suiteInstance := reflect.New(suiteType.Elem())
 
 	// Run the SetUp method, paying attention to whether it panics.
-	runWithProtection(
+	setUpPanicked := runWithProtection(
 		func () {
 			runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
 		},
 	)
 
-	runWithProtection(
-		func () {
-			runMethodIfExists(suiteInstance, method.Name)
-		},
-	)
+	// Run the test method itself, but only if the SetUp method didn't panic.
+	// (This includes AssertThat errors.)
+	if !setUpPanicked {
+		runWithProtection(
+			func () {
+				runMethodIfExists(suiteInstance, method.Name)
+			},
+		)
+	}
 
+	// Run the TearDown method unconditionally.
 	runWithProtection(
 		func () {
 			runMethodIfExists(suiteInstance, "TearDown")
