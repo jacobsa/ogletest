@@ -43,8 +43,12 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	suiteValue := reflect.ValueOf(suite)
 	suiteType := suiteValue.Type()
 
-	// Set up a clean slate for this test.
+	// Set up a clean slate for this test. Make sure to reset it after everything
+	// below is finished, so we don't accidentally use it elsewhere.
 	currentlyRunningTest = newTestInfo()
+	defer func() {
+		currentlyRunningTest = nil
+	}()
 
 	defer func() {
 		currentlyRunningTest.mutex.Lock()
@@ -72,10 +76,6 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 				"panic: %v\n\n%s", r, formatPanicStack())
 			failures = append(failures, &panicRecord)
 		}
-
-		// Reset the global CurrentTest state, so we don't accidentally use it
-		// elsewhere.
-		currentlyRunningTest = nil
 	}()
 
 	// Create a receiver, and call it.

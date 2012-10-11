@@ -15,7 +15,7 @@ github.com/jacobsa/ogletest.runTest
 	some_file.txt:0
 github.com/jacobsa/ogletest.runTestsInternal
 	some_file.txt:0
-github.com/jacobsa/ogletest._func_002
+github.com/jacobsa/ogletest._func_003
 	some_file.txt:0
 sync.(*Once).Do
 	some_file.txt:0
