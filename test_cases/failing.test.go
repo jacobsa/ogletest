@@ -22,23 +22,20 @@ import (
 	"testing"
 )
 
+func TestFailingTest(t *testing.T) { RunTests(t) }
+
 ////////////////////////////////////////////////////////////////////////
-// Helpers
+// Usual failures
 ////////////////////////////////////////////////////////////////////////
 
 type FailingTest struct {
 }
 
-func init()                        { RegisterTestSuite(&FailingTest{}) }
-func TestFailingTest(t *testing.T) { RunTests(t) }
+func init() { RegisterTestSuite(&FailingTest{}) }
 
 func (t *FailingTest) TearDown() {
 	fmt.Println("TearDown running.")
 }
-
-////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////
 
 func (t *FailingTest) PassingMethod() {
 }
