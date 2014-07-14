@@ -7,7 +7,7 @@ panic: foobar
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).PanickingTest
 	some_file.txt:0
 runtime.call16
-	/usr/local/go/src/pkg/runtime/asm_amd64.s:338
+	/usr/local/go/src/pkg/runtime/asm_amd64.s:360
 reflect.Value.call
 	some_file.txt:0
 reflect.Value.Call
