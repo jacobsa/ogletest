@@ -188,29 +188,46 @@ func isPanic(pc uintptr) bool {
 		return false
 	}
 
-	return f.Name() == "runtime.gopanic"
+	return f.Name() == "runtime.gopanic" || f.Name() == "runtime.sigpanic"
 }
 
-// Attempt to find the file base name and line number for the source of a
-// panic, on the panicking stack. Return a human-readable sentinel if
-// unsuccessful.
-func findPanic() (string, int) {
-	found := false
+// Find the deepest stack frame containing something that appears to be a
+// panic. Return the 'skip' value that a caller to this function would need
+// to supply to runtime.Caller for that frame, or a negative number if not found.
+func findPanic() int {
+	localSkip := -1
 	for i := 0; ; i++ {
-		pc, file, line, ok := runtime.Caller(i)
+		// Stop if we've passed the base of the stack.
+		pc, _, _, ok := runtime.Caller(i)
 		if !ok {
-			return "(unknown)", 0
+			break
 		}
 
-		if found {
-			return path.Base(file), line
-		}
-
+		// Is this a panic?
 		if isPanic(pc) {
-			found = true
-			continue
+			localSkip = i
 		}
 	}
+
+	return localSkip - 1
+}
+
+// Attempt to find the file base name and line number for the ultimate source
+// of a panic, on the panicking stack. Return a human-readable sentinel if
+// unsuccessful.
+func findPanicFileLine() (string, int) {
+	panicSkip := findPanic()
+	if panicSkip < 0 {
+		return "(unknown)", 0
+	}
+
+	// Find the trigger of the panic.
+	_, file, line, ok := runtime.Caller(panicSkip + 1)
+	if !ok {
+		return "(unknown)", 0
+	}
+
+	return path.Base(file), line
 }
 
 // Run the supplied function, catching panics (including AssertThat errors) and
@@ -234,7 +251,7 @@ func runWithProtection(f func()) (panicked bool) {
 		// failure), add a failure for the panic.
 		if !isAssertThatError(r) {
 			var panicRecord failureRecord
-			panicRecord.FileName, panicRecord.LineNumber = findPanic()
+			panicRecord.FileName, panicRecord.LineNumber = findPanicFileLine()
 			panicRecord.GeneratedError = fmt.Sprintf(
 				"panic: %v\n\n%s", r, formatPanicStack())
 
@@ -285,9 +302,14 @@ func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {
 func formatPanicStack() string {
 	buf := new(bytes.Buffer)
 
-	// Walk the stack from top to bottom.
-	panicPassed := false
-	for i := 0; ; i++ {
+	// Find the panic. If successful, we'll skip to below it. Otherwise, we'll
+	// format everything.
+	var initialSkip int
+	if panicSkip := findPanic(); panicSkip >= 0 {
+		initialSkip = panicSkip + 1
+	}
+
+	for i := initialSkip; ; i++ {
 		pc, file, line, ok := runtime.Caller(i)
 		if !ok {
 			break
@@ -297,16 +319,6 @@ func formatPanicStack() string {
 		funcName := "(unknown)"
 		if f := runtime.FuncForPC(pc); f != nil {
 			funcName = f.Name()
-		}
-
-		// Avoid stack frames at panic and above.
-		if isPanic(pc) {
-			panicPassed = true
-			continue
-		}
-
-		if !panicPassed {
-			continue
 		}
 
 		// Stop if we've gotten as far as the test runner code.

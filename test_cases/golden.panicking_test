@@ -17,13 +17,9 @@ reflect.Value.Call
 [  FAILED  ] PanickingTest.ExplicitPanic
 [ RUN      ] PanickingTest.NilPointerDerefence
 TearDown running.
-panic.go:42:
+panicking_test.go:51:
 panic: runtime error: invalid memory address or nil pointer dereference
 
-runtime.panicmem
-	some_file.txt:0
-runtime.sigpanic
-	some_file.txt:0
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).NilPointerDerefence
 	some_file.txt:0
 runtime.call16
