@@ -17,9 +17,11 @@ package oglematchers_test
 
 import (
 	"fmt"
+	"log"
+	"testing"
+
 	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
-	"testing"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -40,8 +42,13 @@ func (t *PanickingTest) TearDown() {
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *PanickingTest) PanickingTest() {
+func (t *PanickingTest) ExplicitPanic() {
 	panic("foobar")
+}
+
+func (t *PanickingTest) NilPointerDerefence() {
+	var p *int
+	log.Println(*p)
 }
 
 func (t *PanickingTest) ZzzSomeOtherTest() {
