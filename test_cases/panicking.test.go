@@ -24,7 +24,7 @@ import (
 	. "github.com/jacobsa/ogletest"
 )
 
-func TestOgletest(t *testing.T) { RunTests(t) }
+func TestPanickingTest(t *testing.T) { RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // PanickingTest
