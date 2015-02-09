@@ -55,7 +55,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 
 	// Run the SetUp method, paying attention to whether it panics.
 	setUpPanicked := runWithProtection(
-		func () {
+		func() {
 			runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
 		},
 	)
@@ -64,7 +64,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
 		runWithProtection(
-			func () {
+			func() {
 				runMethodIfExists(suiteInstance, method.Name)
 			},
 		)
@@ -72,7 +72,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 
 	// Run the TearDown method unconditionally.
 	runWithProtection(
-		func () {
+		func() {
 			runMethodIfExists(suiteInstance, "TearDown")
 		},
 	)
@@ -181,6 +181,38 @@ func runTestsInternal(t *testing.T) {
 	}
 }
 
+// Return true iff the supplied program counter appears to lie within panic().
+func isPanic(pc uintptr) bool {
+	f := runtime.FuncForPC(pc)
+	if f == nil {
+		return false
+	}
+
+	return f.Name() == "runtime.gopanic"
+}
+
+// Attempt to find the file base name and line number for the source of a
+// panic, on the panicking stack. Return a human-readable sentinel if
+// unsuccessful.
+func findPanic() (string, int) {
+	found := false
+	for i := 0; ; i++ {
+		pc, file, line, ok := runtime.Caller(i)
+		if !ok {
+			return "(unknown)", 0
+		}
+
+		if found {
+			return path.Base(file), line
+		}
+
+		if isPanic(pc) {
+			found = true
+			continue
+		}
+	}
+}
+
 // Run the supplied function, catching panics (including AssertThat errors) and
 // reporting them to the currently-running test as appropriate. Return true iff
 // the function panicked.
@@ -201,19 +233,8 @@ func runWithProtection(f func()) (panicked bool) {
 		// If the function panicked (and the panic was not due to an AssertThat
 		// failure), add a failure for the panic.
 		if !isAssertThatError(r) {
-			// The stack looks like this:
-			//
-			//     <this deferred function>
-			//     panic(r)
-			//     <function that called panic>
-			//
-			_, fileName, lineNumber, ok := runtime.Caller(2)
 			var panicRecord failureRecord
-			if ok {
-				panicRecord.FileName = path.Base(fileName)
-				panicRecord.LineNumber = lineNumber
-			}
-
+			panicRecord.FileName, panicRecord.LineNumber = findPanic()
 			panicRecord.GeneratedError = fmt.Sprintf(
 				"panic: %v\n\n%s", r, formatPanicStack())
 
@@ -279,7 +300,7 @@ func formatPanicStack() string {
 		}
 
 		// Avoid stack frames at panic and above.
-		if funcName == "runtime.panic" {
+		if isPanic(pc) {
 			panicPassed = true
 			continue
 		}
