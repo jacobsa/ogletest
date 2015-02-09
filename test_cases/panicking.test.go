@@ -24,23 +24,20 @@ import (
 	. "github.com/jacobsa/ogletest"
 )
 
+func TestOgletest(t *testing.T) { RunTests(t) }
+
 ////////////////////////////////////////////////////////////////////////
-// Helpers
+// PanickingTest
 ////////////////////////////////////////////////////////////////////////
 
 type PanickingTest struct {
 }
 
-func init()                          { RegisterTestSuite(&PanickingTest{}) }
-func TestPanickingTest(t *testing.T) { RunTests(t) }
+func init() { RegisterTestSuite(&PanickingTest{}) }
 
 func (t *PanickingTest) TearDown() {
 	fmt.Println("TearDown running.")
 }
-
-////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////
 
 func (t *PanickingTest) ExplicitPanic() {
 	panic("foobar")
@@ -53,4 +50,26 @@ func (t *PanickingTest) NilPointerDerefence() {
 
 func (t *PanickingTest) ZzzSomeOtherTest() {
 	ExpectThat(17, Equals(17.0))
+}
+
+////////////////////////////////////////////////////////////////////////
+// SetUpPanicTest
+////////////////////////////////////////////////////////////////////////
+
+type SetUpPanicTest struct {
+}
+
+func init() { RegisterTestSuite(&SetUpPanicTest{}) }
+
+func (t *SetUpPanicTest) SetUp(ti *TestInfo) {
+	fmt.Println("SetUp about to panic.")
+	panic("baz")
+}
+
+func (t *SetUpPanicTest) TearDown() {
+	fmt.Println("TearDown running.")
+}
+
+func (t *SetUpPanicTest) SomeTestCase() {
+	panic("foobar")
 }
