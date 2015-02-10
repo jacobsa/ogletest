@@ -15,6 +15,12 @@
 
 package ogletest
 
+import (
+	"fmt"
+	"reflect"
+	"regexp"
+)
+
 // Test suites that implement this interface have special meaning to
 // RegisterTestSuite.
 type SetUpTestSuiteInterface interface {
@@ -107,3 +113,49 @@ func RegisterTestSuite(p interface{}) {
 
 // The set of test suites previously registered.
 var testSuites = make([]interface{}, 0)
+
+func runTestMethod(suite reflect.Value, method reflect.Method) {
+	if method.Func.Type().NumIn() != 1 {
+		panic(fmt.Sprintf(
+			"%s: expected 1 args, actually %d.",
+			method.Name,
+			method.Func.Type().NumIn()))
+	}
+
+	method.Func.Call([]reflect.Value{suite})
+}
+
+func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method) {
+	for _, m := range in {
+		// Skip set up, tear down, and unexported methods.
+		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
+			continue
+		}
+
+		// Has the user told us to skip this method?
+		fullName := fmt.Sprintf("%s.%s", suiteName, m.Name)
+		matched, err := regexp.MatchString(*testFilter, fullName)
+		if err != nil {
+			panic("Invalid value for --ogletest.run: " + err.Error())
+		}
+
+		if !matched {
+			continue
+		}
+
+		out = append(out, m)
+	}
+
+	return
+}
+
+func isSpecialMethod(name string) bool {
+	return (name == "SetUpTestSuite") ||
+		(name == "TearDownTestSuite") ||
+		(name == "SetUp") ||
+		(name == "TearDown")
+}
+
+func isExportedMethod(name string) bool {
+	return len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z'
+}
