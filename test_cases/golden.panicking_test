@@ -2,7 +2,7 @@
 [ RUN      ] PanickingTest.ExplicitPanic
 TearDown running.
 panicking_test.go:43:
-panic: foobar
+panic: Panic in ExplicitPanic
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanic
 	some_file.txt:0
@@ -40,7 +40,7 @@ TearDown running.
 SetUp about to panic.
 TearDown running.
 panicking_test.go:66:
-panic: baz
+panic: Panic in SetUp
 
 github.com/jacobsa/ogletest/somepkg_test.(*SetUpPanicTest).SetUp
 	some_file.txt:0
@@ -54,6 +54,24 @@ reflect.Value.Call
 
 [  FAILED  ] SetUpPanicTest.SomeTestCase
 [----------] Finished with tests from SetUpPanicTest
+[----------] Running tests from TearDownPanicTest
+[ RUN      ] TearDownPanicTest.SomeTestCase
+TearDown about to panic.
+panicking_test.go:87:
+panic: Panic in TearDown
+
+github.com/jacobsa/ogletest/somepkg_test.(*TearDownPanicTest).TearDown
+	some_file.txt:0
+runtime.call16
+	/usr/local/go/src/runtime/asm_amd64.s:401
+reflect.Value.call
+	some_file.txt:0
+reflect.Value.Call
+	some_file.txt:0
+
+
+[  FAILED  ] TearDownPanicTest.SomeTestCase
+[----------] Finished with tests from TearDownPanicTest
 --- FAIL: TestSomething (1.23s)
 FAIL
 exit status 1

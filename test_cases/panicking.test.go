@@ -40,7 +40,7 @@ func (t *PanickingTest) TearDown() {
 }
 
 func (t *PanickingTest) ExplicitPanic() {
-	panic("foobar")
+	panic("Panic in ExplicitPanic")
 }
 
 func (t *PanickingTest) NilPointerDerefence() {
@@ -63,7 +63,7 @@ func init() { RegisterTestSuite(&SetUpPanicTest{}) }
 
 func (t *SetUpPanicTest) SetUp(ti *TestInfo) {
 	fmt.Println("SetUp about to panic.")
-	panic("baz")
+	panic("Panic in SetUp")
 }
 
 func (t *SetUpPanicTest) TearDown() {
@@ -71,5 +71,21 @@ func (t *SetUpPanicTest) TearDown() {
 }
 
 func (t *SetUpPanicTest) SomeTestCase() {
-	panic("foobar")
+}
+
+////////////////////////////////////////////////////////////////////////
+// TearDownPanicTest
+////////////////////////////////////////////////////////////////////////
+
+type TearDownPanicTest struct {
+}
+
+func init() { RegisterTestSuite(&TearDownPanicTest{}) }
+
+func (t *TearDownPanicTest) TearDown() {
+	fmt.Println("TearDown about to panic.")
+	panic("Panic in TearDown")
+}
+
+func (t *TearDownPanicTest) SomeTestCase() {
 }
