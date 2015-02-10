@@ -71,11 +71,13 @@ func runTestFunction(tf TestFunction) (failures []*failureRecord) {
 	return currentlyRunningTest.failureRecords
 }
 
-// RunTests runs the test suites registered with ogletest, communicating
-// failures to the supplied testing.T object. This is the bridge between
-// ogletest and the testing package (and gotest); you should ensure that it's
-// called at least once by creating a gotest-compatible test function and
-// calling it there.
+// Run everything registered with Register (including via the wrapper
+// RegisterTestSuite).
+//
+// Failures are communicated to the supplied testing.T object. This is the
+// bridge between ogletest and the testing package (and `go test`); you should
+// ensure that it's called at least once by creating a test function compatible
+// with `go test` and calling it there.
 //
 // For example:
 //
