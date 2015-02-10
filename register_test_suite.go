@@ -15,31 +15,55 @@
 
 package ogletest
 
+// Test suites that implement this interface have special meaning to
+// RegisterTestSuite.
+type SetUpTestSuiteInterface interface {
+	// This method will be called exactly once, before the first test method is
+	// run. The receiver of this method will be a zero value of the test suite
+	// type, and is not shared with any other methods. Use this method to set up
+	// any necessary global state shared by all of the test methods.
+	SetUpTestSuite()
+}
+
+// Test suites that implement this interface have special meaning to
+// RegisterTestSuite.
+type TearDownTestSuiteInterface interface {
+	// This method will be called exactly once, after the last test method is
+	// run. The receiver of this method will be a zero value of the test suite
+	// type, and is not shared with any other methods. Use this method to clean
+	// up after any necessary global state shared by all of the test methods.
+	TearDownTestSuite()
+}
+
+// Test suites that implement this interface have special meaning to
+// Register.
+type SetUpInterface interface {
+	// This method is called before each test method is invoked, with the same
+	// receiver as that test method. At the time this method is invoked, the
+	// receiver is a zero value for the test suite type. Use this method for
+	// common setup code that works on data not shared across tests.
+	SetUp(*TestInfo)
+}
+
+// Test suites that implement this interface have special meaning to
+// Register.
+type TearDownInterface interface {
+	// This method is called after each test method is invoked, with the same
+	// receiver as that test method. Use this method for common cleanup code that
+	// works on data not shared across tests.
+	TearDown()
+}
+
 // RegisterTestSuite tells ogletest about a test suite containing tests that it
 // should run. Any exported method on the type pointed to by the supplied
 // prototype value will be treated as test methods, with the exception of the
-// following methods (which need not be present):
+// methods defined by the following interfaces, which when present are treated
+// as described in the documentation for those interfaces:
 //
-//  *  SetUpTestSuite() -- called exactly once, before the first test method is
-//     run. The receiver of this method will be a zero value of the test suite
-//     type, and is not shared with any other methods. Use this method to set
-//     up any necessary global state shared by all of the test methods.
-//
-//  *  TearDownTestSuite() -- called exactly once, after the last test method
-//     is run. The receiver of this method will be a zero value of the test
-//     suite type, and is not shared with any other methods. Use this method to
-//     clean up after any necessary global state shared by all of the test
-//     methods.
-//
-//  *  SetUp(testInfo) -- called before each test method is invoked, with the
-//     same receiver as that test method, and with a TestInfo arg. At the time
-//     this method is invoked, the receiver is a zero value for the test suite
-//     type. Use this method for common setup code that works on data not
-//     shared across tests.
-//
-//  *  TearDown() -- called after each test method is invoked, with the same
-//     receiver as that test method. Use this method for common cleanup code
-//     that works on data not shared across tests.
+//  *  SetUpTestSuiteInterface
+//  *  TeearDownTestSuiteInterface
+//  *  SetUpInterface
+//  *  TeearDownInterface
 //
 // Each test method is invoked on a different receiver, which is initially a
 // zero value of the test suite type.
