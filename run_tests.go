@@ -38,11 +38,8 @@ func isAssertThatError(x interface{}) bool {
 	return ok
 }
 
-// runTest runs a single test, returning a slice of failure records for that test.
-func runTest(suite interface{}, method reflect.Method) (failures []*failureRecord) {
-	suiteValue := reflect.ValueOf(suite)
-	suiteType := suiteValue.Type()
-
+// Run a single test function, returning a slice of failure records.
+func runTestFunction(tf TestFunction) (failures []*failureRecord) {
 	// Set up a clean slate for this test. Make sure to reset it after everything
 	// below is finished, so we don't accidentally use it elsewhere.
 	currentlyRunningTest = newTestInfo()
@@ -50,25 +47,21 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		currentlyRunningTest = nil
 	}()
 
-	// Create a receiver.
-	var suiteInstance reflect.Value = reflect.New(suiteType.Elem())
-	var suiteInstanceAsInterface interface{} = suiteInstance.Interface()
-
-	// Run the SetUp method, paying attention to whether it panics.
+	// Run the SetUp function, if any, paying attention to whether it panics.
 	setUpPanicked := false
-	if i, ok := suiteInstanceAsInterface.(SetUpInterface); ok {
-		setUpPanicked = runWithProtection(func() { i.SetUp(currentlyRunningTest) })
+	if tf.SetUp != nil {
+		setUpPanicked = runWithProtection(func() { tf.SetUp(currentlyRunningTest) })
 	}
 
-	// Run the test method itself, but only if the SetUp method didn't panic.
+	// Run the test function itself, but only if the SetUp function didn't panic.
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
-		runWithProtection(func() { runTestMethod(suiteInstance, method) })
+		runWithProtection(tf.Run)
 	}
 
-	// Run the TearDown method, if any.
-	if i, ok := suiteInstanceAsInterface.(TearDownInterface); ok {
-		runWithProtection(func() { i.TearDown() })
+	// Run the TearDown function, if any.
+	if tf.TearDown != nil {
+		runWithProtection(tf.TearDown)
 	}
 
 	// Tell the mock controller for the tests to report any errors it's sitting
