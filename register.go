@@ -60,4 +60,27 @@ type TestFunction struct {
 // This is the most general registration mechanism. Most users will want
 // RegisterTestSuite, which is a wrapper around this function that requires
 // less boilerplate.
-func Register(suite *TestSuite)
+//
+// Panics on invalid input.
+func Register(suite TestSuite) {
+	// Make sure the suite is legal.
+	if suite.Name == "" {
+		panic("Test suites must have names.")
+	}
+
+	for _, tf := range suite.TestFunctions {
+		if tf.Name == "" {
+			panic("Test functions must have names.")
+		}
+
+		if tf.Run == nil {
+			panic("Test functions must have non-nil run fields.")
+		}
+	}
+
+	// Save the suite for later.
+	registeredSuites = append(registeredSuites, suite)
+}
+
+// The list of test suites previously registered.
+var registeredSuites []TestSuite
