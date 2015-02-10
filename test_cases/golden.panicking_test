@@ -62,7 +62,9 @@ panic: Panic in SetUp
 
 github.com/jacobsa/ogletest/somepkg_test.(*SetUpPanicTest).SetUp
 	some_file.txt:0
-github.com/jacobsa/ogletest.func·002
+github.com/jacobsa/ogletest.func·003
+	some_file.txt:0
+github.com/jacobsa/ogletest.func·007
 	some_file.txt:0
 
 
@@ -76,7 +78,7 @@ panic: Panic in TearDown
 
 github.com/jacobsa/ogletest/somepkg_test.(*TearDownPanicTest).TearDown
 	some_file.txt:0
-github.com/jacobsa/ogletest.func·004
+github.com/jacobsa/ogletest.func·005
 	some_file.txt:0
 
 
