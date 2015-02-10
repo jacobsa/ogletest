@@ -141,7 +141,8 @@ func RegisterTestSuite(p interface{}) {
 			tf.SetUp = func(ti *TestInfo) { i.SetUp(ti) }
 		}
 
-		tf.Run = func() { runTestMethod(instance, method) }
+		methodCopy := method
+		tf.Run = func() { runTestMethod(instance, methodCopy) }
 
 		if i, ok := instance.Interface().(TearDownInterface); ok {
 			tf.TearDown = func() { i.TearDown() }
