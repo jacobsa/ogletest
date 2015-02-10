@@ -20,6 +20,7 @@ import (
 	"flag"
 	"fmt"
 	"path"
+	"regexp"
 	"runtime"
 	"sync"
 	"testing"
@@ -104,8 +105,8 @@ func runTestsInternal(t *testing.T) {
 			suite.SetUp()
 		}
 
-		// Run each test function.
-		for _, tf := range suite.TestFunctions {
+		// Run each test function that the user has not told us to skip.
+		for _, tf := range filterTestFunctions(suite) {
 			// Print a banner for the start of this test function.
 			fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
@@ -276,4 +277,23 @@ func formatPanicStack() string {
 	}
 
 	return buf.String()
+}
+
+// Filter test functions according to the user-supplied filter flag.
+func filterTestFunctions(suite TestSuite) (out []TestFunction) {
+	for _, tf := range suite.TestFunctions {
+		fullName := fmt.Sprintf("%s.%s", suite.Name, tf.Name)
+		matched, err := regexp.MatchString(*testFilter, fullName)
+		if err != nil {
+			panic("Invalid value for --ogletest.run: " + err.Error())
+		}
+
+		if !matched {
+			continue
+		}
+
+		out = append(out, tf)
+	}
+
+	return
 }

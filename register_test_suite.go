@@ -18,7 +18,6 @@ package ogletest
 import (
 	"fmt"
 	"reflect"
-	"regexp"
 )
 
 // Test suites that implement this interface have special meaning to
@@ -171,17 +170,6 @@ func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method)
 	for _, m := range in {
 		// Skip set up, tear down, and unexported methods.
 		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
-			continue
-		}
-
-		// Has the user told us to skip this method?
-		fullName := fmt.Sprintf("%s.%s", suiteName, m.Name)
-		matched, err := regexp.MatchString(*testFilter, fullName)
-		if err != nil {
-			panic("Invalid value for --ogletest.run: " + err.Error())
-		}
-
-		if !matched {
 			continue
 		}
 
