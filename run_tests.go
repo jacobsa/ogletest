@@ -281,14 +281,14 @@ func formatPanicStack() string {
 
 // Filter test functions according to the user-supplied filter flag.
 func filterTestFunctions(suite TestSuite) (out []TestFunction) {
+	re, err := regexp.Compile(*testFilter)
+	if err != nil {
+		panic("Invalid value for --ogletest.run: " + err.Error())
+	}
+
 	for _, tf := range suite.TestFunctions {
 		fullName := fmt.Sprintf("%s.%s", suite.Name, tf.Name)
-		matched, err := regexp.MatchString(*testFilter, fullName)
-		if err != nil {
-			panic("Invalid value for --ogletest.run: " + err.Error())
-		}
-
-		if !matched {
+		if !re.MatchString(fullName) {
 			continue
 		}
 
