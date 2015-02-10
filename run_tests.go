@@ -98,35 +98,22 @@ func RunTests(t *testing.T) {
 // sync.Once.
 func runTestsInternal(t *testing.T) {
 	// Process each registered suite.
-	for _, suite := range testSuites {
-		val := reflect.ValueOf(suite)
-		typ := val.Type()
-		suiteName := typ.Elem().Name()
+	for _, suite := range registeredSuites {
+		fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 
-		// Grab methods for the suite, filtering them to just the ones that we
-		// don't need to skip.
-		testMethods := filterMethods(suiteName, getMethodsInSourceOrder(typ))
-
-		// Is there anything left to do?
-		if len(testMethods) == 0 {
-			continue
+		// Run the SetUp function, if any.
+		if suite.SetUp != nil {
+			suite.SetUp()
 		}
 
-		fmt.Printf("[----------] Running tests from %s\n", suiteName)
+		// Run each test function.
+		for _, tf := range suite.TestFunctions {
+			// Print a banner for the start of this test function.
+			fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
-		// Run the SetUpTestSuite method, if any.
-		if i, ok := suite.(SetUpTestSuiteInterface); ok {
-			i.SetUpTestSuite()
-		}
-
-		// Run each method.
-		for _, method := range testMethods {
-			// Print a banner for the start of this test.
-			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
-
-			// Run the test.
+			// Run the test function.
 			startTime := time.Now()
-			failures := runTest(suite, method)
+			failures := runTestFunction(tf)
 			runDuration := time.Since(startTime)
 
 			// Print any failures, and mark the test as having failed if there are any.
@@ -160,17 +147,17 @@ func runTestsInternal(t *testing.T) {
 			fmt.Printf(
 				"%s %s.%s%s\n",
 				bannerMessage,
-				suiteName,
-				method.Name,
+				suite.Name,
+				tf.Name,
 				timeMessage)
 		}
 
-		// Run the TearDownTestSuite method, if any.
-		if i, ok := suite.(TearDownTestSuiteInterface); ok {
-			i.TearDownTestSuite()
+		// Run the suite's TearDown function, if any.
+		if suite.TearDown != nil {
+			suite.TearDown()
 		}
 
-		fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
+		fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
 	}
 }
 
