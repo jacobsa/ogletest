@@ -62,11 +62,7 @@ panic: Panic in SetUp
 
 github.com/jacobsa/ogletest/somepkg_test.(*SetUpPanicTest).SetUp
 	some_file.txt:0
-runtime.call16
-	/usr/local/go/src/runtime/asm_amd64.s:401
-reflect.Value.call
-	some_file.txt:0
-reflect.Value.Call
+github.com/jacobsa/ogletest.func·002
 	some_file.txt:0
 
 
@@ -80,11 +76,7 @@ panic: Panic in TearDown
 
 github.com/jacobsa/ogletest/somepkg_test.(*TearDownPanicTest).TearDown
 	some_file.txt:0
-runtime.call16
-	/usr/local/go/src/runtime/asm_amd64.s:401
-reflect.Value.call
-	some_file.txt:0
-reflect.Value.Call
+github.com/jacobsa/ogletest.func·004
 	some_file.txt:0
 
 

@@ -51,14 +51,14 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	}()
 
 	// Create a receiver.
-	suiteInstance := reflect.New(suiteType.Elem())
+	var suiteInstance reflect.Value = reflect.New(suiteType.Elem())
+	var suiteInstanceAsInterface interface{} = suiteInstance.Interface()
 
 	// Run the SetUp method, paying attention to whether it panics.
-	setUpPanicked := runWithProtection(
-		func() {
-			runMethodIfExists(suiteInstance, "SetUp", currentlyRunningTest)
-		},
-	)
+	setUpPanicked := false
+	if i, ok := suiteInstanceAsInterface.(SetUpInterface); ok {
+		setUpPanicked = runWithProtection(func() { i.SetUp(currentlyRunningTest) })
+	}
 
 	// Run the test method itself, but only if the SetUp method didn't panic.
 	// (This includes AssertThat errors.)
@@ -70,12 +70,10 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		)
 	}
 
-	// Run the TearDown method unconditionally.
-	runWithProtection(
-		func() {
-			runMethodIfExists(suiteInstance, "TearDown")
-		},
-	)
+	// Run the TearDown method, if any.
+	if i, ok := suiteInstanceAsInterface.(TearDownInterface); ok {
+		runWithProtection(func() { i.TearDown() })
+	}
 
 	// Tell the mock controller for the tests to report any errors it's sitting
 	// on.
@@ -326,7 +324,8 @@ func formatPanicStack() string {
 		}
 
 		// Stop if we've gotten as far as the test runner code.
-		if funcName == "github.com/jacobsa/ogletest.runMethodIfExists" {
+		if funcName == "github.com/jacobsa/ogletest.runMethodIfExists" ||
+			funcName == "github.com/jacobsa/ogletest.runWithProtection" {
 			break
 		}
 
