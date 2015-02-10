@@ -20,7 +20,6 @@ import (
 	"flag"
 	"fmt"
 	"path"
-	"reflect"
 	"regexp"
 	"runtime"
 	"sync"
@@ -38,11 +37,8 @@ func isAssertThatError(x interface{}) bool {
 	return ok
 }
 
-// runTest runs a single test, returning a slice of failure records for that test.
-func runTest(suite interface{}, method reflect.Method) (failures []*failureRecord) {
-	suiteValue := reflect.ValueOf(suite)
-	suiteType := suiteValue.Type()
-
+// Run a single test function, returning a slice of failure records.
+func runTestFunction(tf TestFunction) (failures []*failureRecord) {
 	// Set up a clean slate for this test. Make sure to reset it after everything
 	// below is finished, so we don't accidentally use it elsewhere.
 	currentlyRunningTest = newTestInfo()
@@ -50,25 +46,21 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 		currentlyRunningTest = nil
 	}()
 
-	// Create a receiver.
-	var suiteInstance reflect.Value = reflect.New(suiteType.Elem())
-	var suiteInstanceAsInterface interface{} = suiteInstance.Interface()
-
-	// Run the SetUp method, paying attention to whether it panics.
+	// Run the SetUp function, if any, paying attention to whether it panics.
 	setUpPanicked := false
-	if i, ok := suiteInstanceAsInterface.(SetUpInterface); ok {
-		setUpPanicked = runWithProtection(func() { i.SetUp(currentlyRunningTest) })
+	if tf.SetUp != nil {
+		setUpPanicked = runWithProtection(func() { tf.SetUp(currentlyRunningTest) })
 	}
 
-	// Run the test method itself, but only if the SetUp method didn't panic.
+	// Run the test function itself, but only if the SetUp function didn't panic.
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
-		runWithProtection(func() { runTestMethod(suiteInstance, method) })
+		runWithProtection(tf.Run)
 	}
 
-	// Run the TearDown method, if any.
-	if i, ok := suiteInstanceAsInterface.(TearDownInterface); ok {
-		runWithProtection(func() { i.TearDown() })
+	// Run the TearDown function, if any.
+	if tf.TearDown != nil {
+		runWithProtection(tf.TearDown)
 	}
 
 	// Tell the mock controller for the tests to report any errors it's sitting
@@ -78,11 +70,13 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	return currentlyRunningTest.failureRecords
 }
 
-// RunTests runs the test suites registered with ogletest, communicating
-// failures to the supplied testing.T object. This is the bridge between
-// ogletest and the testing package (and gotest); you should ensure that it's
-// called at least once by creating a gotest-compatible test function and
-// calling it there.
+// Run everything registered with Register (including via the wrapper
+// RegisterTestSuite).
+//
+// Failures are communicated to the supplied testing.T object. This is the
+// bridge between ogletest and the testing package (and `go test`); you should
+// ensure that it's called at least once by creating a test function compatible
+// with `go test` and calling it there.
 //
 // For example:
 //
@@ -103,35 +97,22 @@ func RunTests(t *testing.T) {
 // sync.Once.
 func runTestsInternal(t *testing.T) {
 	// Process each registered suite.
-	for _, suite := range testSuites {
-		val := reflect.ValueOf(suite)
-		typ := val.Type()
-		suiteName := typ.Elem().Name()
+	for _, suite := range registeredSuites {
+		fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 
-		// Grab methods for the suite, filtering them to just the ones that we
-		// don't need to skip.
-		testMethods := filterMethods(suiteName, getMethodsInSourceOrder(typ))
-
-		// Is there anything left to do?
-		if len(testMethods) == 0 {
-			continue
+		// Run the SetUp function, if any.
+		if suite.SetUp != nil {
+			suite.SetUp()
 		}
 
-		fmt.Printf("[----------] Running tests from %s\n", suiteName)
+		// Run each test function that the user has not told us to skip.
+		for _, tf := range filterTestFunctions(suite) {
+			// Print a banner for the start of this test function.
+			fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
-		// Run the SetUpTestSuite method, if any.
-		if i, ok := suite.(SetUpTestSuiteInterface); ok {
-			i.SetUpTestSuite()
-		}
-
-		// Run each method.
-		for _, method := range testMethods {
-			// Print a banner for the start of this test.
-			fmt.Printf("[ RUN      ] %s.%s\n", suiteName, method.Name)
-
-			// Run the test.
+			// Run the test function.
 			startTime := time.Now()
-			failures := runTest(suite, method)
+			failures := runTestFunction(tf)
 			runDuration := time.Since(startTime)
 
 			// Print any failures, and mark the test as having failed if there are any.
@@ -165,17 +146,17 @@ func runTestsInternal(t *testing.T) {
 			fmt.Printf(
 				"%s %s.%s%s\n",
 				bannerMessage,
-				suiteName,
-				method.Name,
+				suite.Name,
+				tf.Name,
 				timeMessage)
 		}
 
-		// Run the TearDownTestSuite method, if any.
-		if i, ok := suite.(TearDownTestSuiteInterface); ok {
-			i.TearDownTestSuite()
+		// Run the suite's TearDown function, if any.
+		if suite.TearDown != nil {
+			suite.TearDown()
 		}
 
-		fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
+		fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
 	}
 }
 
@@ -263,17 +244,6 @@ func runWithProtection(f func()) (panicked bool) {
 	return
 }
 
-func runTestMethod(suite reflect.Value, method reflect.Method) {
-	if method.Func.Type().NumIn() != 1 {
-		panic(fmt.Sprintf(
-			"%s: expected 1 args, actually %d.",
-			method.Name,
-			method.Func.Type().NumIn()))
-	}
-
-	method.Func.Call([]reflect.Value{suite})
-}
-
 func formatPanicStack() string {
 	buf := new(bytes.Buffer)
 
@@ -309,37 +279,21 @@ func formatPanicStack() string {
 	return buf.String()
 }
 
-func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method) {
-	for _, m := range in {
-		// Skip set up, tear down, and unexported methods.
-		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
+// Filter test functions according to the user-supplied filter flag.
+func filterTestFunctions(suite TestSuite) (out []TestFunction) {
+	re, err := regexp.Compile(*testFilter)
+	if err != nil {
+		panic("Invalid value for --ogletest.run: " + err.Error())
+	}
+
+	for _, tf := range suite.TestFunctions {
+		fullName := fmt.Sprintf("%s.%s", suite.Name, tf.Name)
+		if !re.MatchString(fullName) {
 			continue
 		}
 
-		// Has the user told us to skip this method?
-		fullName := fmt.Sprintf("%s.%s", suiteName, m.Name)
-		matched, err := regexp.MatchString(*testFilter, fullName)
-		if err != nil {
-			panic("Invalid value for --ogletest.run: " + err.Error())
-		}
-
-		if !matched {
-			continue
-		}
-
-		out = append(out, m)
+		out = append(out, tf)
 	}
 
 	return
-}
-
-func isSpecialMethod(name string) bool {
-	return (name == "SetUpTestSuite") ||
-		(name == "TearDownTestSuite") ||
-		(name == "SetUp") ||
-		(name == "TearDown")
-}
-
-func isExportedMethod(name string) bool {
-	return len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z'
 }

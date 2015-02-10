@@ -15,6 +15,11 @@
 
 package ogletest
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // Test suites that implement this interface have special meaning to
 // RegisterTestSuite.
 type SetUpTestSuiteInterface interface {
@@ -102,8 +107,85 @@ func RegisterTestSuite(p interface{}) {
 		panic("RegisterTestSuite called with nil suite.")
 	}
 
-	testSuites = append(testSuites, p)
+	val := reflect.ValueOf(p)
+	typ := val.Type()
+	var zeroInstance reflect.Value
+
+	// We will transform to a TestSuite struct.
+	suite := TestSuite{}
+	suite.Name = typ.Elem().Name()
+
+	zeroInstance = reflect.New(typ.Elem())
+	if i, ok := zeroInstance.Interface().(SetUpTestSuiteInterface); ok {
+		suite.SetUp = func() { i.SetUpTestSuite() }
+	}
+
+	zeroInstance = reflect.New(typ.Elem())
+	if i, ok := zeroInstance.Interface().(TearDownTestSuiteInterface); ok {
+		suite.TearDown = func() { i.TearDownTestSuite() }
+	}
+
+	// Transform a list of test methods for the suite, filtering them to just the
+	// ones that we don't need to skip.
+	for _, method := range filterMethods(suite.Name, getMethodsInSourceOrder(typ)) {
+		var tf TestFunction
+		tf.Name = method.Name
+
+		// Create an instance to be operated on by all of the TestFunction's
+		// internal functions.
+		instance := reflect.New(typ.Elem())
+
+		// Bind the functions to the instance.
+		if i, ok := instance.Interface().(SetUpInterface); ok {
+			tf.SetUp = func(ti *TestInfo) { i.SetUp(ti) }
+		}
+
+		methodCopy := method
+		tf.Run = func() { runTestMethod(instance, methodCopy) }
+
+		if i, ok := instance.Interface().(TearDownInterface); ok {
+			tf.TearDown = func() { i.TearDown() }
+		}
+
+		// Save the TestFunction.
+		suite.TestFunctions = append(suite.TestFunctions, tf)
+	}
+
+	// Register the suite.
+	Register(suite)
 }
 
-// The set of test suites previously registered.
-var testSuites = make([]interface{}, 0)
+func runTestMethod(suite reflect.Value, method reflect.Method) {
+	if method.Func.Type().NumIn() != 1 {
+		panic(fmt.Sprintf(
+			"%s: expected 1 args, actually %d.",
+			method.Name,
+			method.Func.Type().NumIn()))
+	}
+
+	method.Func.Call([]reflect.Value{suite})
+}
+
+func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method) {
+	for _, m := range in {
+		// Skip set up, tear down, and unexported methods.
+		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
+			continue
+		}
+
+		out = append(out, m)
+	}
+
+	return
+}
+
+func isSpecialMethod(name string) bool {
+	return (name == "SetUpTestSuite") ||
+		(name == "TearDownTestSuite") ||
+		(name == "SetUp") ||
+		(name == "TearDown")
+}
+
+func isExportedMethod(name string) bool {
+	return len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z'
+}
