@@ -61,9 +61,9 @@ type TearDownInterface interface {
 // as described in the documentation for those interfaces:
 //
 //  *  SetUpTestSuiteInterface
-//  *  TeearDownTestSuiteInterface
 //  *  SetUpInterface
-//  *  TeearDownInterface
+//  *  TearDownInterface
+//  *  TearDownTestSuiteInterface
 //
 // Each test method is invoked on a different receiver, which is initially a
 // zero value of the test suite type.
