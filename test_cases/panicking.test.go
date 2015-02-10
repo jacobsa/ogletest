@@ -30,6 +30,10 @@ func TestPanickingTest(t *testing.T) { RunTests(t) }
 // PanickingTest
 ////////////////////////////////////////////////////////////////////////
 
+func someFuncThatPanics() {
+	panic("Panic in someFuncThatPanics")
+}
+
 type PanickingTest struct {
 }
 
@@ -41,6 +45,10 @@ func (t *PanickingTest) TearDown() {
 
 func (t *PanickingTest) ExplicitPanic() {
 	panic("Panic in ExplicitPanic")
+}
+
+func (t *PanickingTest) ExplicitPanicInHelperFunction() {
+	someFuncThatPanics()
 }
 
 func (t *PanickingTest) NilPointerDerefence() {

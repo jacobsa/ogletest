@@ -1,7 +1,7 @@
 [----------] Running tests from PanickingTest
 [ RUN      ] PanickingTest.ExplicitPanic
 TearDown running.
-panicking_test.go:43:
+panicking_test.go:47:
 panic: Panic in ExplicitPanic
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanic
@@ -15,9 +15,27 @@ reflect.Value.Call
 
 
 [  FAILED  ] PanickingTest.ExplicitPanic
+[ RUN      ] PanickingTest.ExplicitPanicInHelperFunction
+TearDown running.
+panicking_test.go:34:
+panic: Panic in someFuncThatPanics
+
+github.com/jacobsa/ogletest/somepkg_test.someFuncThatPanics
+	some_file.txt:0
+github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanicInHelperFunction
+	some_file.txt:0
+runtime.call16
+	/usr/local/go/src/runtime/asm_amd64.s:401
+reflect.Value.call
+	some_file.txt:0
+reflect.Value.Call
+	some_file.txt:0
+
+
+[  FAILED  ] PanickingTest.ExplicitPanicInHelperFunction
 [ RUN      ] PanickingTest.NilPointerDerefence
 TearDown running.
-panicking_test.go:48:
+panicking_test.go:56:
 panic: runtime error: invalid memory address or nil pointer dereference
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).NilPointerDerefence
@@ -39,7 +57,7 @@ TearDown running.
 [ RUN      ] SetUpPanicTest.SomeTestCase
 SetUp about to panic.
 TearDown running.
-panicking_test.go:66:
+panicking_test.go:74:
 panic: Panic in SetUp
 
 github.com/jacobsa/ogletest/somepkg_test.(*SetUpPanicTest).SetUp
@@ -57,7 +75,7 @@ reflect.Value.Call
 [----------] Running tests from TearDownPanicTest
 [ RUN      ] TearDownPanicTest.SomeTestCase
 TearDown about to panic.
-panicking_test.go:87:
+panicking_test.go:95:
 panic: Panic in TearDown
 
 github.com/jacobsa/ogletest/somepkg_test.(*TearDownPanicTest).TearDown
