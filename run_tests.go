@@ -126,7 +126,9 @@ func runTestsInternal(t *testing.T) {
 		fmt.Printf("[----------] Running tests from %s\n", suiteName)
 
 		// Run the SetUpTestSuite method, if any.
-		runMethodIfExists(val, "SetUpTestSuite")
+		if i, ok := suite.(SetUpTestSuiteInterface); ok {
+			i.SetUpTestSuite()
+		}
 
 		// Run each method.
 		for _, method := range testMethods {
@@ -175,7 +177,9 @@ func runTestsInternal(t *testing.T) {
 		}
 
 		// Run the TearDownTestSuite method, if any.
-		runMethodIfExists(val, "TearDownTestSuite")
+		if i, ok := suite.(TearDownTestSuiteInterface); ok {
+			i.TearDownTestSuite()
+		}
 
 		fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
 	}
