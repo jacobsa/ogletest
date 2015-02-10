@@ -108,11 +108,52 @@ func RegisterTestSuite(p interface{}) {
 		panic("RegisterTestSuite called with nil suite.")
 	}
 
-	testSuites = append(testSuites, p)
-}
+	val := reflect.ValueOf(p)
+	typ := val.Type()
+	var zeroInstance reflect.Value
 
-// The set of test suites previously registered.
-var testSuites = make([]interface{}, 0)
+	// We will transform to a TestSuite struct.
+	suite := TestSuite{}
+	suite.Name = typ.Elem().Name()
+
+	zeroInstance = reflect.New(typ.Elem())
+	if i, ok := zeroInstance.Interface().(SetUpTestSuiteInterface); ok {
+		suite.SetUp = func() { i.SetUpTestSuite() }
+	}
+
+	zeroInstance = reflect.New(typ.Elem())
+	if i, ok := zeroInstance.Interface().(TearDownTestSuiteInterface); ok {
+		suite.TearDown = func() { i.TearDownTestSuite() }
+	}
+
+	// Transform a list of test methods for the suite, filtering them to just the
+	// ones that we don't need to skip.
+	for _, method := range filterMethods(suite.Name, getMethodsInSourceOrder(typ)) {
+		var tf TestFunction
+		tf.Name = method.Name
+
+		// Create an instance to be operated on by all of the TestFunction's
+		// internal functions.
+		instance := reflect.New(typ.Elem())
+
+		// Bind the functions to the instance.
+		if i, ok := instance.Interface().(SetUpInterface); ok {
+			tf.SetUp = func(ti *TestInfo) { i.SetUp(ti) }
+		}
+
+		tf.Run = func() { runTestMethod(instance, method) }
+
+		if i, ok := instance.Interface().(TearDownInterface); ok {
+			tf.TearDown = func() { i.TearDown() }
+		}
+
+		// Save the TestFunction.
+		suite.TestFunctions = append(suite.TestFunctions, tf)
+	}
+
+	// Register the suite.
+	Register(suite)
+}
 
 func runTestMethod(suite reflect.Value, method reflect.Method) {
 	if method.Func.Type().NumIn() != 1 {
