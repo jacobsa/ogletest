@@ -63,11 +63,7 @@ func runTest(suite interface{}, method reflect.Method) (failures []*failureRecor
 	// Run the test method itself, but only if the SetUp method didn't panic.
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
-		runWithProtection(
-			func() {
-				runMethodIfExists(suiteInstance, method.Name)
-			},
-		)
+		runWithProtection(func() { runTestMethod(suiteInstance, method) })
 	}
 
 	// Run the TearDown method, if any.
@@ -267,38 +263,15 @@ func runWithProtection(f func()) (panicked bool) {
 	return
 }
 
-func runMethodIfExists(v reflect.Value, name string, args ...interface{}) {
-	method := v.MethodByName(name)
-	if method.Kind() == reflect.Invalid {
-		return
-	}
-
-	if method.Type().NumIn() != len(args) {
+func runTestMethod(suite reflect.Value, method reflect.Method) {
+	if method.Func.Type().NumIn() != 1 {
 		panic(fmt.Sprintf(
-			"%s: expected %d args, actually %d.",
-			name,
-			len(args),
-			method.Type().NumIn()))
+			"%s: expected 1 args, actually %d.",
+			method.Name,
+			method.Func.Type().NumIn()))
 	}
 
-	// Create a slice of reflect.Values to pass to the method. Simultaneously
-	// check types.
-	argVals := make([]reflect.Value, len(args))
-	for i, arg := range args {
-		argVal := reflect.ValueOf(arg)
-
-		if argVal.Type() != method.Type().In(i) {
-			panic(fmt.Sprintf(
-				"%s: expected arg %d to have type %v.",
-				name,
-				i,
-				argVal.Type()))
-		}
-
-		argVals[i] = argVal
-	}
-
-	method.Call(argVals)
+	method.Func.Call([]reflect.Value{suite})
 }
 
 func formatPanicStack() string {
@@ -324,7 +297,7 @@ func formatPanicStack() string {
 		}
 
 		// Stop if we've gotten as far as the test runner code.
-		if funcName == "github.com/jacobsa/ogletest.runMethodIfExists" ||
+		if funcName == "github.com/jacobsa/ogletest.runTestMethod" ||
 			funcName == "github.com/jacobsa/ogletest.runWithProtection" {
 			break
 		}
