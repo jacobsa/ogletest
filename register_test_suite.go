@@ -18,6 +18,8 @@ package ogletest
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/jacobsa/ogletest/srcutil"
 )
 
 // Test suites that implement this interface have special meaning to
@@ -127,7 +129,7 @@ func RegisterTestSuite(p interface{}) {
 
 	// Transform a list of test methods for the suite, filtering them to just the
 	// ones that we don't need to skip.
-	for _, method := range filterMethods(suite.Name, getMethodsInSourceOrder(typ)) {
+	for _, method := range filterMethods(suite.Name, srcutil.GetMethodsInSourceOrder(typ)) {
 		var tf TestFunction
 		tf.Name = method.Name
 
