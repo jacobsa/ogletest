@@ -17,17 +17,18 @@ package ogletest
 
 import (
 	"fmt"
-	"github.com/jacobsa/oglematchers"
 	"path"
 	"reflect"
 	"runtime"
+
+	"github.com/jacobsa/oglematchers"
 )
 
-// ExpectationResult is an interface returned by ExpectThat that allows callers
+// expectationResult is an interface returned by expectThat that allows callers
 // to get information about the result of the expectation and set their own
 // custom information. This is not useful to the average consumer, but may be
 // helpful if you're writing widely used test utility functions.
-type ExpectationResult interface {
+type expectationResult interface {
 	// SetCaller updates the file name and line number associated with the
 	// expectation. This allows, for example, a utility function to express that
 	// *its* caller should have its line number printed if the expectation fails,
@@ -54,7 +55,16 @@ type ExpectationResult interface {
 func ExpectThat(
 	x interface{},
 	m oglematchers.Matcher,
-	errorParts ...interface{}) ExpectationResult {
+	errorParts ...interface{}) {
+	expectThat(x, m, errorParts...)
+}
+
+// Like ExpectThat, but returns an expectationResult that can be used to modify
+// the recorded failure record.
+func expectThat(
+	x interface{},
+	m oglematchers.Matcher,
+	errorParts ...interface{}) expectationResult {
 	res := &expectationResultImpl{}
 
 	// Get information about the call site.
