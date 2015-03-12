@@ -31,14 +31,6 @@ func AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
-	assertThat(x, m, errorParts...)
-}
-
-// Like expectThat, but returns an expectationResult.
-func assertThat(
-	x interface{},
-	m oglematchers.Matcher,
-	errorParts ...interface{}) expectationResult {
 	res := expectThat(x, m, errorParts...)
 	res.SetCaller(getCallerForAlias())
 
@@ -46,8 +38,6 @@ func assertThat(
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // assertThatError is a sentinel type that is used in a conspiracy between
