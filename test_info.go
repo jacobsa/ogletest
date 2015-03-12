@@ -33,21 +33,23 @@ type TestInfo struct {
 	MockController oglemock.Controller
 
 	// A mutex protecting shared state.
-	mutex sync.RWMutex
+	mu sync.RWMutex
 
 	// A set of failure records that the test has produced.
-	failureRecords []*failureRecord // Protected by mutex
+	//
+	// GUARDED_BY(mu)
+	failureRecords []FailureRecord
 }
 
 // currentlyRunningTest is the state for the currently running test, if any.
 var currentlyRunningTest *TestInfo
 
 // newTestInfo creates a valid but empty TestInfo struct.
-func newTestInfo() *TestInfo {
-	info := &TestInfo{}
-	info.failureRecords = make([]*failureRecord, 0)
+func newTestInfo() (info *TestInfo) {
+	info = &TestInfo{}
 	info.MockController = oglemock.NewController(&testInfoErrorReporter{info})
-	return info
+
+	return
 }
 
 // testInfoErrorReporter is an oglemock.ErrorReporter that writes failure
