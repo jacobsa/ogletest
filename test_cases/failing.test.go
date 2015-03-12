@@ -79,11 +79,6 @@ func (t *FailingTest) AssertWithUserErrorMessages() {
 	AssertThat(17, Equals(19), "foo bar: %d", 112)
 }
 
-func (t *FailingTest) ModifiedExpectation() {
-	ExpectThat(17, HasSubstr("ac")).SetCaller("foo.go", 112)
-	ExpectEq(17, 19).SetCaller("bar.go", 117)
-}
-
 func (t *FailingTest) ExpectationAliases() {
 	ExpectEq(17, 17.5)
 	ExpectEq("taco", 17.5)
