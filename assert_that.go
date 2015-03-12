@@ -30,7 +30,15 @@ import (
 func AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
-	errorParts ...interface{}) ExpectationResult {
+	errorParts ...interface{}) {
+	assertThat(x, m, errorParts...)
+}
+
+// Like expectThat, but returns an expectationResult.
+func assertThat(
+	x interface{},
+	m oglematchers.Matcher,
+	errorParts ...interface{}) expectationResult {
 	res := ExpectThat(x, m, errorParts...)
 	res.SetCaller(getCallerForAlias())
 
