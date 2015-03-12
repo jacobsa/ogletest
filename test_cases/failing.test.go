@@ -146,13 +146,23 @@ func (t *FailingTest) AssertFalseFailure() {
 	panic("Shouldn't get here.")
 }
 
-func (t *FailingTest) AddFailureThenContinue() {
+func (t *FailingTest) AddFailureRecord() {
+	r := FailureRecord{
+		FileName:   "foo.go",
+		LineNumber: 17,
+		"taco\nburrito",
+	}
+
+	AddFailureRecord(r)
+}
+
+func (t *FailingTest) AddFailure() {
 	AddFailure("taco")
-	fmt.Println("Still going.")
+	AddFailure("burrito: %d", 17)
 }
 
 func (t *FailingTest) AddFailureThenAbortTest() {
-	AddFailure("burrito")
+	AddFailure("enchilada")
 	AbortTest()
 }
 
