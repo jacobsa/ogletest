@@ -164,6 +164,7 @@ func (t *FailingTest) AddFailure() {
 func (t *FailingTest) AddFailureThenAbortTest() {
 	AddFailure("enchilada")
 	AbortTest()
+	fmt.Println("Shouldn't get here.")
 }
 
 ////////////////////////////////////////////////////////////////////////

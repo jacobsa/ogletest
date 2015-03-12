@@ -209,13 +209,35 @@ Expected: false
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.AssertFalseFailure
+[ RUN      ] FailingTest.AddFailureRecord
+TearDown running.
+foo.go:17:
+taco
+burrito
+
+[  FAILED  ] FailingTest.AddFailureRecord
+[ RUN      ] FailingTest.AddFailure
+TearDown running.
+failing_test.go:160:
+taco
+
+failing_test.go:161:
+burrito: 17
+
+[  FAILED  ] FailingTest.AddFailure
+[ RUN      ] FailingTest.AddFailureThenAbortTest
+TearDown running.
+failing_test.go:165:
+enchilada
+
+[  FAILED  ] FailingTest.AddFailureThenAbortTest
 TearDownTestSuite running.
 [----------] Finished with tests from FailingTest
 [----------] Running tests from ExpectFailDuringSetUpTest
 [ RUN      ] ExpectFailDuringSetUpTest.PassingMethod
 Method running.
 TearDown running.
-failing_test.go:159:
+failing_test.go:180:
 Expected: false
 Actual:   true
 
@@ -224,7 +246,7 @@ Actual:   true
 [----------] Running tests from AssertFailDuringSetUpTest
 [ RUN      ] AssertFailDuringSetUpTest.PassingMethod
 TearDown running.
-failing_test.go:180:
+failing_test.go:201:
 Expected: false
 Actual:   true
 
@@ -234,7 +256,7 @@ Actual:   true
 [ RUN      ] ExpectFailDuringTearDownTest.PassingMethod
 SetUp running.
 Method running.
-failing_test.go:205:
+failing_test.go:226:
 Expected: false
 Actual:   true
 
@@ -244,7 +266,7 @@ Actual:   true
 [ RUN      ] AssertFailDuringTearDownTest.PassingMethod
 SetUp running.
 Method running.
-failing_test.go:226:
+failing_test.go:247:
 Expected: false
 Actual:   true
 
