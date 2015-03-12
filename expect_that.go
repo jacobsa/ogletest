@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"fmt"
+	"path"
 	"reflect"
 	"runtime"
 
@@ -63,6 +64,8 @@ func expectThat(
 	if _, r.FileName, r.LineNumber, ok = runtime.Caller(depth + 1); !ok {
 		panic("expectThat: runtime.Caller")
 	}
+
+	r.FileName = path.Base(r.FileName)
 
 	// Create an appropriate failure message. Make sure that the expected and
 	// actual values align properly.
