@@ -119,7 +119,7 @@ func runTestsInternal(t *testing.T) {
 			for _, record := range failures {
 				t.Fail()
 				fmt.Printf(
-					"%s:%d:\n%s\n",
+					"%s:%d:\n%s\n\n",
 					record.FileName,
 					record.LineNumber,
 					record.Error)
