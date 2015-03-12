@@ -48,7 +48,7 @@ func expectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	depth int,
-	errorParts ...interface{}) (passewd bool) {
+	errorParts []interface{}) (passewd bool) {
 	// Check whether the value matches. If it does, we are finished.
 	matcherErr := m.Matches(x)
 	if matcherErr == nil {

@@ -42,7 +42,7 @@ func AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
-	assertThat(x, m, 1, errorParts...)
+	assertThat(x, m, 1, errorParts)
 }
 
 // assertThatError is a sentinel type that is used in a conspiracy between
