@@ -38,7 +38,7 @@ func ExpectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
-	expectThat(x, m, 1, errorParts...)
+	expectThat(x, m, 1, errorParts)
 }
 
 // The generalized form of ExpectThat. depth is the distance on the stack
@@ -48,19 +48,19 @@ func expectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	depth int,
-	errorParts []interface{}) (passewd bool) {
+	errorParts []interface{}) (passed bool) {
 	// Check whether the value matches. If it does, we are finished.
 	matcherErr := m.Matches(x)
 	if matcherErr == nil {
-		passewd = true
+		passed = true
 		return
 	}
 
-	var FailureRecord r
+	var r FailureRecord
 
 	// Get information about the call site.
 	var ok bool
-	if _, r.File, r.LineNumber, ok = runtime.Caller(depth + 1); !ok {
+	if _, r.FileName, r.LineNumber, ok = runtime.Caller(depth + 1); !ok {
 		panic("expectThat: runtime.Caller")
 	}
 
@@ -92,4 +92,6 @@ func expectThat(
 
 	// Report the failure.
 	AddFailureRecord(r)
+
+	return
 }
