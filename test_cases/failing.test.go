@@ -146,6 +146,16 @@ func (t *FailingTest) AssertFalseFailure() {
 	panic("Shouldn't get here.")
 }
 
+func (t *FailingTest) AddFailureThenContinue() {
+	AddFailure("taco")
+	fmt.Println("Still going.")
+}
+
+func (t *FailingTest) AddFailureThenAbortTest() {
+	AddFailure("burrito")
+	AbortTest()
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Expectation failure during SetUp
 ////////////////////////////////////////////////////////////////////////
