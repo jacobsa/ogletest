@@ -62,13 +62,13 @@ func (r *testInfoErrorReporter) ReportError(
 	fileName string,
 	lineNumber int,
 	err error) {
-	r.testInfo.mutex.Lock()
-	defer r.testInfo.mutex.Unlock()
+	r.testInfo.mu.Lock()
+	defer r.testInfo.mu.Unlock()
 
-	record := &failureRecord{
-		FileName:       fileName,
-		LineNumber:     lineNumber,
-		GeneratedError: err.Error(),
+	record := FailureRecord{
+		FileName:   fileName,
+		LineNumber: lineNumber,
+		Error:      err.Error(),
 	}
 
 	r.testInfo.failureRecords = append(r.testInfo.failureRecords, record)
