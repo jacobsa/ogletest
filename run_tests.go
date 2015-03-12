@@ -32,8 +32,8 @@ var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to r
 // runTestsOnce protects RunTests from executing multiple times.
 var runTestsOnce sync.Once
 
-func isAssertThatError(x interface{}) bool {
-	_, ok := x.(*assertThatError)
+func isAbortError(x interface{}) bool {
+	_, ok := x.(abortError)
 	return ok
 }
 
@@ -222,7 +222,7 @@ func runWithProtection(f func()) (panicked bool) {
 
 		// If the function panicked (and the panic was not due to an AssertThat
 		// failure), add a failure for the panic.
-		if !isAssertThatError(r) {
+		if !isAbortError(r) {
 			var panicRecord FailureRecord
 			panicRecord.FileName, panicRecord.LineNumber = findPanicFileLine()
 			panicRecord.Error = fmt.Sprintf(

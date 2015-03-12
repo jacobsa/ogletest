@@ -79,5 +79,5 @@ func (r *testInfoErrorReporter) ReportFatalError(
 	lineNumber int,
 	err error) {
 	r.ReportError(fileName, lineNumber, err)
-	panic(&assertThatError{})
+	AbortTest()
 }

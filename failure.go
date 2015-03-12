@@ -73,7 +73,15 @@ func AddFailure(format string, a ...interface{}) {
 	AddFailureRecord(r)
 }
 
+// A sentinel type that is used in a conspiracy between AbortTest and runTests.
+// If runTests sees an abortError as the value given to a panic() call, it will
+// avoid printing the panic error.
+type abortError struct {
+}
+
 // Immediately stop executing the running test, causing it to fail with the
 // failures previously recorded. Behavior is undefined if no failures have been
 // recorded.
-func AbortTest()
+func AbortTest() {
+	panic(abortError{})
+}

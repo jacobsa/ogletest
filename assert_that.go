@@ -26,7 +26,7 @@ func assertThat(
 	errorParts []interface{}) {
 	passed := expectThat(x, m, depth+1, errorParts)
 	if !passed {
-		panic(&assertThatError{})
+		AbortTest()
 	}
 }
 
@@ -43,10 +43,4 @@ func AssertThat(
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
 	assertThat(x, m, 1, errorParts)
-}
-
-// assertThatError is a sentinel type that is used in a conspiracy between
-// AssertThat and runTests. If runTests sees a *assertThatError as the value
-// given to a panic() call, it will avoid printing the panic error.
-type assertThatError struct {
 }
