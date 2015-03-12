@@ -150,7 +150,7 @@ func (t *FailingTest) AddFailureRecord() {
 	r := FailureRecord{
 		FileName:   "foo.go",
 		LineNumber: 17,
-		"taco\nburrito",
+		Error:      "taco\nburrito",
 	}
 
 	AddFailureRecord(r)
