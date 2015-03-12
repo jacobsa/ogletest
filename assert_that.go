@@ -39,7 +39,7 @@ func assertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) expectationResult {
-	res := ExpectThat(x, m, errorParts...)
+	res := expectThat(x, m, errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
