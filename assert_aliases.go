@@ -21,7 +21,11 @@ import (
 
 // AssertEq(e, a) is equivalent to AssertThat(a, oglematchers.Equals(e)).
 func AssertEq(expected, actual interface{}, errorParts ...interface{}) {
-	assertThat(actual, oglematchers.Equals(expected), 1, errorParts)
+	assertThat(
+		actual,
+		oglematchers.Equals(expected),
+		1,
+		errorParts)
 }
 
 // AssertNe(e, a) is equivalent to AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
