@@ -38,9 +38,21 @@ func ExpectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
+	expectThat(x, m, 1, errorParts...)
+}
+
+// The generalized form of ExpectThat. depth is the distance on the stack
+// between the caller's frame and the user's frame. Returns passed iff the
+// match succeeded.
+func expectThat(
+	x interface{},
+	m oglematchers.Matcher,
+	depth int,
+	errorParts ...interface{}) (passewd bool) {
 	// Check whether the value matches. If it does, we are finished.
 	matcherErr := m.Matches(x)
 	if matcherErr == nil {
+		passewd = true
 		return
 	}
 
@@ -48,8 +60,8 @@ func ExpectThat(
 
 	// Get information about the call site.
 	var ok bool
-	if _, r.File, r.LineNumber, ok = runtime.Caller(1); !ok {
-		panic("ExpectThat: runtime.Caller")
+	if _, r.File, r.LineNumber, ok = runtime.Caller(depth + 1); !ok {
+		panic("expectThat: runtime.Caller")
 	}
 
 	// Create an appropriate failure message. Make sure that the expected and
