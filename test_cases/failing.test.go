@@ -146,6 +146,27 @@ func (t *FailingTest) AssertFalseFailure() {
 	panic("Shouldn't get here.")
 }
 
+func (t *FailingTest) AddFailureRecord() {
+	r := FailureRecord{
+		FileName:   "foo.go",
+		LineNumber: 17,
+		Error:      "taco\nburrito",
+	}
+
+	AddFailureRecord(r)
+}
+
+func (t *FailingTest) AddFailure() {
+	AddFailure("taco")
+	AddFailure("burrito: %d", 17)
+}
+
+func (t *FailingTest) AddFailureThenAbortTest() {
+	AddFailure("enchilada")
+	AbortTest()
+	fmt.Println("Shouldn't get here.")
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Expectation failure during SetUp
 ////////////////////////////////////////////////////////////////////////

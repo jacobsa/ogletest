@@ -32,13 +32,13 @@ var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to r
 // runTestsOnce protects RunTests from executing multiple times.
 var runTestsOnce sync.Once
 
-func isAssertThatError(x interface{}) bool {
-	_, ok := x.(*assertThatError)
+func isAbortError(x interface{}) bool {
+	_, ok := x.(abortError)
 	return ok
 }
 
 // Run a single test function, returning a slice of failure records.
-func runTestFunction(tf TestFunction) (failures []*failureRecord) {
+func runTestFunction(tf TestFunction) (failures []FailureRecord) {
 	// Set up a clean slate for this test. Make sure to reset it after everything
 	// below is finished, so we don't accidentally use it elsewhere.
 	currentlyRunningTest = newTestInfo()
@@ -118,17 +118,11 @@ func runTestsInternal(t *testing.T) {
 			// Print any failures, and mark the test as having failed if there are any.
 			for _, record := range failures {
 				t.Fail()
-				userErrorSection := ""
-				if record.UserError != "" {
-					userErrorSection = record.UserError + "\n"
-				}
-
 				fmt.Printf(
-					"%s:%d:\n%s\n%s\n",
+					"%s:%d:\n%s\n\n",
 					record.FileName,
 					record.LineNumber,
-					record.GeneratedError,
-					userErrorSection)
+					record.Error)
 			}
 
 			// Print a banner for the end of the test.
@@ -223,20 +217,20 @@ func runWithProtection(f func()) (panicked bool) {
 		panicked = true
 
 		// We modify the currently running test below.
-		currentlyRunningTest.mutex.Lock()
-		defer currentlyRunningTest.mutex.Unlock()
+		currentlyRunningTest.mu.Lock()
+		defer currentlyRunningTest.mu.Unlock()
 
 		// If the function panicked (and the panic was not due to an AssertThat
 		// failure), add a failure for the panic.
-		if !isAssertThatError(r) {
-			var panicRecord failureRecord
+		if !isAbortError(r) {
+			var panicRecord FailureRecord
 			panicRecord.FileName, panicRecord.LineNumber = findPanicFileLine()
-			panicRecord.GeneratedError = fmt.Sprintf(
+			panicRecord.Error = fmt.Sprintf(
 				"panic: %v\n\n%s", r, formatPanicStack())
 
 			currentlyRunningTest.failureRecords = append(
 				currentlyRunningTest.failureRecords,
-				&panicRecord)
+				panicRecord)
 		}
 	}()
 
