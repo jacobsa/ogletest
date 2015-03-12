@@ -20,105 +20,93 @@ import (
 )
 
 // AssertEq(e, a) is equivalent to AssertThat(a, oglematchers.Equals(e)).
-func AssertEq(expected, actual interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(actual, oglematchers.Equals(expected), errorParts...)
+func AssertEq(expected, actual interface{}, errorParts ...interface{}) {
+	res := expectThat(actual, oglematchers.Equals(expected), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertNe(e, a) is equivalent to AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
-func AssertNe(expected, actual interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(actual, oglematchers.Not(oglematchers.Equals(expected)), errorParts...)
+func AssertNe(expected, actual interface{}, errorParts ...interface{}) {
+	res := expectThat(
+		actual,
+		oglematchers.Not(oglematchers.Equals(expected)),
+		errorParts...)
+
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertLt(x, y) is equivalent to AssertThat(x, oglematchers.LessThan(y)).
-func AssertLt(x, y interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(x, oglematchers.LessThan(y), errorParts...)
+func AssertLt(x, y interface{}, errorParts ...interface{}) {
+	res := expectThat(x, oglematchers.LessThan(y), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertLe(x, y) is equivalent to AssertThat(x, oglematchers.LessOrEqual(y)).
-func AssertLe(x, y interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(x, oglematchers.LessOrEqual(y), errorParts...)
+func AssertLe(x, y interface{}, errorParts ...interface{}) {
+	res := expectThat(x, oglematchers.LessOrEqual(y), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertGt(x, y) is equivalent to AssertThat(x, oglematchers.GreaterThan(y)).
-func AssertGt(x, y interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(x, oglematchers.GreaterThan(y), errorParts...)
+func AssertGt(x, y interface{}, errorParts ...interface{}) {
+	res := expectThat(x, oglematchers.GreaterThan(y), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertGe(x, y) is equivalent to AssertThat(x, oglematchers.GreaterOrEqual(y)).
-func AssertGe(x, y interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(x, oglematchers.GreaterOrEqual(y), errorParts...)
+func AssertGe(x, y interface{}, errorParts ...interface{}) {
+	res := expectThat(x, oglematchers.GreaterOrEqual(y), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertTrue(b) is equivalent to AssertThat(b, oglematchers.Equals(true)).
-func AssertTrue(b interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(b, oglematchers.Equals(true), errorParts...)
+func AssertTrue(b interface{}, errorParts ...interface{}) {
+	res := expectThat(b, oglematchers.Equals(true), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
 
 // AssertFalse(b) is equivalent to AssertThat(b, oglematchers.Equals(false)).
-func AssertFalse(b interface{}, errorParts ...interface{}) ExpectationResult {
-	res := ExpectThat(b, oglematchers.Equals(false), errorParts...)
+func AssertFalse(b interface{}, errorParts ...interface{}) {
+	res := expectThat(b, oglematchers.Equals(false), errorParts...)
 	res.SetCaller(getCallerForAlias())
 
 	matcherErr := res.MatchResult()
 	if matcherErr != nil {
 		panic(&assertThatError{})
 	}
-
-	return res
 }
