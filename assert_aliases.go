@@ -28,7 +28,8 @@ func AssertEq(expected, actual interface{}, errorParts ...interface{}) {
 		errorParts)
 }
 
-// AssertNe(e, a) is equivalent to AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
+// AssertNe(e, a) is equivalent to
+// AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
 func AssertNe(expected, actual interface{}, errorParts ...interface{}) {
 	assertThat(
 		actual,
@@ -52,7 +53,8 @@ func AssertGt(x, y interface{}, errorParts ...interface{}) {
 	assertThat(x, oglematchers.GreaterThan(y), 1, errorParts)
 }
 
-// AssertGe(x, y) is equivalent to AssertThat(x, oglematchers.GreaterOrEqual(y)).
+// AssertGe(x, y) is equivalent to
+// AssertThat(x, oglematchers.GreaterOrEqual(y)).
 func AssertGe(x, y interface{}, errorParts ...interface{}) {
 	assertThat(x, oglematchers.GreaterOrEqual(y), 1, errorParts)
 }
