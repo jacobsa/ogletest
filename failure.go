@@ -42,7 +42,14 @@ type FailureRecord struct {
 // Most users will want to use ExpectThat, ExpectEq, etc. instead of this
 // function. Those that do want to report arbitrary errors will probably be
 // satisfied with AddFailure, which is easier to use.
-func AddFailureRecord(r FailureRecord)
+func AddFailureRecord(r FailureRecord) {
+	currentlyRunningTest.mu.Lock()
+	defer currentlyRunningTest.mu.Unlock()
+
+	currentlyRunningTest.failureRecords = append(
+		currentlyRunningTest.failureRecords,
+		r)
+}
 
 // Call AddFailureRecord with a record whose file name and line number come
 // from the caller of this function, and whose error string is created by
