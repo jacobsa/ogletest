@@ -17,8 +17,9 @@ package ogletest
 
 import (
 	"errors"
-	. "github.com/jacobsa/oglematchers"
 	"testing"
+
+	. "github.com/jacobsa/oglematchers"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -134,7 +135,10 @@ func TestNoMatchWithErrorTExt(t *testing.T) {
 	assertEqInt(t, 1, len(currentlyRunningTest.failureRecords))
 	record := currentlyRunningTest.failureRecords[0]
 
-	expectEqStr(t, "Expected: taco\nActual:   17, which is foo", record.GeneratedError)
+	expectEqStr(
+		t,
+		"Expected: taco\nActual:   17, which is foo",
+		record.GeneratedError)
 }
 
 func TestFailureWithUserMessage(t *testing.T) {
