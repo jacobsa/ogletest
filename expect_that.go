@@ -67,8 +67,9 @@ func expectThat(
 	errorParts ...interface{}) expectationResult {
 	res := &expectationResultImpl{}
 
-	// Get information about the call site.
-	_, file, lineNumber, ok := runtime.Caller(1)
+	// Get information about the call site, compensating for the
+	// ExpectThat -> expectThat indirection.
+	_, file, lineNumber, ok := runtime.Caller(2)
 	if !ok {
 		panic("ExpectThat: runtime.Caller")
 	}
