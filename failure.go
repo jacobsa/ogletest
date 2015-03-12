@@ -17,6 +17,7 @@ package ogletest
 
 import (
 	"fmt"
+	"path"
 	"runtime"
 )
 
@@ -69,6 +70,8 @@ func AddFailure(format string, a ...interface{}) {
 	if _, r.FileName, r.LineNumber, ok = runtime.Caller(1); !ok {
 		panic("Can't find caller")
 	}
+
+	r.FileName = path.Base(r.FileName)
 
 	AddFailureRecord(r)
 }
