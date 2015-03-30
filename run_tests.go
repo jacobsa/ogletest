@@ -27,7 +27,15 @@ import (
 	"time"
 )
 
-var testFilter = flag.String("ogletest.run", "", "Regexp for matching tests to run.")
+var fTestFilter = flag.String(
+	"ogletest.run",
+	"",
+	"Regexp for matching tests to run.")
+
+var fStopEarly = flag.Bool(
+	"ogletest.stop_early",
+	false,
+	"If true, stop after the first failure.")
 
 // runTestsOnce protects RunTests from executing multiple times.
 var runTestsOnce sync.Once
@@ -98,6 +106,13 @@ func RunTests(t *testing.T) {
 func runTestsInternal(t *testing.T) {
 	// Process each registered suite.
 	for _, suite := range registeredSuites {
+		// Stop now if we've already seen a failure and we've been told to stop
+		// early.
+		if t.Failed() && *fStopEarly {
+			break
+		}
+
+		// Print a banner.
 		fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 
 		// Run the SetUp function, if any.
@@ -143,6 +158,12 @@ func runTestsInternal(t *testing.T) {
 				suite.Name,
 				tf.Name,
 				timeMessage)
+
+			// Stop running tests from this suite if we've been told to stop early
+			// and this test failed.
+			if t.Failed() && *fStopEarly {
+				break
+			}
 		}
 
 		// Run the suite's TearDown function, if any.
@@ -275,7 +296,7 @@ func formatPanicStack() string {
 
 // Filter test functions according to the user-supplied filter flag.
 func filterTestFunctions(suite TestSuite) (out []TestFunction) {
-	re, err := regexp.Compile(*testFilter)
+	re, err := regexp.Compile(*fTestFilter)
 	if err != nil {
 		panic("Invalid value for --ogletest.run: " + err.Error())
 	}
