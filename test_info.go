@@ -18,6 +18,8 @@ package ogletest
 import (
 	"sync"
 
+	"golang.org/x/net/context"
+
 	"github.com/jacobsa/oglemock"
 )
 
@@ -31,6 +33,11 @@ type TestInfo struct {
 	//
 	// Note that this feature is still experimental, and is subject to change.
 	MockController oglemock.Controller
+
+	// A context that can be used by tests for long-running operations. In
+	// particular, this enables conveniently tracing the execution of a test
+	// function with reqtrace.
+	Ctx context.Context
 
 	// A mutex protecting shared state.
 	mu sync.RWMutex
@@ -48,6 +55,7 @@ var currentlyRunningTest *TestInfo
 func newTestInfo() (info *TestInfo) {
 	info = &TestInfo{}
 	info.MockController = oglemock.NewController(&testInfoErrorReporter{info})
+	info.Ctx = context.Background()
 
 	return
 }

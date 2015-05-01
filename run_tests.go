@@ -25,6 +25,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/jacobsa/reqtrace"
 )
 
 var fTestFilter = flag.String(
@@ -54,10 +56,16 @@ func runTestFunction(tf TestFunction) (failures []FailureRecord) {
 		currentlyRunningTest = nil
 	}()
 
+	ti := currentlyRunningTest
+
+	// Start a trace.
+	var reportOutcome reqtrace.ReportFunc
+	ti.Ctx, reportOutcome = reqtrace.Trace(ti.Ctx, tf.Name)
+
 	// Run the SetUp function, if any, paying attention to whether it panics.
 	setUpPanicked := false
 	if tf.SetUp != nil {
-		setUpPanicked = runWithProtection(func() { tf.SetUp(currentlyRunningTest) })
+		setUpPanicked = runWithProtection(func() { tf.SetUp(ti) })
 	}
 
 	// Run the test function itself, but only if the SetUp function didn't panic.
@@ -73,9 +81,16 @@ func runTestFunction(tf TestFunction) (failures []FailureRecord) {
 
 	// Tell the mock controller for the tests to report any errors it's sitting
 	// on.
-	currentlyRunningTest.MockController.Finish()
+	ti.MockController.Finish()
 
-	return currentlyRunningTest.failureRecords
+	// Report the outcome to reqtrace.
+	if len(ti.failureRecords) == 0 {
+		reportOutcome(nil)
+	} else {
+		reportOutcome(fmt.Errorf("%v failure records", len(ti.failureRecords)))
+	}
+
+	return ti.failureRecords
 }
 
 // Run everything registered with Register (including via the wrapper
