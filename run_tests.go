@@ -116,6 +116,12 @@ func RunTests(t *testing.T) {
 	runTestsOnce.Do(func() { runTestsInternal(t) })
 }
 
+// Request that RunTests stop what it's doing. After the currently running test
+// is finished, including tear-down, the program will exit with an error code.
+func StopRunningTests() {
+	panic("TODO")
+}
+
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
 // sync.Once.
 func runTestsInternal(t *testing.T) {
