@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"os"
 	"path"
 	"regexp"
 	"runtime"
@@ -118,12 +119,12 @@ func RunTests(t *testing.T) {
 }
 
 // Signalling between RunTests and StopRunningTests.
-var stopRunning uint64
+var gStopRunning uint64
 
 // Request that RunTests stop what it's doing. After the currently running test
 // is finished, including tear-down, the program will exit with an error code.
 func StopRunningTests() {
-	atomic.StoreUint64(&stopRunning, 1)
+	atomic.StoreUint64(&gStopRunning, 1)
 }
 
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
@@ -146,7 +147,15 @@ func runTestsInternal(t *testing.T) {
 		}
 
 		// Run each test function that the user has not told us to skip.
+		stoppedEarly := false
 		for _, tf := range filterTestFunctions(suite) {
+			// Did the user request that we stop running tests? If so, skip the rest
+			// of this suite (and exit after tearing it down).
+			if atomic.LoadUint64(&gStopRunning) != 0 {
+				stoppedEarly = true
+				break
+			}
+
 			// Print a banner for the start of this test function.
 			fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
@@ -194,6 +203,12 @@ func runTestsInternal(t *testing.T) {
 		// Run the suite's TearDown function, if any.
 		if suite.TearDown != nil {
 			suite.TearDown()
+		}
+
+		// Were we told to exit early?
+		if stoppedEarly {
+			fmt.Println("Exiting early due to user request.")
+			os.Exit(1)
 		}
 
 		fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
