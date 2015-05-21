@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/jacobsa/oglematchers"
 	. "github.com/jacobsa/ogletest"
 )
 
