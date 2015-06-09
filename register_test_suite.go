@@ -24,61 +24,37 @@ import (
 
 // Test suites that implement this interface have special meaning to
 // RegisterTestSuite.
-type SetUpTestSuiteInterface interface {
-	// This method will be called exactly once, before the first test method is
-	// run. The receiver of this method will be a zero value of the test suite
-	// type, and is not shared with any other methods. Use this method to set up
-	// any necessary global state shared by all of the test methods.
-	SetUpTestSuite()
-}
-
-// Test suites that implement this interface have special meaning to
-// RegisterTestSuite.
-type TearDownTestSuiteInterface interface {
-	// This method will be called exactly once, after the last test method is
-	// run. The receiver of this method will be a zero value of the test suite
-	// type, and is not shared with any other methods. Use this method to clean
-	// up after any necessary global state shared by all of the test methods.
-	TearDownTestSuite()
-}
-
-// Test suites that implement this interface have special meaning to
-// Register.
 type SetUpInterface interface {
 	// This method is called before each test method is invoked, with the same
 	// receiver as that test method. At the time this method is invoked, the
 	// receiver is a zero value for the test suite type. Use this method for
 	// common setup code that works on data not shared across tests.
-	SetUp(*TestInfo)
+	SetUp(t *T)
 }
 
 // Test suites that implement this interface have special meaning to
-// Register.
+// RegisterTestSuite.
 type TearDownInterface interface {
 	// This method is called after each test method is invoked, with the same
 	// receiver as that test method. Use this method for common cleanup code that
 	// works on data not shared across tests.
-	TearDown()
+	TearDown(t *T)
 }
 
 // RegisterTestSuite tells ogletest about a test suite containing tests that it
 // should run. Any exported method on the type pointed to by the supplied
-// prototype value will be treated as test methods, with the exception of the
-// methods defined by the following interfaces, which when present are treated
-// as described in the documentation for those interfaces:
+// prototype value that accepts a single argument of type *T will be treated as
+// a test method, with the exception of the methods defined by the following
+// interfaces, which when present are treated as described in the documentation
+// for those interfaces:
 //
-//  *  SetUpTestSuiteInterface
 //  *  SetUpInterface
 //  *  TearDownInterface
-//  *  TearDownTestSuiteInterface
 //
 // Each test method is invoked on a different receiver, which is initially a
-// zero value of the test suite type.
+// zero value of the test suite type. Methods may be run concurrently.
 //
 // Example:
-//
-//     // Some value that is needed by the tests but is expensive to compute.
-//     var someExpensiveThing uint
 //
 //     type FooTest struct {
 //       // Path to a temporary file used by the tests. Each test gets a
@@ -87,21 +63,20 @@ type TearDownInterface interface {
 //     }
 //     func init() { ogletest.RegisterTestSuite(&FooTest{}) }
 //
-//     func (t *FooTest) SetUpTestSuite() {
-//       someExpensiveThing = ComputeSomeExpensiveThing()
+//     func (s *FooTest) SetUp(t *ogletest.T) {
+//       var err error
+//       s.tempFile, err = CreateTempFile()
+//       t.AssertEq(nil, err)
 //     }
 //
-//     func (t *FooTest) SetUp(ti *ogletest.TestInfo) {
-//       t.tempFile = CreateTempFile()
+//     func (s *FooTest) TearDown(t *ogletest.T) {
+//       err := DeleteTempFile(s.tempFile)
+//       t.AssertEq(nil, err)
 //     }
 //
-//     func (t *FooTest) TearDown() {
-//       DeleteTempFile(t.tempFile)
-//     }
-//
-//     func (t *FooTest) FrobinicatorIsSuccessfullyTweaked() {
-//       res := DoSomethingWithExpensiveThing(someExpensiveThing, t.tempFile)
-//       ExpectThat(res, Equals(true))
+//     func (s *FooTest) FrobinicatorIsSuccessfullyTweaked(t *ogletest.T) {
+//       res := DoSomething(s.tempFile)
+//       t.ExpectTrue(res)
 //     }
 //
 func RegisterTestSuite(p interface{}) {
@@ -154,7 +129,7 @@ func RegisterTestSuite(p interface{}) {
 	}
 
 	// Register the suite.
-	Register(suite)
+	RegisterTestSuite(suite)
 }
 
 func runTestMethod(suite reflect.Value, method reflect.Method) {
