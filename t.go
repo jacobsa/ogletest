@@ -90,6 +90,12 @@ func (t *T) AddFailure(format string, a ...interface{}) {
 	t.AddFailureRecord(r)
 }
 
+// A sentinel type that is used in a conspiracy between AbortTest and runTests.
+// If runTests sees an abortError as the value given to a panic() call, it will
+// avoid printing the panic error.
+type abortError struct {
+}
+
 // Immediately stop executing the test, causing it to fail with the failures
 // previously recorded. Behavior is undefined if no failures have been
 // recorded.
@@ -97,7 +103,7 @@ func (t *T) AddFailure(format string, a ...interface{}) {
 // This function must only be called from the goroutine on which the test was
 // initially started.
 func (t *T) AbortTest() {
-	panic("TODO")
+	panic(abortError{})
 }
 
 // tErrorReporter is an oglemock.ErrorReporter that writes failure records into
