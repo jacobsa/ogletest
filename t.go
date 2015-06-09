@@ -39,6 +39,16 @@ type T struct {
 	MockController oglemock.Controller
 }
 
+func newT() (t *T)
+
+func (t *T) name() string {
+	panic("TODO")
+}
+
+func (t *T) failureRecords() []FailureRecord {
+	panic("TODO")
+}
+
 // FailureRecord represents a single failed expectation or assertion for a
 // test. Most users don't want to interact with these directly; they are
 // generated implicitly using ExpectThat, AssertThat, ExpectLt, etc.

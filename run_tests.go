@@ -51,48 +51,42 @@ func isAbortError(x interface{}) bool {
 
 // Run a single test function, returning a slice of failure records.
 func runTestFunction(tf TestFunction) (failures []FailureRecord) {
-	// Set up a clean slate for this test. Make sure to reset it after everything
-	// below is finished, so we don't accidentally use it elsewhere.
-	currentlyRunningTest = newTestInfo()
-	defer func() {
-		currentlyRunningTest = nil
-	}()
-
-	ti := currentlyRunningTest
+	t := newT()
 
 	// Start a trace.
 	var reportOutcome reqtrace.ReportFunc
-	ti.Ctx, reportOutcome = reqtrace.Trace(ti.Ctx, tf.Name)
+	t.Ctx, reportOutcome = reqtrace.Trace(t.Ctx, t.name())
 
 	// Run the SetUp function, if any, paying attention to whether it panics.
 	setUpPanicked := false
 	if tf.SetUp != nil {
-		setUpPanicked = runWithProtection(func() { tf.SetUp(ti) })
+		setUpPanicked = runWithProtection(func() { tf.SetUp(t) })
 	}
 
 	// Run the test function itself, but only if the SetUp function didn't panic.
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
-		runWithProtection(tf.Run)
+		runWithProtection(func() { tf.Run(t) })
 	}
 
 	// Run the TearDown function, if any.
 	if tf.TearDown != nil {
-		runWithProtection(tf.TearDown)
+		runWithProtection(func() { tf.TearDown(t) })
 	}
 
 	// Tell the mock controller for the tests to report any errors it's sitting
 	// on.
-	ti.MockController.Finish()
+	t.MockController.Finish()
 
 	// Report the outcome to reqtrace.
-	if len(ti.failureRecords) == 0 {
+	failureRecords := t.failureRecords()
+	if len(failureRecords) == 0 {
 		reportOutcome(nil)
 	} else {
-		reportOutcome(fmt.Errorf("%v failure records", len(ti.failureRecords)))
+		reportOutcome(fmt.Errorf("%v failure records", len(failureRecords)))
 	}
 
-	return ti.failureRecords
+	return failureRecords
 }
 
 // Run everything registered with Register (including via the wrapper
