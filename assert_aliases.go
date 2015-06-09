@@ -20,8 +20,8 @@ import (
 )
 
 // AssertEq(e, a) is equivalent to AssertThat(a, oglematchers.Equals(e)).
-func AssertEq(expected, actual interface{}, errorParts ...interface{}) {
-	assertThat(
+func (t *T) AssertEq(expected, actual interface{}, errorParts ...interface{}) {
+	t.assertThat(
 		actual,
 		oglematchers.Equals(expected),
 		1,
@@ -30,8 +30,8 @@ func AssertEq(expected, actual interface{}, errorParts ...interface{}) {
 
 // AssertNe(e, a) is equivalent to
 // AssertThat(a, oglematchers.Not(oglematchers.Equals(e))).
-func AssertNe(expected, actual interface{}, errorParts ...interface{}) {
-	assertThat(
+func (t *T) AssertNe(expected, actual interface{}, errorParts ...interface{}) {
+	t.assertThat(
 		actual,
 		oglematchers.Not(oglematchers.Equals(expected)),
 		1,
@@ -39,32 +39,32 @@ func AssertNe(expected, actual interface{}, errorParts ...interface{}) {
 }
 
 // AssertLt(x, y) is equivalent to AssertThat(x, oglematchers.LessThan(y)).
-func AssertLt(x, y interface{}, errorParts ...interface{}) {
-	assertThat(x, oglematchers.LessThan(y), 1, errorParts)
+func (t *T) AssertLt(x, y interface{}, errorParts ...interface{}) {
+	t.assertThat(x, oglematchers.LessThan(y), 1, errorParts)
 }
 
 // AssertLe(x, y) is equivalent to AssertThat(x, oglematchers.LessOrEqual(y)).
-func AssertLe(x, y interface{}, errorParts ...interface{}) {
-	assertThat(x, oglematchers.LessOrEqual(y), 1, errorParts)
+func (t *T) AssertLe(x, y interface{}, errorParts ...interface{}) {
+	t.assertThat(x, oglematchers.LessOrEqual(y), 1, errorParts)
 }
 
 // AssertGt(x, y) is equivalent to AssertThat(x, oglematchers.GreaterThan(y)).
-func AssertGt(x, y interface{}, errorParts ...interface{}) {
-	assertThat(x, oglematchers.GreaterThan(y), 1, errorParts)
+func (t *T) AssertGt(x, y interface{}, errorParts ...interface{}) {
+	t.assertThat(x, oglematchers.GreaterThan(y), 1, errorParts)
 }
 
 // AssertGe(x, y) is equivalent to
 // AssertThat(x, oglematchers.GreaterOrEqual(y)).
-func AssertGe(x, y interface{}, errorParts ...interface{}) {
-	assertThat(x, oglematchers.GreaterOrEqual(y), 1, errorParts)
+func (t *T) AssertGe(x, y interface{}, errorParts ...interface{}) {
+	t.assertThat(x, oglematchers.GreaterOrEqual(y), 1, errorParts)
 }
 
 // AssertTrue(b) is equivalent to AssertThat(b, oglematchers.Equals(true)).
-func AssertTrue(b interface{}, errorParts ...interface{}) {
-	assertThat(b, oglematchers.Equals(true), 1, errorParts)
+func (t *T) AssertTrue(b interface{}, errorParts ...interface{}) {
+	t.assertThat(b, oglematchers.Equals(true), 1, errorParts)
 }
 
 // AssertFalse(b) is equivalent to AssertThat(b, oglematchers.Equals(false)).
-func AssertFalse(b interface{}, errorParts ...interface{}) {
-	assertThat(b, oglematchers.Equals(false), 1, errorParts)
+func (t *T) AssertFalse(b interface{}, errorParts ...interface{}) {
+	t.assertThat(b, oglematchers.Equals(false), 1, errorParts)
 }
