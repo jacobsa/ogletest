@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"path"
 	"runtime"
+	"sync"
 
 	"github.com/jacobsa/oglemock"
 	"golang.org/x/net/context"
@@ -38,7 +39,22 @@ type T struct {
 	// finishes.
 	MockController oglemock.Controller
 
+	/////////////////////////
+	// Constant data
+	/////////////////////////
+
 	testName string
+
+	/////////////////////////
+	// Mutable state
+	/////////////////////////
+
+	mu sync.Mutex
+
+	// Failure records accumulated so far. Only ever appended to.
+	//
+	// GUARDED_BY(mu)
+	records []FailureRecord
 }
 
 func newT(
@@ -59,7 +75,10 @@ func (t *T) name() string {
 }
 
 func (t *T) failureRecords() []FailureRecord {
-	panic("TODO")
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	return t.records
 }
 
 // FailureRecord represents a single failed expectation or assertion for a
