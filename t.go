@@ -16,6 +16,10 @@
 package ogletest
 
 import (
+	"fmt"
+	"path"
+	"runtime"
+
 	"github.com/jacobsa/oglemock"
 	"golang.org/x/net/context"
 )
@@ -33,4 +37,65 @@ type T struct {
 	// be run by the user; ogletest will do that automatically after the test
 	// finishes.
 	MockController oglemock.Controller
+}
+
+// FailureRecord represents a single failed expectation or assertion for a
+// test. Most users don't want to interact with these directly; they are
+// generated implicitly using ExpectThat, AssertThat, ExpectLt, etc.
+type FailureRecord struct {
+	// The file name within which the expectation failed, e.g. "foo_test.go".
+	FileName string
+
+	// The line number at which the expectation failed.
+	LineNumber int
+
+	// The error associated with the file:line pair above. For example, the
+	// following expectation:
+	//
+	//     ExpectEq(17, "taco")"
+	//
+	// May cause this error:
+	//
+	//     Expected: 17
+	//     Actual:   "taco", which is not numeric
+	//
+	Error string
+}
+
+// Record a failure (and continue running the test).
+//
+// Most users will want to use ExpectThat, ExpectEq, etc. instead of this
+// function. Those that do want to report arbitrary errors will probably be
+// satisfied with AddFailure, which is easier to use.
+func (t *T) AddFailureRecord(r FailureRecord) {
+	panic("TODO")
+}
+
+// Call AddFailureRecord with a record whose file name and line number come
+// from the caller of this function, and whose error string is created by
+// calling fmt.Sprintf using the arguments to this function.
+func (t *T) AddFailure(format string, a ...interface{}) {
+	r := FailureRecord{
+		Error: fmt.Sprintf(format, a...),
+	}
+
+	// Get information about the call site.
+	var ok bool
+	if _, r.FileName, r.LineNumber, ok = runtime.Caller(1); !ok {
+		panic("Can't find caller")
+	}
+
+	r.FileName = path.Base(r.FileName)
+
+	t.AddFailureRecord(r)
+}
+
+// Immediately stop executing the test, causing it to fail with the failures
+// previously recorded. Behavior is undefined if no failures have been
+// recorded.
+//
+// This function must only be called from the goroutine on which the test was
+// initially started.
+func (t *T) AbortTest() {
+	panic("TODO")
 }
