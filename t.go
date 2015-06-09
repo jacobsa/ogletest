@@ -99,3 +99,30 @@ func (t *T) AddFailure(format string, a ...interface{}) {
 func (t *T) AbortTest() {
 	panic("TODO")
 }
+
+// tErrorReporter is an oglemock.ErrorReporter that writes failure records into
+// a T.
+type tErrorReporter struct {
+	t *T
+}
+
+func (r tErrorReporter) ReportError(
+	fileName string,
+	lineNumber int,
+	err error) {
+	record := FailureRecord{
+		FileName:   fileName,
+		LineNumber: lineNumber,
+		Error:      err.Error(),
+	}
+
+	r.t.AddFailureRecord(record)
+}
+
+func (r tErrorReporter) ReportFatalError(
+	fileName string,
+	lineNumber int,
+	err error) {
+	r.ReportError(fileName, lineNumber, err)
+	r.t.AbortTest()
+}
