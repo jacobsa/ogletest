@@ -19,22 +19,13 @@ package ogletest
 // ogletest.RegisterTestSuite.
 //
 // A test suite is the basic unit of registration in ogletest. It consists of
-// zero or more named test functions which will be run in sequence, along with
-// optional setup and tear-down functions.
+// zero or more named test functions which will be run in sequence.
 type TestSuite struct {
 	// The name of the overall suite, e.g. "MyPackageTest".
 	Name string
 
-	// If non-nil, a function that will be run exactly once, before any of the
-	// test functions are run.
-	SetUp func()
-
 	// The test functions comprising this suite.
 	TestFunctions []TestFunction
-
-	// If non-nil, a function that will be run exactly once, after all of the
-	// test functions have run.
-	TearDown func()
 }
 
 type TestFunction struct {
@@ -43,16 +34,15 @@ type TestFunction struct {
 	// in the ogletest UI as "FooTest.TweaksFrobnicator".
 	Name string
 
-	// If non-nil, a function that is run before Run, passed a pointer to a
-	// struct containing information about the test run.
-	SetUp func(*TestInfo)
+	// If non-nil, a function that is run before Run.
+	SetUp func(*T)
 
 	// The function to invoke for the test body. Must be non-nil. Will not be run
 	// if SetUp panics.
-	Run func()
+	Run func(*T)
 
 	// If non-nil, a function that is run after Run.
-	TearDown func()
+	TearDown func(*T)
 }
 
 // Register a test suite for execution by RunTests.
