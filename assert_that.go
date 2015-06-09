@@ -19,14 +19,14 @@ import (
 	"github.com/jacobsa/oglematchers"
 )
 
-func assertThat(
+func (t *T) assertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	depth int,
 	errorParts []interface{}) {
-	passed := expectThat(x, m, depth+1, errorParts)
+	passed := t.expectThat(x, m, depth+1, errorParts)
 	if !passed {
-		AbortTest()
+		t.AbortTest()
 	}
 }
 
@@ -35,12 +35,12 @@ func assertThat(
 // things like bounds checking:
 //
 //     someSlice := [...]
-//     AssertEq(1, len(someSlice))  // Protects next line from panicking.
-//     ExpectEq("taco", someSlice[0])
+//     t.AssertEq(1, len(someSlice))  // Protects next line from panicking.
+//     t.ExpectEq("taco", someSlice[0])
 //
-func AssertThat(
+func (t *T) AssertThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
-	assertThat(x, m, 1, errorParts)
+	t.assertThat(x, m, 1, errorParts)
 }
