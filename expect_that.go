@@ -25,27 +25,27 @@ import (
 )
 
 // ExpectThat confirms that the supplied matcher matches the value x, adding a
-// failure record to the currently running test if it does not. If additional
-// parameters are supplied, the first will be used as a format string for the
-// later ones, and the user-supplied error message will be added to the test
-// output in the event of a failure.
+// failure record to t if it does not. If additional parameters are supplied,
+// the first will be used as a format string for the later ones, and the
+// user-supplied error message will be added to the test output in the event of
+// a failure.
 //
 // For example:
 //
-//     ExpectThat(userName, Equals("jacobsa"))
-//     ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
+//     t.ExpectThat(userName, Equals("jacobsa"))
+//     t.ExpectThat(users[i], Equals("jacobsa"), "while processing user %d", i)
 //
-func ExpectThat(
+func (t *T) ExpectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	errorParts ...interface{}) {
-	expectThat(x, m, 1, errorParts)
+	t.expectThat(x, m, 1, errorParts)
 }
 
 // The generalized form of ExpectThat. depth is the distance on the stack
-// between the caller's frame and the user's frame. Returns passed iff the
-// match succeeded.
-func expectThat(
+// between the caller's frame and the user's frame. Returns passed == true iff
+// the match succeeded.
+func (t *T) expectThat(
 	x interface{},
 	m oglematchers.Matcher,
 	depth int,
@@ -94,7 +94,7 @@ func expectThat(
 	}
 
 	// Report the failure.
-	AddFailureRecord(r)
+	t.AddFailureRecord(r)
 
 	return
 }
