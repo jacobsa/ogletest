@@ -86,25 +86,15 @@ func RegisterTestSuite(p interface{}) {
 
 	val := reflect.ValueOf(p)
 	typ := val.Type()
-	var zeroInstance reflect.Value
 
 	// We will transform to a TestSuite struct.
 	suite := TestSuite{}
 	suite.Name = typ.Elem().Name()
 
-	zeroInstance = reflect.New(typ.Elem())
-	if i, ok := zeroInstance.Interface().(SetUpTestSuiteInterface); ok {
-		suite.SetUp = func() { i.SetUpTestSuite() }
-	}
-
-	zeroInstance = reflect.New(typ.Elem())
-	if i, ok := zeroInstance.Interface().(TearDownTestSuiteInterface); ok {
-		suite.TearDown = func() { i.TearDownTestSuite() }
-	}
-
 	// Transform a list of test methods for the suite, filtering them to just the
 	// ones that we don't need to skip.
-	for _, method := range filterMethods(suite.Name, srcutil.GetMethodsInSourceOrder(typ)) {
+	methods := filterMethods(suite.Name, srcutil.GetMethodsInSourceOrder(typ))
+	for _, method := range methods {
 		var tf TestFunction
 		tf.Name = method.Name
 
@@ -114,14 +104,14 @@ func RegisterTestSuite(p interface{}) {
 
 		// Bind the functions to the instance.
 		if i, ok := instance.Interface().(SetUpInterface); ok {
-			tf.SetUp = func(ti *TestInfo) { i.SetUp(ti) }
+			tf.SetUp = i.SetUp
 		}
 
 		methodCopy := method
-		tf.Run = func() { runTestMethod(instance, methodCopy) }
+		tf.Run = func(t *T) { runTestMethod(t, instance, methodCopy) }
 
 		if i, ok := instance.Interface().(TearDownInterface); ok {
-			tf.TearDown = func() { i.TearDown() }
+			tf.TearDown = i.TearDown
 		}
 
 		// Save the TestFunction.
@@ -129,10 +119,13 @@ func RegisterTestSuite(p interface{}) {
 	}
 
 	// Register the suite.
-	RegisterTestSuite(suite)
+	Register(suite)
 }
 
-func runTestMethod(suite reflect.Value, method reflect.Method) {
+func runTestMethod(t *T, suite reflect.Value, method reflect.Method) {
+	// TODO(jacobsa): Put type checking logic in filterMethods, and just leave
+	// out non-conforming methods. Then delete this check. Make sure to add an
+	// integration test that shows methods being left out.
 	if method.Func.Type().NumIn() != 1 {
 		panic(fmt.Sprintf(
 			"%s: expected 1 args, actually %d.",
@@ -140,10 +133,12 @@ func runTestMethod(suite reflect.Value, method reflect.Method) {
 			method.Func.Type().NumIn()))
 	}
 
-	method.Func.Call([]reflect.Value{suite})
+	method.Func.Call([]reflect.Value{suite, reflect.ValueOf(t)})
 }
 
-func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method) {
+func filterMethods(
+	suiteName string,
+	in []reflect.Method) (out []reflect.Method) {
 	for _, m := range in {
 		// Skip set up, tear down, and unexported methods.
 		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
@@ -157,9 +152,7 @@ func filterMethods(suiteName string, in []reflect.Method) (out []reflect.Method)
 }
 
 func isSpecialMethod(name string) bool {
-	return (name == "SetUpTestSuite") ||
-		(name == "TearDownTestSuite") ||
-		(name == "SetUp") ||
+	return (name == "SetUp") ||
 		(name == "TearDown")
 }
 
