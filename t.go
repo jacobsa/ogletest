@@ -110,7 +110,10 @@ type FailureRecord struct {
 // function. Those that do want to report arbitrary errors will probably be
 // satisfied with AddFailure, which is easier to use.
 func (t *T) AddFailureRecord(r FailureRecord) {
-	panic("TODO")
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	t.records = append(t.records, r)
 }
 
 // Call AddFailureRecord with a record whose file name and line number come
