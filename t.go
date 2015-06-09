@@ -37,12 +37,25 @@ type T struct {
 	// be run by the user; ogletest will do that automatically after the test
 	// finishes.
 	MockController oglemock.Controller
+
+	testName string
 }
 
-func newT() (t *T)
+func newT(
+	ctx context.Context,
+	name string) (t *T) {
+	t = &T{
+		Ctx:      ctx,
+		testName: name,
+	}
+
+	t.MockController = oglemock.NewController(tErrorReporter{t})
+
+	return
+}
 
 func (t *T) name() string {
-	panic("TODO")
+	return t.testName
 }
 
 func (t *T) failureRecords() []FailureRecord {

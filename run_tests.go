@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"golang.org/x/net/context"
+
 	"github.com/jacobsa/reqtrace"
 )
 
@@ -51,27 +53,27 @@ func isAbortError(x interface{}) bool {
 
 // Run a single test function, returning a slice of failure records.
 func runTestFunction(tf TestFunction) (failures []FailureRecord) {
-	t := newT()
-
 	// Start a trace.
-	var reportOutcome reqtrace.ReportFunc
-	t.Ctx, reportOutcome = reqtrace.Trace(t.Ctx, t.name())
+	ctx, reportOutcome := reqtrace.Trace(context.Background(), tf.Name)
+
+	// Create the T.
+	t := newT(ctx, tf.Name)
 
 	// Run the SetUp function, if any, paying attention to whether it panics.
 	setUpPanicked := false
 	if tf.SetUp != nil {
-		setUpPanicked = runWithProtection(func() { tf.SetUp(t) })
+		setUpPanicked = runWithProtection(t, tf.SetUp)
 	}
 
 	// Run the test function itself, but only if the SetUp function didn't panic.
 	// (This includes AssertThat errors.)
 	if !setUpPanicked {
-		runWithProtection(func() { tf.Run(t) })
+		runWithProtection(t, tf.Run)
 	}
 
 	// Run the TearDown function, if any.
 	if tf.TearDown != nil {
-		runWithProtection(func() { tf.TearDown(t) })
+		runWithProtection(t, tf.TearDown)
 	}
 
 	// Tell the mock controller for the tests to report any errors it's sitting
@@ -135,11 +137,6 @@ func runTestsInternal(t *testing.T) {
 		// Print a banner.
 		fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 
-		// Run the SetUp function, if any.
-		if suite.SetUp != nil {
-			suite.SetUp()
-		}
-
 		// Run each test function that the user has not told us to skip.
 		stoppedEarly := false
 		for _, tf := range filterTestFunctions(suite) {
@@ -192,11 +189,6 @@ func runTestsInternal(t *testing.T) {
 			if t.Failed() && *fStopEarly {
 				break
 			}
-		}
-
-		// Run the suite's TearDown function, if any.
-		if suite.TearDown != nil {
-			suite.TearDown()
 		}
 
 		// Were we told to exit early?
@@ -261,7 +253,7 @@ func findPanicFileLine() (string, int) {
 // Run the supplied function, catching panics (including AssertThat errors) and
 // reporting them to the currently-running test as appropriate. Return true iff
 // the function panicked.
-func runWithProtection(f func()) (panicked bool) {
+func runWithProtection(t *T, f func(*T)) (panicked bool) {
 	defer func() {
 		// If the test didn't panic, we're done.
 		r := recover()
@@ -271,10 +263,6 @@ func runWithProtection(f func()) (panicked bool) {
 
 		panicked = true
 
-		// We modify the currently running test below.
-		currentlyRunningTest.mu.Lock()
-		defer currentlyRunningTest.mu.Unlock()
-
 		// If the function panicked (and the panic was not due to an AssertThat
 		// failure), add a failure for the panic.
 		if !isAbortError(r) {
@@ -283,13 +271,11 @@ func runWithProtection(f func()) (panicked bool) {
 			panicRecord.Error = fmt.Sprintf(
 				"panic: %v\n\n%s", r, formatPanicStack())
 
-			currentlyRunningTest.failureRecords = append(
-				currentlyRunningTest.failureRecords,
-				panicRecord)
+			t.AddFailureRecord(panicRecord)
 		}
 	}()
 
-	f()
+	f(t)
 	return
 }
 
