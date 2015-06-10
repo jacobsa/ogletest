@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest"
 )
 
-func TestStop(t *testing.T) { RunTests(t) }
+func TestStop(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Boilerplate
@@ -31,31 +31,26 @@ func TestStop(t *testing.T) { RunTests(t) }
 type StopTest struct {
 }
 
-var _ TearDownInterface = &StopTest{}
-var _ TearDownTestSuiteInterface = &StopTest{}
+var _ ogletest.TearDownInterface = &StopTest{}
 
-func init() { RegisterTestSuite(&StopTest{}) }
+func init() { ogletest.RegisterTestSuite(&StopTest{}) }
 
-func (t *StopTest) TearDown() {
+func (s *StopTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
-}
-
-func (t *StopTest) TearDownTestSuite() {
-	fmt.Println("TearDownTestSuite running.")
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *StopTest) First() {
+func (s *StopTest) First(t *ogletest.T) {
 }
 
-func (t *StopTest) Second() {
+func (s *StopTest) Second(t *ogletest.T) {
 	fmt.Println("About to call StopRunningTests.")
-	StopRunningTests()
+	ogletest.StopRunningTests()
 	fmt.Println("Called StopRunningTests.")
 }
 
-func (t *StopTest) Third() {
+func (s *StopTest) Third(t *ogletest.T) {
 }
