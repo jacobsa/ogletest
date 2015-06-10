@@ -410,11 +410,17 @@ func runTestsInternal(t *testing.T) {
 // StopRunningTests
 ////////////////////////////////////////////////////////////////////////
 
-// Signalling between RunTests and StopRunningTests.
-var gStopRunning uint64
+// A channel that is closed when the user wants us to halt after waiting for
+// the currently running tests to complete.
+var gStopRunning = make(chan struct{})
+
+// Protect StopRunningTests from closing gStopRunning twice.
+var gCloseStopRunning sync.Once
 
 // Request that RunTests stop running additional tests and cause the program to
 // exit with a non-zero status when the currently running tests finish.
 func StopRunningTests() {
-	atomic.StoreUint64(&gStopRunning, 1)
+	gCloseStopRunning.Do(func() {
+		close(gStopRunning)
+	})
 }
