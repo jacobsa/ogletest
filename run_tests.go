@@ -278,59 +278,32 @@ func processWork(
 // Test suites
 ////////////////////////////////////////////////////////////////////////
 
-// Run a single test suite, signalling failures to the supplied testing.T.
-//
-// TODO(jacobsa): Hoist parallelism so that we can process multiple suites in
-// parallel?
-func runTestSuite(
+// Wait for results for each test function in the suite of the given name,
+// signalling failures to the supplied testing.T.
+func processSuiteResults(
 	t *testing.T,
-	suite TestSuite) {
+	suiteName string,
+	work []workItem,
+	workers *sync.WaitGroup) {
 	// If the overall test target has already failed and we've been told to stop
 	// on failure, then don't do anything.
 	if t.Failed() && *fStopEarly {
 		return
 	}
 
-	// Set up a slice containing the work to be done.
-	var work []workItem
-	for _, tf := range filterTestFunctions(suite) {
-		wi := workItem{
-			tf:       tf,
-			complete: make(chan struct{}),
-		}
-
-		work = append(work, wi)
-	}
-
-	// Put pointers to those slice elements in a channel buffer.
-	workChan := make(chan *workItem, len(work))
-	for i := range work {
-		workChan <- &work[i]
-	}
-
-	// Start several workers processing work in parallel.
-	var wg sync.WaitGroup
-	for i := 0; i < *fParallelism; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			processWork(workChan)
-		}()
-	}
-
 	// Print results.
-	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
+	fmt.Printf("[----------] Running tests from %s\n", suiteName)
 	for i := range work {
 		wi := &work[i]
 
 		// Print a banner for the start of this test function.
-		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, wi.tf.Name)
+		fmt.Printf("[ RUN      ] %s.%s\n", suiteName, wi.tf.Name)
 
 		// Wait for the result. Special case: if the user has told us to finish up,
 		// join the workers and then exit in error.
 		select {
 		case <-gStopRunning:
-			wg.Wait()
+			workers.Wait()
 			fmt.Println("Exiting early due to user request.")
 			os.Exit(1)
 
@@ -360,7 +333,7 @@ func runTestSuite(
 		fmt.Printf(
 			"%s %s.%s%s\n",
 			bannerMessage,
-			suite.Name,
+			suiteName,
 			wi.tf.Name,
 			timeMessage)
 
@@ -371,7 +344,7 @@ func runTestSuite(
 		}
 	}
 
-	fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
+	fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -407,9 +380,56 @@ func RunTests(t *testing.T) {
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
 // sync.Once.
 func runTestsInternal(t *testing.T) {
-	// Process each registered suite.
-	for _, suite := range registeredSuites {
-		runTestSuite(t, suite)
+	// For each suite:
+	//
+	//  *  Filter to the set of test functions the user has asked us to run.
+	//  *  Set up a slice containing the work to be handed off below.
+	//
+	type suiteAndWork struct {
+		suiteName string
+		work      []workItem
+	}
+
+	var suites []suiteAndWork
+	var totalWorkItems int
+	for _, s := range registeredSuites {
+		suite := suiteAndWork{suiteName: s.Name}
+		for _, tf := range filterTestFunctions(s) {
+			wi := workItem{
+				tf:       tf,
+				complete: make(chan struct{}),
+			}
+
+			suite.work = append(suite.work, wi)
+			totalWorkItems++
+		}
+
+		suites = append(suites, suite)
+	}
+
+	// Set up a channel containing all of the work to be divvied out to the
+	// workers below.
+	workChan := make(chan *workItem, totalWorkItems)
+	for _, suite := range suites {
+		for i := range suite.work {
+			workChan <- &suite.work[i]
+		}
+	}
+	close(workChan)
+
+	// Start several workers processing work concurrently.
+	var wg sync.WaitGroup
+	for i := 0; i < *fParallelism; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			processWork(workChan)
+		}()
+	}
+
+	// Process results for each suite.
+	for _, suite := range suites {
+		processSuiteResults(t, suite.suiteName, suite.work, &wg)
 	}
 }
 
