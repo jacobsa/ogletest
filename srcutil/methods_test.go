@@ -21,11 +21,11 @@ import (
 	"testing"
 
 	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest"
 	"github.com/jacobsa/ogletest/srcutil"
 )
 
-func TestRegisterMethodsTest(t *testing.T) { RunTests(t) }
+func TestRegisterMethodsTest(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -34,7 +34,7 @@ func TestRegisterMethodsTest(t *testing.T) { RunTests(t) }
 type MethodsTest struct {
 }
 
-func init() { RegisterTestSuite(&MethodsTest{}) }
+func init() { ogletest.RegisterTestSuite(&MethodsTest{}) }
 
 type OneMethodType int
 
@@ -75,25 +75,27 @@ func NameIs(name string) Matcher {
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *MethodsTest) NoMethods() {
+func (s *MethodsTest) NoMethods(t *ogletest.T) {
 	type foo int
 
 	methods := srcutil.GetMethodsInSourceOrder(reflect.TypeOf(foo(17)))
-	ExpectThat(methods, ElementsAre())
+	t.ExpectThat(methods, ElementsAre())
 }
 
-func (t *MethodsTest) OneMethod() {
+func (s *MethodsTest) OneMethod(t *ogletest.T) {
 	methods := srcutil.GetMethodsInSourceOrder(reflect.TypeOf(OneMethodType(17)))
-	ExpectThat(
+	t.ExpectThat(
 		methods,
 		ElementsAre(
 			NameIs("Foo"),
 		))
 }
 
-func (t *MethodsTest) MultipleMethods() {
-	methods := srcutil.GetMethodsInSourceOrder(reflect.TypeOf(MultipleMethodsType(17)))
-	ExpectThat(
+func (s *MethodsTest) MultipleMethods(t *ogletest.T) {
+	methods := srcutil.GetMethodsInSourceOrder(
+		reflect.TypeOf(MultipleMethodsType(17)))
+
+	t.ExpectThat(
 		methods,
 		ElementsAre(
 			NameIs("Foo"),
@@ -101,7 +103,7 @@ func (t *MethodsTest) MultipleMethods() {
 			NameIs("Baz"),
 		))
 
-	ExpectEq("Foo", methods[0].Name)
-	ExpectEq("Bar", methods[1].Name)
-	ExpectEq("Baz", methods[2].Name)
+	t.ExpectEq("Foo", methods[0].Name)
+	t.ExpectEq("Bar", methods[1].Name)
+	t.ExpectEq("Baz", methods[2].Name)
 }
