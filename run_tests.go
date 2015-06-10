@@ -245,56 +245,55 @@ func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 func runTestSuite(
 	t *testing.T,
 	suite TestSuite) {
-	// Set a slice containing the functions to be run and storage for their
-	// results.
-	type workItem struct {
-		tf       TestFunction
-		duration time.Duration
+	tfs := filterTestFunctions(suite)
+
+	// Set up a channel containing indices of test functions to be run. This will
+	// be used to assign work to workers.
+	indices := make(chan int, len(tfs))
+	for i := 0; i < len(tfs); i++ {
+		indices <- i
+	}
+	close(indices)
+
+	// Set up a slice of channels into which results will be written. These will
+	// be used to communicate results from the workers, in order.
+	type result struct {
 		failures []FailureRecord
+		duration time.Duration
 	}
 
-	var work []workItem
-	for _, tf := range filterTestFunctions(suite) {
-		work = append(work, workItem{tf: tf})
+	var resultChans []chan result
+	for i := 0; i < len(tfs); i++ {
+		resultChans = append(resultChans, make(chan result, 1))
 	}
 
 	// Start several workers processing work in parallel.
 	//
 	// TODO(jacobsa): Make the parallelism configurable.
-	workChan := make(chan *workItem, len(work))
-	for i := range work {
-		workChan <- &work[i]
-	}
-	close(workChan)
-
 	const parallelism = 1
-	var wg sync.WaitGroup
 	for i := 0; i < parallelism; i++ {
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
-			for wi := range workChan {
+			for i := range indices {
 				startTime := time.Now()
-				wi.failures = runTestFunction(wi.tf)
-				wi.duration = time.Since(startTime)
+				failures := runTestFunction(tfs[i])
+				duration := time.Since(startTime)
+
+				resultChans[i] <- result{failures, duration}
 			}
 		}()
 	}
 
-	// Wait for everything to finish.
-	wg.Wait()
-
 	// Print results.
 	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
-	for _, wi := range work {
-		tf := wi.tf
-		failures := wi.failures
-
+	for i, tf := range tfs {
 		// Print a banner for the start of this test function.
 		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
+		// Wait for the result.
+		result := <-resultChans[i]
+
 		// Print any failures, and mark the test as having failed if there are any.
-		for _, record := range failures {
+		for _, record := range result.failures {
 			t.Fail()
 		}
 
@@ -309,8 +308,8 @@ func runTestSuite(
 
 		// Print a summary of the time taken, if long enough.
 		var timeMessage string
-		if wi.duration >= 25*time.Millisecond {
-			timeMessage = fmt.Sprintf(" (%v)", wi.duration)
+		if result.duration >= 25*time.Millisecond {
+			timeMessage = fmt.Sprintf(" (%v)", result.duration)
 		}
 
 		fmt.Printf(
