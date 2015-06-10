@@ -24,7 +24,6 @@ import (
 	"regexp"
 	"runtime"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -253,17 +252,6 @@ func runTestSuite(
 	suite TestSuite) {
 	tfs := filterTestFunctions(suite)
 
-	// Ensure that if we exit this function early due to StopRunningTests being
-	// called, we exit the program with an error. This prevents us from skipping
-	// test functions but making the program look like it succeeded.
-	defer func() {
-		if atomic.LoadUint64(&gStopRunning) != 0 {
-			fmt.Println("Exiting early due to user request.")
-			os.Exit(1)
-			return
-		}
-	}()
-
 	// If the overall test target has already failed and we've been told to stop
 	// on failure, then don't do anything.
 	if t.Failed() && *fStopEarly {
@@ -298,12 +286,13 @@ func runTestSuite(
 		go func() {
 			defer wg.Done()
 			for i := range indices {
-				// Special case: if the user has asked us to stop running additional
-				// tests, then do so.
-				if atomic.LoadUint64(&gStopRunning) != 0 {
+				select {
+				default:
+				case <-gStopRunning:
 					return
 				}
 
+				// Run this test function.
 				startTime := time.Now()
 				failed, output := runTestFunction(tfs[i])
 				duration := time.Since(startTime)
@@ -316,19 +305,20 @@ func runTestSuite(
 	// Print results.
 	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 	for i, tf := range tfs {
-		// If the user has asked us to stop running tests, then wait for all
-		// workers to exit (in order to fulfill the guarantee made by
-		// StopRunningTests that tests will finish) and then bail out.
-		if atomic.LoadUint64(&gStopRunning) == 1 {
-			wg.Wait()
-			return
-		}
-
 		// Print a banner for the start of this test function.
 		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
-		// Wait for the result.
-		result := <-resultChans[i]
+		// Wait for the result. Special case: if the user has told us to finish up,
+		// join the workers and then exit in error.
+		var result result
+		select {
+		case <-gStopRunning:
+			wg.Wait()
+			fmt.Println("Exiting early due to user request.")
+			os.Exit(1)
+
+		case result = <-resultChans[i]:
+		}
 
 		// Mark the test as having failed if appropriate.
 		if result.failed {
@@ -368,7 +358,7 @@ func runTestSuite(
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Public interface
+// RunTests
 ////////////////////////////////////////////////////////////////////////
 
 // runTestsOnce protects RunTests from executing multiple times.
@@ -397,15 +387,6 @@ func RunTests(t *testing.T) {
 	runTestsOnce.Do(func() { runTestsInternal(t) })
 }
 
-// Signalling between RunTests and StopRunningTests.
-var gStopRunning uint64
-
-// Request that RunTests stop running additional tests and cause the program to
-// exit with a non-zero status when the currently running tests finish.
-func StopRunningTests() {
-	atomic.StoreUint64(&gStopRunning, 1)
-}
-
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
 // sync.Once.
 func runTestsInternal(t *testing.T) {
@@ -413,4 +394,23 @@ func runTestsInternal(t *testing.T) {
 	for _, suite := range registeredSuites {
 		runTestSuite(t, suite)
 	}
+}
+
+////////////////////////////////////////////////////////////////////////
+// StopRunningTests
+////////////////////////////////////////////////////////////////////////
+
+// A channel that is closed when the user wants us to halt after waiting for
+// the currently running tests to complete.
+var gStopRunning = make(chan struct{})
+
+// Protect StopRunningTests from closing gStopRunning twice.
+var gCloseStopRunning sync.Once
+
+// Request that RunTests stop running additional tests and cause the program to
+// exit with a non-zero status when the currently running tests finish.
+func StopRunningTests() {
+	gCloseStopRunning.Do(func() {
+		close(gStopRunning)
+	})
 }
