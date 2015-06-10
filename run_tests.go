@@ -252,6 +252,28 @@ type workItem struct {
 	valid chan struct{}
 }
 
+// Run test functions from the channel, closing 'valid' channels when finished
+// with them. Return early without draining the input channel if gStopRunning
+// is closed.
+func processWork(
+	work <-chan *workItem) {
+	for wi := range work {
+		// Check whether we should return early.
+		select {
+		default:
+		case <-gStopRunning:
+			return
+		}
+
+		// Run the test function.
+		startTime := time.Now()
+		wi.failed, wi.output = runTestFunction(wi.tf)
+		wi.duration = time.Since(startTime)
+
+		close(wi.valid)
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Test suites
 ////////////////////////////////////////////////////////////////////////
