@@ -155,22 +155,20 @@ func runTestsInternal(t *testing.T) {
 
 			// Run the test function.
 			startTime := time.Now()
-			failures := runTestFunction(tf)
+			failed, output := runTestFunction(tf)
 			runDuration := time.Since(startTime)
 
-			// Print any failures, and mark the test as having failed if there are any.
-			for _, record := range failures {
+			// Mark the test as having failed if appropriate.
+			if failed {
 				t.Fail()
-				fmt.Printf(
-					"%s:%d:\n%s\n\n",
-					record.FileName,
-					record.LineNumber,
-					record.Error)
 			}
+
+			// Print output.
+			fmt.Printf("%s", output)
 
 			// Print a banner for the end of the test.
 			bannerMessage := "[       OK ]"
-			if len(failures) != 0 {
+			if failed {
 				bannerMessage = "[  FAILED  ]"
 			}
 
