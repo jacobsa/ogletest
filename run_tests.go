@@ -239,6 +239,19 @@ func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 	return
 }
 
+type workItem struct {
+	// The test function to be run.
+	tf TestFunction
+
+	// Results of executing the test function. Valid only once valid has been
+	// closed.
+	failed   bool
+	output   []byte
+	duration time.Duration
+
+	valid chan struct{}
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Test suites
 ////////////////////////////////////////////////////////////////////////
