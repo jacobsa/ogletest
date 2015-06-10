@@ -239,6 +239,41 @@ func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 	return
 }
 
+type workItem struct {
+	// The test function to be run.
+	tf TestFunction
+
+	// Results of executing the test function. Valid only once complete has been
+	// closed.
+	failed   bool
+	output   []byte
+	duration time.Duration
+
+	complete chan struct{}
+}
+
+// Run test functions from the channel, closing 'complete' channels when
+// finished with them. Return early without draining the input channel if
+// gStopRunning is closed.
+func processWork(
+	work <-chan *workItem) {
+	for wi := range work {
+		// Check whether we should return early.
+		select {
+		default:
+		case <-gStopRunning:
+			return
+		}
+
+		// Run the test function.
+		startTime := time.Now()
+		wi.failed, wi.output = runTestFunction(wi.tf)
+		wi.duration = time.Since(startTime)
+
+		close(wi.complete)
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Test suites
 ////////////////////////////////////////////////////////////////////////
@@ -250,33 +285,27 @@ func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 func runTestSuite(
 	t *testing.T,
 	suite TestSuite) {
-	tfs := filterTestFunctions(suite)
-
 	// If the overall test target has already failed and we've been told to stop
 	// on failure, then don't do anything.
 	if t.Failed() && *fStopEarly {
 		return
 	}
 
-	// Set up a channel containing indices of test functions to be run. This will
-	// be used to assign work to workers.
-	indices := make(chan int, len(tfs))
-	for i := 0; i < len(tfs); i++ {
-		indices <- i
-	}
-	close(indices)
+	// Set up a slice containing the work to be done.
+	var work []workItem
+	for _, tf := range filterTestFunctions(suite) {
+		wi := workItem{
+			tf:       tf,
+			complete: make(chan struct{}),
+		}
 
-	// Set up a slice of channels into which results will be written. These will
-	// be used to communicate results from the workers, in order.
-	type result struct {
-		failed   bool
-		output   []byte
-		duration time.Duration
+		work = append(work, wi)
 	}
 
-	var resultChans []chan result
-	for i := 0; i < len(tfs); i++ {
-		resultChans = append(resultChans, make(chan result, 1))
+	// Put pointers to those slice elements in a channel buffer.
+	workChan := make(chan *workItem, len(work))
+	for i := range work {
+		workChan <- &work[i]
 	}
 
 	// Start several workers processing work in parallel.
@@ -285,66 +314,54 @@ func runTestSuite(
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := range indices {
-				select {
-				default:
-				case <-gStopRunning:
-					return
-				}
-
-				// Run this test function.
-				startTime := time.Now()
-				failed, output := runTestFunction(tfs[i])
-				duration := time.Since(startTime)
-
-				resultChans[i] <- result{failed, output, duration}
-			}
+			processWork(workChan)
 		}()
 	}
 
 	// Print results.
 	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
-	for i, tf := range tfs {
+	for i := range work {
+		wi := &work[i]
+
 		// Print a banner for the start of this test function.
-		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
+		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, wi.tf.Name)
 
 		// Wait for the result. Special case: if the user has told us to finish up,
 		// join the workers and then exit in error.
-		var result result
 		select {
 		case <-gStopRunning:
 			wg.Wait()
 			fmt.Println("Exiting early due to user request.")
 			os.Exit(1)
 
-		case result = <-resultChans[i]:
+		case <-wi.complete:
 		}
 
 		// Mark the test as having failed if appropriate.
-		if result.failed {
+		if wi.failed {
 			t.Fail()
 		}
 
 		// Print output.
-		fmt.Printf("%s", result.output)
+		fmt.Printf("%s", wi.output)
 
 		// Print a banner for the end of the test.
 		bannerMessage := "[       OK ]"
-		if result.failed {
+		if wi.failed {
 			bannerMessage = "[  FAILED  ]"
 		}
 
 		// Print a summary of the time taken, if long enough.
 		var timeMessage string
-		if result.duration >= 25*time.Millisecond {
-			timeMessage = fmt.Sprintf(" (%v)", result.duration)
+		if wi.duration >= 25*time.Millisecond {
+			timeMessage = fmt.Sprintf(" (%v)", wi.duration)
 		}
 
 		fmt.Printf(
 			"%s %s.%s%s\n",
 			bannerMessage,
 			suite.Name,
-			tf.Name,
+			wi.tf.Name,
 			timeMessage)
 
 		// Stop printing results from this suite if we've been told to stop on
