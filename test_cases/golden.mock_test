@@ -2,17 +2,17 @@
 [ RUN      ] MockTest.ExpectationSatisfied
 [       OK ] MockTest.ExpectationSatisfied
 [ RUN      ] MockTest.MockExpectationNotSatisfied
-/some/path/mock_test.go:56:
+/some/path/mock_test.go:55:
 Unsatisfied expectation; expected At to be called at least 1 times; called 0 times.
 
 [  FAILED  ] MockTest.MockExpectationNotSatisfied
 [ RUN      ] MockTest.ExpectCallForUnknownMethod
-/some/path/mock_test.go:61:
+/some/path/mock_test.go:60:
 Unknown method: FooBar
 
 [  FAILED  ] MockTest.ExpectCallForUnknownMethod
 [ RUN      ] MockTest.UnexpectedCall
-/some/path/mock_test.go:65:
+/some/path/mock_test.go:64:
 Unexpected call to At with args: [11 23]
 
 [  FAILED  ] MockTest.UnexpectedCall

@@ -16,12 +16,13 @@
 package oglematchers_test
 
 import (
-	. "github.com/jacobsa/oglematchers"
-	"github.com/jacobsa/oglemock"
-	. "github.com/jacobsa/ogletest"
-	"github.com/jacobsa/ogletest/test_cases/mock_image"
 	"image/color"
 	"testing"
+
+	. "github.com/jacobsa/oglematchers"
+	"github.com/jacobsa/oglemock"
+	"github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest/test_cases/mock_image"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -29,43 +30,41 @@ import (
 ////////////////////////////////////////////////////////////////////////
 
 type MockTest struct {
-	controller oglemock.Controller
-	image      mock_image.MockImage
+	image mock_image.MockImage
 }
 
-func init()                     { RegisterTestSuite(&MockTest{}) }
-func TestMockTest(t *testing.T) { RunTests(t) }
+func init()                     { ogletest.RegisterTestSuite(&MockTest{}) }
+func TestMockTest(t *testing.T) { ogletest.RunTests(t) }
 
-func (t *MockTest) SetUp(i *TestInfo) {
-	t.controller = i.MockController
-	t.image = mock_image.NewMockImage(t.controller, "some mock image")
+func (s *MockTest) SetUp(t *ogletest.T) {
+	s.image = mock_image.NewMockImage(t.MockController, "some mock image")
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *MockTest) ExpectationSatisfied() {
-	ExpectCall(t.image, "At")(11, GreaterThan(19)).
+func (s *MockTest) ExpectationSatisfied(t *ogletest.T) {
+	t.ExpectCall(s.image, "At")(11, GreaterThan(19)).
 		WillOnce(oglemock.Return(color.Gray{0}))
 
-	ExpectThat(t.image.At(11, 23), IdenticalTo(color.Gray{0}))
+	t.ExpectThat(s.image.At(11, 23), IdenticalTo(color.Gray{0}))
 }
 
-func (t *MockTest) MockExpectationNotSatisfied() {
-	ExpectCall(t.image, "At")(11, GreaterThan(19)).
+func (s *MockTest) MockExpectationNotSatisfied(t *ogletest.T) {
+	t.ExpectCall(s.image, "At")(11, GreaterThan(19)).
 		WillOnce(oglemock.Return(color.Gray{0}))
 }
 
-func (t *MockTest) ExpectCallForUnknownMethod() {
-	ExpectCall(t.image, "FooBar")(11)
+func (s *MockTest) ExpectCallForUnknownMethod(t *ogletest.T) {
+	t.ExpectCall(s.image, "FooBar")(11)
 }
 
-func (t *MockTest) UnexpectedCall() {
-	t.image.At(11, 23)
+func (s *MockTest) UnexpectedCall(t *ogletest.T) {
+	s.image.At(11, 23)
 }
 
-func (t *MockTest) InvokeFunction() {
+func (s *MockTest) InvokeFunction(t *ogletest.T) {
 	var suppliedX, suppliedY int
 	f := func(x, y int) color.Color {
 		suppliedX = x
@@ -73,10 +72,10 @@ func (t *MockTest) InvokeFunction() {
 		return color.Gray{17}
 	}
 
-	ExpectCall(t.image, "At")(Any(), Any()).
+	t.ExpectCall(s.image, "At")(Any(), Any()).
 		WillOnce(oglemock.Invoke(f))
 
-	ExpectThat(t.image.At(-1, 12), IdenticalTo(color.Gray{17}))
-	ExpectEq(-1, suppliedX)
-	ExpectEq(12, suppliedY)
+	t.ExpectThat(s.image.At(-1, 12), IdenticalTo(color.Gray{17}))
+	t.ExpectEq(-1, suppliedX)
+	t.ExpectEq(12, suppliedY)
 }
