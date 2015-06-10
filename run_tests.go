@@ -265,6 +265,7 @@ func runTestSuite(
 	for i := range work {
 		workChan <- &work[i]
 	}
+	close(workChan)
 
 	const parallelism = 1
 	var wg sync.WaitGroup
