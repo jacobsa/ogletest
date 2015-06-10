@@ -80,17 +80,12 @@ func (t *T) name() string {
 	return t.testName
 }
 
-func (t *T) failed() bool {
+// Return whether the test failed, and a copy of the output.
+func (t *T) result() (failed bool, out []byte) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	return t.fail
-}
-
-// Return a copy of the current output.
-func (t *T) output() (out []byte) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
+	failed = t.fail
 
 	b := t.buf.Bytes()
 	out = make([]byte, len(b))
