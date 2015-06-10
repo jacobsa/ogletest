@@ -2,7 +2,7 @@
 [ RUN      ] RunTwiceTest.PassingMethod
 [       OK ] RunTwiceTest.PassingMethod
 [ RUN      ] RunTwiceTest.FailingMethod
-run_twice_test.go:46:
+run_twice_test.go:47:
 Expected: 17.5
 Actual:   17
 
