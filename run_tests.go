@@ -49,8 +49,8 @@ var fStopEarly = flag.Bool(
 
 var fParallelism = flag.Int(
 	"ogletest.parallelism",
-	runtime.GOMAXPROCS(0),
-	"The parallelism with which to run tests.")
+	16,
+	"The maximum number of tests to run concurrently.")
 
 ////////////////////////////////////////////////////////////////////////
 // Helpers
