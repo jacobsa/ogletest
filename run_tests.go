@@ -253,6 +253,17 @@ func runTestSuite(
 	suite TestSuite) {
 	tfs := filterTestFunctions(suite)
 
+	// Ensure that if we exit this function early due to StopRunningTests being
+	// called, we exit the program with an error. This prevents us from skipping
+	// test functions but making the program look like it succeeded.
+	defer func() {
+		if atomic.LoadUint64(&gStopRunning) != 0 {
+			fmt.Println("Exiting early due to user request.")
+			os.Exit(1)
+			return
+		}
+	}()
+
 	// If the overall test target has already failed and we've been told to stop
 	// on failure, then don't do anything.
 	if t.Failed() && *fStopEarly {
@@ -306,13 +317,11 @@ func runTestSuite(
 	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 	for i, tf := range tfs {
 		// If the user has asked us to stop running tests, then wait for all
-		// workers to have exited and then exit the program in error. We do this
-		// before printing the RUN banner below in order to not give the indication
-		// that we've started a new test if we haven't.
+		// workers to exit (in order to fulfill the guarantee made by
+		// StopRunningTests that tests will finish) and then bail out.
 		if atomic.LoadUint64(&gStopRunning) == 1 {
 			wg.Wait()
-			fmt.Println("Exiting early due to user request.")
-			os.Exit(1)
+			return
 		}
 
 		// Print a banner for the start of this test function.
