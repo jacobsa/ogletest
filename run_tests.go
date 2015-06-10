@@ -247,6 +247,12 @@ func runTestSuite(
 	suite TestSuite) {
 	tfs := filterTestFunctions(suite)
 
+	// If the overall test target has already failed and we've been told to stop
+	// early, then don't do anything.
+	if t.Failed() && *fStopEarly {
+		return
+	}
+
 	// Set up a channel containing indices of test functions to be run. This will
 	// be used to assign work to workers.
 	indices := make(chan int, len(tfs))
@@ -320,8 +326,8 @@ func runTestSuite(
 			tf.Name,
 			timeMessage)
 
-		// Stop running tests from this suite if we've been told to stop early
-		// and this test failed.
+		// Stop printing results from this suite if we've been told to stop early
+		// and we have failed already.
 		if t.Failed() && *fStopEarly {
 			break
 		}
