@@ -33,6 +33,10 @@ import (
 	"github.com/jacobsa/reqtrace"
 )
 
+////////////////////////////////////////////////////////////////////////
+// Flags
+////////////////////////////////////////////////////////////////////////
+
 var fTestFilter = flag.String(
 	"ogletest.run",
 	"",
@@ -43,163 +47,13 @@ var fStopEarly = flag.Bool(
 	false,
 	"If true, stop after the first failure.")
 
-// runTestsOnce protects RunTests from executing multiple times.
-var runTestsOnce sync.Once
+////////////////////////////////////////////////////////////////////////
+// Helpers
+////////////////////////////////////////////////////////////////////////
 
 func isAbortError(x interface{}) bool {
 	_, ok := x.(abortError)
 	return ok
-}
-
-// Run a single test function, returning an indication of whether it failed and
-// its output.
-func runTestFunction(tf TestFunction) (failed bool, output []byte) {
-	// Start a trace.
-	ctx, reportOutcome := reqtrace.Trace(context.Background(), tf.Name)
-
-	// Create the T.
-	t := newT(ctx, tf.Name)
-
-	// Run the SetUp function, if any, paying attention to whether it panics.
-	setUpPanicked := false
-	if tf.SetUp != nil {
-		setUpPanicked = runWithProtection(t, tf.SetUp)
-	}
-
-	// Run the test function itself, but only if the SetUp function didn't panic.
-	// (This includes AssertThat errors.)
-	if !setUpPanicked {
-		runWithProtection(t, tf.Run)
-	}
-
-	// Run the TearDown function, if any.
-	if tf.TearDown != nil {
-		runWithProtection(t, tf.TearDown)
-	}
-
-	// Tell the mock controller for the tests to report any errors it's sitting
-	// on.
-	t.MockController.Finish()
-
-	// Find out what happened.
-	failed, output = t.result()
-
-	// Report the outcome to reqtrace.
-	if failed {
-		reportOutcome(fmt.Errorf("failed"))
-	} else {
-		reportOutcome(nil)
-	}
-
-	return
-}
-
-// Run everything registered with Register (including via the wrapper
-// RegisterTestSuite).
-//
-// Failures are communicated to the supplied testing.T object. This is the
-// bridge between ogletest and the testing package (and `go test`); you should
-// ensure that it's called at least once by creating a test function compatible
-// with `go test` and calling it there.
-//
-// For example:
-//
-//     import (
-//       "github.com/jacobsa/ogletest"
-//       "testing"
-//     )
-//
-//     func TestOgletest(t *testing.T) {
-//       ogletest.RunTests(t)
-//     }
-//
-func RunTests(t *testing.T) {
-	runTestsOnce.Do(func() { runTestsInternal(t) })
-}
-
-// Signalling between RunTests and StopRunningTests.
-var gStopRunning uint64
-
-// Request that RunTests stop what it's doing. After the currently running test
-// is finished, including tear-down, the program will exit with an error code.
-func StopRunningTests() {
-	atomic.StoreUint64(&gStopRunning, 1)
-}
-
-// runTestsInternal does the real work of RunTests, which simply wraps it in a
-// sync.Once.
-func runTestsInternal(t *testing.T) {
-	// Process each registered suite.
-	for _, suite := range registeredSuites {
-		// Stop now if we've already seen a failure and we've been told to stop
-		// early.
-		if t.Failed() && *fStopEarly {
-			break
-		}
-
-		// Print a banner.
-		fmt.Printf("[----------] Running tests from %s\n", suite.Name)
-
-		// Run each test function that the user has not told us to skip.
-		stoppedEarly := false
-		for _, tf := range filterTestFunctions(suite) {
-			// Did the user request that we stop running tests? If so, skip the rest
-			// of this suite (and exit after tearing it down).
-			if atomic.LoadUint64(&gStopRunning) != 0 {
-				stoppedEarly = true
-				break
-			}
-
-			// Print a banner for the start of this test function.
-			fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
-
-			// Run the test function.
-			startTime := time.Now()
-			failed, output := runTestFunction(tf)
-			runDuration := time.Since(startTime)
-
-			// Mark the test as having failed if appropriate.
-			if failed {
-				t.Fail()
-			}
-
-			// Print output.
-			fmt.Printf("%s", output)
-
-			// Print a banner for the end of the test.
-			bannerMessage := "[       OK ]"
-			if failed {
-				bannerMessage = "[  FAILED  ]"
-			}
-
-			// Print a summary of the time taken, if long enough.
-			var timeMessage string
-			if runDuration >= 25*time.Millisecond {
-				timeMessage = fmt.Sprintf(" (%s)", runDuration.String())
-			}
-
-			fmt.Printf(
-				"%s %s.%s%s\n",
-				bannerMessage,
-				suite.Name,
-				tf.Name,
-				timeMessage)
-
-			// Stop running tests from this suite if we've been told to stop early
-			// and this test failed.
-			if t.Failed() && *fStopEarly {
-				break
-			}
-		}
-
-		// Were we told to exit early?
-		if stoppedEarly {
-			fmt.Println("Exiting early due to user request.")
-			os.Exit(1)
-		}
-
-		fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
-	}
 }
 
 // Return true iff the supplied program counter appears to lie within panic().
@@ -332,4 +186,220 @@ func filterTestFunctions(suite TestSuite) (out []TestFunction) {
 	}
 
 	return
+}
+
+////////////////////////////////////////////////////////////////////////
+// Test functions
+////////////////////////////////////////////////////////////////////////
+
+// Run a single test function, returning an indication of whether it failed and
+// its output.
+func runTestFunction(tf TestFunction) (failed bool, output []byte) {
+	// Start a trace.
+	ctx, reportOutcome := reqtrace.Trace(context.Background(), tf.Name)
+
+	// Create the T.
+	t := newT(ctx, tf.Name)
+
+	// Run the SetUp function, if any, paying attention to whether it panics.
+	setUpPanicked := false
+	if tf.SetUp != nil {
+		setUpPanicked = runWithProtection(t, tf.SetUp)
+	}
+
+	// Run the test function itself, but only if the SetUp function didn't panic.
+	// (This includes AssertThat errors.)
+	if !setUpPanicked {
+		runWithProtection(t, tf.Run)
+	}
+
+	// Run the TearDown function, if any.
+	if tf.TearDown != nil {
+		runWithProtection(t, tf.TearDown)
+	}
+
+	// Tell the mock controller for the tests to report any errors it's sitting
+	// on.
+	t.MockController.Finish()
+
+	// Find out what happened.
+	failed, output = t.result()
+
+	// Report the outcome to reqtrace.
+	if failed {
+		reportOutcome(fmt.Errorf("failed"))
+	} else {
+		reportOutcome(nil)
+	}
+
+	return
+}
+
+////////////////////////////////////////////////////////////////////////
+// Test suites
+////////////////////////////////////////////////////////////////////////
+
+// Run a single test suite, signalling failures to the supplied testing.T.
+//
+// TODO(jacobsa): Hoist parallelism so that we can process multiple suites in
+// parallel?
+func runTestSuite(
+	t *testing.T,
+	suite TestSuite) {
+	tfs := filterTestFunctions(suite)
+
+	// If the overall test target has already failed and we've been told to stop
+	// on failure, then don't do anything.
+	if t.Failed() && *fStopEarly {
+		return
+	}
+
+	// Set up a channel containing indices of test functions to be run. This will
+	// be used to assign work to workers.
+	indices := make(chan int, len(tfs))
+	for i := 0; i < len(tfs); i++ {
+		indices <- i
+	}
+	close(indices)
+
+	// Set up a slice of channels into which results will be written. These will
+	// be used to communicate results from the workers, in order.
+	type result struct {
+		failed   bool
+		output   []byte
+		duration time.Duration
+	}
+
+	var resultChans []chan result
+	for i := 0; i < len(tfs); i++ {
+		resultChans = append(resultChans, make(chan result, 1))
+	}
+
+	// Start several workers processing work in parallel.
+	//
+	// TODO(jacobsa): Make the parallelism configurable.
+	const parallelism = 1
+	var wg sync.WaitGroup
+	for i := 0; i < parallelism; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := range indices {
+				// Special case: if the user has asked us to stop running additional
+				// tests, then do so.
+				if atomic.LoadUint64(&gStopRunning) != 0 {
+					return
+				}
+
+				startTime := time.Now()
+				failed, output := runTestFunction(tfs[i])
+				duration := time.Since(startTime)
+
+				resultChans[i] <- result{failed, output, duration}
+			}
+		}()
+	}
+
+	// Print results.
+	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
+	for i, tf := range tfs {
+		// If the user has asked us to stop running tests, then wait for all
+		// workers to have exited and then exit the program in error. We do this
+		// before printing the RUN banner below in order to not give the indication
+		// that we've started a new test if we haven't.
+		if atomic.LoadUint64(&gStopRunning) == 1 {
+			wg.Wait()
+			fmt.Println("Exiting early due to user request.")
+			os.Exit(1)
+		}
+
+		// Print a banner for the start of this test function.
+		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
+
+		// Wait for the result.
+		result := <-resultChans[i]
+
+		// Mark the test as having failed if appropriate.
+		if result.failed {
+			t.Fail()
+		}
+
+		// Print output.
+		fmt.Printf("%s", result.output)
+
+		// Print a banner for the end of the test.
+		bannerMessage := "[       OK ]"
+		if result.failed {
+			bannerMessage = "[  FAILED  ]"
+		}
+
+		// Print a summary of the time taken, if long enough.
+		var timeMessage string
+		if result.duration >= 25*time.Millisecond {
+			timeMessage = fmt.Sprintf(" (%v)", result.duration)
+		}
+
+		fmt.Printf(
+			"%s %s.%s%s\n",
+			bannerMessage,
+			suite.Name,
+			tf.Name,
+			timeMessage)
+
+		// Stop printing results from this suite if we've been told to stop on
+		// failure and we have failed already.
+		if t.Failed() && *fStopEarly {
+			break
+		}
+	}
+
+	fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
+}
+
+////////////////////////////////////////////////////////////////////////
+// Public interface
+////////////////////////////////////////////////////////////////////////
+
+// runTestsOnce protects RunTests from executing multiple times.
+var runTestsOnce sync.Once
+
+// Run everything registered with Register (including via the wrapper
+// RegisterTestSuite).
+//
+// Failures are communicated to the supplied testing.T object. This is the
+// bridge between ogletest and the testing package (and `go test`); you should
+// ensure that it's called at least once by creating a test function compatible
+// with `go test` and calling it there.
+//
+// For example:
+//
+//     import (
+//       "github.com/jacobsa/ogletest"
+//       "testing"
+//     )
+//
+//     func TestOgletest(t *testing.T) {
+//       ogletest.RunTests(t)
+//     }
+//
+func RunTests(t *testing.T) {
+	runTestsOnce.Do(func() { runTestsInternal(t) })
+}
+
+// Signalling between RunTests and StopRunningTests.
+var gStopRunning uint64
+
+// Request that RunTests stop running additional tests and cause the program to
+// exit with a non-zero status when the currently running tests finish.
+func StopRunningTests() {
+	atomic.StoreUint64(&gStopRunning, 1)
+}
+
+// runTestsInternal does the real work of RunTests, which simply wraps it in a
+// sync.Once.
+func runTestsInternal(t *testing.T) {
+	// Process each registered suite.
+	for _, suite := range registeredSuites {
+		runTestSuite(t, suite)
+	}
 }
