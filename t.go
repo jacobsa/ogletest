@@ -16,6 +16,7 @@
 package ogletest
 
 import (
+	"bytes"
 	"fmt"
 	"path"
 	"runtime"
@@ -51,10 +52,15 @@ type T struct {
 
 	mu sync.Mutex
 
-	// Failure records accumulated so far. Only ever appended to.
+	// Has the test failed?
 	//
 	// GUARDED_BY(mu)
-	records []FailureRecord
+	fail bool
+
+	// Output of the test, including failure messages.
+	//
+	// GUARDED_BY(mu)
+	buf bytes.Buffer
 }
 
 func newT(
