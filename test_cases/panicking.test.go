@@ -16,7 +16,6 @@
 package oglematchers_test
 
 import (
-	"fmt"
 	"log"
 	"testing"
 
@@ -40,7 +39,7 @@ type PanickingTest struct {
 func init() { ogletest.RegisterTestSuite(&PanickingTest{}) }
 
 func (s *PanickingTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 func (s *PanickingTest) ExplicitPanic(t *ogletest.T) {
@@ -70,12 +69,12 @@ type SetUpPanicTest struct {
 func init() { ogletest.RegisterTestSuite(&SetUpPanicTest{}) }
 
 func (s *SetUpPanicTest) SetUp(t *ogletest.T) {
-	fmt.Println("SetUp about to panic.")
+	t.Logf("SetUp about to panic.")
 	panic("Panic in SetUp")
 }
 
 func (s *SetUpPanicTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 func (s *SetUpPanicTest) SomeTestCase(t *ogletest.T) {
@@ -91,7 +90,7 @@ type TearDownPanicTest struct {
 func init() { ogletest.RegisterTestSuite(&TearDownPanicTest{}) }
 
 func (s *TearDownPanicTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown about to panic.")
+	t.Logf("TearDown about to panic.")
 	panic("Panic in TearDown")
 }
 
