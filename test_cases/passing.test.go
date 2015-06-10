@@ -21,10 +21,10 @@ import (
 	"time"
 
 	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest"
 )
 
-func TestPassingTest(t *testing.T) { RunTests(t) }
+func TestPassingTest(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // PassingTest
@@ -33,56 +33,56 @@ func TestPassingTest(t *testing.T) { RunTests(t) }
 type PassingTest struct {
 }
 
-func init() { RegisterTestSuite(&PassingTest{}) }
+func init() { ogletest.RegisterTestSuite(&PassingTest{}) }
 
-func (t *PassingTest) EmptyTestMethod() {
+func (s *PassingTest) EmptyTestMethod(t *ogletest.T) {
 }
 
-func (t *PassingTest) SuccessfullMatches() {
-	ExpectThat(17, Equals(17.0))
-	ExpectThat(16.9, LessThan(17))
-	ExpectThat("taco", HasSubstr("ac"))
+func (s *PassingTest) SuccessfullMatches(t *ogletest.T) {
+	t.ExpectThat(17, Equals(17.0))
+	t.ExpectThat(16.9, LessThan(17))
+	t.ExpectThat("taco", HasSubstr("ac"))
 
-	AssertThat(17, Equals(17.0))
-	AssertThat(16.9, LessThan(17))
-	AssertThat("taco", HasSubstr("ac"))
+	t.AssertThat(17, Equals(17.0))
+	t.AssertThat(16.9, LessThan(17))
+	t.AssertThat("taco", HasSubstr("ac"))
 }
 
-func (t *PassingTest) ExpectAliases() {
-	ExpectEq(17, 17.0)
+func (s *PassingTest) ExpectAliases(t *ogletest.T) {
+	t.ExpectEq(17, 17.0)
 
-	ExpectLe(17, 17.0)
-	ExpectLe(17, 18.0)
-	ExpectLt(17, 18.0)
+	t.ExpectLe(17, 17.0)
+	t.ExpectLe(17, 18.0)
+	t.ExpectLt(17, 18.0)
 
-	ExpectGe(17, 17.0)
-	ExpectGe(17, 16.0)
-	ExpectGt(17, 16.0)
+	t.ExpectGe(17, 17.0)
+	t.ExpectGe(17, 16.0)
+	t.ExpectGt(17, 16.0)
 
-	ExpectNe(17, 18.0)
+	t.ExpectNe(17, 18.0)
 
-	ExpectTrue(true)
-	ExpectFalse(false)
+	t.ExpectTrue(true)
+	t.ExpectFalse(false)
 }
 
-func (t *PassingTest) AssertAliases() {
-	AssertEq(17, 17.0)
+func (s *PassingTest) AssertAliases(t *ogletest.T) {
+	t.AssertEq(17, 17.0)
 
-	AssertLe(17, 17.0)
-	AssertLe(17, 18.0)
-	AssertLt(17, 18.0)
+	t.AssertLe(17, 17.0)
+	t.AssertLe(17, 18.0)
+	t.AssertLt(17, 18.0)
 
-	AssertGe(17, 17.0)
-	AssertGe(17, 16.0)
-	AssertGt(17, 16.0)
+	t.AssertGe(17, 17.0)
+	t.AssertGe(17, 16.0)
+	t.AssertGt(17, 16.0)
 
-	AssertNe(17, 18.0)
+	t.AssertNe(17, 18.0)
 
-	AssertTrue(true)
-	AssertFalse(false)
+	t.AssertTrue(true)
+	t.AssertFalse(false)
 }
 
-func (t *PassingTest) SlowTest() {
+func (s *PassingTest) SlowTest(t *ogletest.T) {
 	time.Sleep(37 * time.Millisecond)
 }
 
@@ -93,28 +93,18 @@ func (t *PassingTest) SlowTest() {
 type PassingTestWithHelpers struct {
 }
 
-var _ SetUpTestSuiteInterface = &PassingTestWithHelpers{}
-var _ SetUpInterface = &PassingTestWithHelpers{}
-var _ TearDownInterface = &PassingTestWithHelpers{}
-var _ TearDownTestSuiteInterface = &PassingTestWithHelpers{}
+var _ ogletest.SetUpInterface = &PassingTestWithHelpers{}
+var _ ogletest.TearDownInterface = &PassingTestWithHelpers{}
 
-func init() { RegisterTestSuite(&PassingTestWithHelpers{}) }
+func init() { ogletest.RegisterTestSuite(&PassingTestWithHelpers{}) }
 
-func (t *PassingTestWithHelpers) SetUpTestSuite() {
-	fmt.Println("SetUpTestSuite ran.")
-}
-
-func (t *PassingTestWithHelpers) SetUp(ti *TestInfo) {
+func (s *PassingTestWithHelpers) SetUp(t *ogletest.T) {
 	fmt.Println("SetUp ran.")
 }
 
-func (t *PassingTestWithHelpers) TearDown() {
+func (s *PassingTestWithHelpers) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown ran.")
 }
 
-func (t *PassingTestWithHelpers) TearDownTestSuite() {
-	fmt.Println("TearDownTestSuite ran.")
-}
-
-func (t *PassingTestWithHelpers) EmptyTestMethod() {
+func (s *PassingTestWithHelpers) EmptyTestMethod(t *ogletest.T) {
 }
