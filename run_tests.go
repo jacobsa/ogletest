@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"os"
 	"path"
 	"regexp"
 	"runtime"
@@ -248,7 +249,7 @@ func runTestSuite(
 	tfs := filterTestFunctions(suite)
 
 	// If the overall test target has already failed and we've been told to stop
-	// early, then don't do anything.
+	// on failure, then don't do anything.
 	if t.Failed() && *fStopEarly {
 		return
 	}
@@ -278,9 +279,18 @@ func runTestSuite(
 	//
 	// TODO(jacobsa): Make the parallelism configurable.
 	const parallelism = 1
+	var wg sync.WaitGroup
 	for i := 0; i < parallelism; i++ {
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			for i := range indices {
+				// Special case: if the user has asked us to stop running additional
+				// tests, then do so.
+				if atomic.LoadUint64(&gStopRunning) != 0 {
+					return
+				}
+
 				startTime := time.Now()
 				failed, output := runTestFunction(tfs[i])
 				duration := time.Since(startTime)
@@ -293,6 +303,16 @@ func runTestSuite(
 	// Print results.
 	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
 	for i, tf := range tfs {
+		// If the user has asked us to stop running tests, then wait for all
+		// workers to have exited and then exit the program in error. We do this
+		// before printing the RUN banner below in order to not give the indication
+		// that we've started a new test if we haven't.
+		if atomic.LoadUint64(&gStopRunning) == 1 {
+			wg.Wait()
+			fmt.Println("Exiting early due to user request.")
+			os.Exit(1)
+		}
+
 		// Print a banner for the start of this test function.
 		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
@@ -326,8 +346,8 @@ func runTestSuite(
 			tf.Name,
 			timeMessage)
 
-		// Stop printing results from this suite if we've been told to stop early
-		// and we have failed already.
+		// Stop printing results from this suite if we've been told to stop on
+		// failure and we have failed already.
 		if t.Failed() && *fStopEarly {
 			break
 		}
@@ -369,8 +389,8 @@ func RunTests(t *testing.T) {
 // Signalling between RunTests and StopRunningTests.
 var gStopRunning uint64
 
-// Request that RunTests stop what it's doing. After the currently running test
-// is finished, including tear-down, the program will exit with an error code.
+// Request that RunTests stop running additional tests and cause the program to
+// exit with a non-zero status when the currently running tests finish.
 func StopRunningTests() {
 	atomic.StoreUint64(&gStopRunning, 1)
 }
