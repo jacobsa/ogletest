@@ -47,6 +47,11 @@ var fStopEarly = flag.Bool(
 	false,
 	"If true, stop after the first failure.")
 
+var fParallelism = flag.Int(
+	"ogletest.parallelism",
+	runtime.GOMAXPROCS(0),
+	"The parallelism with which to run tests.")
+
 ////////////////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////////////////
@@ -276,11 +281,8 @@ func runTestSuite(
 	}
 
 	// Start several workers processing work in parallel.
-	//
-	// TODO(jacobsa): Make the parallelism configurable.
-	const parallelism = 1
 	var wg sync.WaitGroup
-	for i := 0; i < parallelism; i++ {
+	for i := 0; i < *fParallelism; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
