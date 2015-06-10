@@ -20,10 +20,10 @@ import (
 	"testing"
 
 	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest"
 )
 
-func TestFailingTest(t *testing.T) { RunTests(t) }
+func TestFailingTest(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Usual failures
@@ -32,138 +32,133 @@ func TestFailingTest(t *testing.T) { RunTests(t) }
 type FailingTest struct {
 }
 
-var _ TearDownInterface = &FailingTest{}
-var _ TearDownTestSuiteInterface = &FailingTest{}
+var _ ogletest.TearDownInterface = &FailingTest{}
 
-func init() { RegisterTestSuite(&FailingTest{}) }
+func init() { ogletest.RegisterTestSuite(&FailingTest{}) }
 
-func (t *FailingTest) TearDown() {
+func (s *FailingTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
 }
 
-func (t *FailingTest) TearDownTestSuite() {
-	fmt.Println("TearDownTestSuite running.")
+func (s *FailingTest) PassingMethod(t *ogletest.T) {
 }
 
-func (t *FailingTest) PassingMethod() {
+func (s *FailingTest) Equals(t *ogletest.T) {
+	t.ExpectThat(17, Equals(17.5))
+	t.ExpectThat(17, Equals("taco"))
 }
 
-func (t *FailingTest) Equals() {
-	ExpectThat(17, Equals(17.5))
-	ExpectThat(17, Equals("taco"))
+func (s *FailingTest) LessThan(t *ogletest.T) {
+	t.ExpectThat(18, LessThan(17))
+	t.ExpectThat(18, LessThan("taco"))
 }
 
-func (t *FailingTest) LessThan() {
-	ExpectThat(18, LessThan(17))
-	ExpectThat(18, LessThan("taco"))
+func (s *FailingTest) HasSubstr(t *ogletest.T) {
+	t.ExpectThat("taco", HasSubstr("ac"))
+	t.ExpectThat(17, HasSubstr("ac"))
 }
 
-func (t *FailingTest) HasSubstr() {
-	ExpectThat("taco", HasSubstr("ac"))
-	ExpectThat(17, HasSubstr("ac"))
+func (s *FailingTest) ExpectWithUserErrorMessages(t *ogletest.T) {
+	t.ExpectThat(17, Equals(19), "foo bar: %d", 112)
+	t.ExpectEq(17, 17.5, "foo bar: %d", 112)
+	t.ExpectLe(17, 16.9, "foo bar: %d", 112)
+	t.ExpectLt(17, 16.9, "foo bar: %d", 112)
+	t.ExpectGe(17, 17.1, "foo bar: %d", 112)
+	t.ExpectGt(17, "taco", "foo bar: %d", 112)
+	t.ExpectNe(17, 17.0, "foo bar: %d", 112)
+	t.ExpectFalse(true, "foo bar: %d", 112)
+	t.ExpectTrue(false, "foo bar: %d", 112)
 }
 
-func (t *FailingTest) ExpectWithUserErrorMessages() {
-	ExpectThat(17, Equals(19), "foo bar: %d", 112)
-	ExpectEq(17, 17.5, "foo bar: %d", 112)
-	ExpectLe(17, 16.9, "foo bar: %d", 112)
-	ExpectLt(17, 16.9, "foo bar: %d", 112)
-	ExpectGe(17, 17.1, "foo bar: %d", 112)
-	ExpectGt(17, "taco", "foo bar: %d", 112)
-	ExpectNe(17, 17.0, "foo bar: %d", 112)
-	ExpectFalse(true, "foo bar: %d", 112)
-	ExpectTrue(false, "foo bar: %d", 112)
+func (s *FailingTest) AssertWithUserErrorMessages(t *ogletest.T) {
+	t.AssertThat(17, Equals(19), "foo bar: %d", 112)
 }
 
-func (t *FailingTest) AssertWithUserErrorMessages() {
-	AssertThat(17, Equals(19), "foo bar: %d", 112)
+func (s *FailingTest) ExpectationAliases(t *ogletest.T) {
+	t.ExpectEq(17, 17.5)
+	t.ExpectEq("taco", 17.5)
+
+	t.ExpectLe(17, 16.9)
+	t.ExpectLt(17, 16.9)
+	t.ExpectLt(17, "taco")
+
+	t.ExpectGe(17, 17.1)
+	t.ExpectGt(17, 17.1)
+	t.ExpectGt(17, "taco")
+
+	t.ExpectNe(17, 17.0)
+	t.ExpectNe(17, "taco")
+
+	t.ExpectFalse(true)
+	t.ExpectFalse("taco")
+
+	t.ExpectTrue(false)
+	t.ExpectTrue("taco")
 }
 
-func (t *FailingTest) ExpectationAliases() {
-	ExpectEq(17, 17.5)
-	ExpectEq("taco", 17.5)
-
-	ExpectLe(17, 16.9)
-	ExpectLt(17, 16.9)
-	ExpectLt(17, "taco")
-
-	ExpectGe(17, 17.1)
-	ExpectGt(17, 17.1)
-	ExpectGt(17, "taco")
-
-	ExpectNe(17, 17.0)
-	ExpectNe(17, "taco")
-
-	ExpectFalse(true)
-	ExpectFalse("taco")
-
-	ExpectTrue(false)
-	ExpectTrue("taco")
+func (s *FailingTest) AssertThatFailure(t *ogletest.T) {
+	t.AssertThat(17, Equals(19))
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertThatFailure() {
-	AssertThat(17, Equals(19))
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertEqFailure(t *ogletest.T) {
+	t.AssertEq(19, 17)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertEqFailure() {
-	AssertEq(19, 17)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertNeFailure(t *ogletest.T) {
+	t.AssertNe(19, 19)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertNeFailure() {
-	AssertNe(19, 19)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertLeFailure(t *ogletest.T) {
+	t.AssertLe(19, 17)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertLeFailure() {
-	AssertLe(19, 17)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertLtFailure(t *ogletest.T) {
+	t.AssertLt(19, 17)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertLtFailure() {
-	AssertLt(19, 17)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertGeFailure(t *ogletest.T) {
+	t.AssertGe(17, 19)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertGeFailure() {
-	AssertGe(17, 19)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertGtFailure(t *ogletest.T) {
+	t.AssertGt(17, 19)
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertGtFailure() {
-	AssertGt(17, 19)
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertTrueFailure(t *ogletest.T) {
+	t.AssertTrue("taco")
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertTrueFailure() {
-	AssertTrue("taco")
-	panic("Shouldn't get here.")
+func (s *FailingTest) AssertFalseFailure(t *ogletest.T) {
+	t.AssertFalse("taco")
+	panic("Shouldn's get here.")
 }
 
-func (t *FailingTest) AssertFalseFailure() {
-	AssertFalse("taco")
-	panic("Shouldn't get here.")
-}
-
-func (t *FailingTest) AddFailureRecord() {
-	r := FailureRecord{
+func (s *FailingTest) AddFailureRecord(t *ogletest.T) {
+	r := ogletest.FailureRecord{
 		FileName:   "foo.go",
 		LineNumber: 17,
 		Error:      "taco\nburrito",
 	}
 
-	AddFailureRecord(r)
+	t.AddFailureRecord(r)
 }
 
-func (t *FailingTest) AddFailure() {
-	AddFailure("taco")
-	AddFailure("burrito: %d", 17)
+func (s *FailingTest) AddFailure(t *ogletest.T) {
+	t.AddFailure("taco")
+	t.AddFailure("burrito: %d", 17)
 }
 
-func (t *FailingTest) AddFailureThenAbortTest() {
-	AddFailure("enchilada")
-	AbortTest()
+func (s *FailingTest) AddFailureThenAbortTest(t *ogletest.T) {
+	t.AddFailure("enchilada")
+	t.AbortTest()
 	fmt.Println("Shouldn't get here.")
 }
 
@@ -174,17 +169,17 @@ func (t *FailingTest) AddFailureThenAbortTest() {
 type ExpectFailDuringSetUpTest struct {
 }
 
-func init() { RegisterTestSuite(&ExpectFailDuringSetUpTest{}) }
+func init() { ogletest.RegisterTestSuite(&ExpectFailDuringSetUpTest{}) }
 
-func (t *ExpectFailDuringSetUpTest) SetUp(i *TestInfo) {
-	ExpectFalse(true)
+func (s *ExpectFailDuringSetUpTest) SetUp(t *ogletest.T) {
+	t.ExpectFalse(true)
 }
 
-func (t *ExpectFailDuringSetUpTest) TearDown() {
+func (s *ExpectFailDuringSetUpTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
 }
 
-func (t *ExpectFailDuringSetUpTest) PassingMethod() {
+func (s *ExpectFailDuringSetUpTest) PassingMethod(t *ogletest.T) {
 	fmt.Println("Method running.")
 }
 
@@ -195,17 +190,17 @@ func (t *ExpectFailDuringSetUpTest) PassingMethod() {
 type AssertFailDuringSetUpTest struct {
 }
 
-func init() { RegisterTestSuite(&AssertFailDuringSetUpTest{}) }
+func init() { ogletest.RegisterTestSuite(&AssertFailDuringSetUpTest{}) }
 
-func (t *AssertFailDuringSetUpTest) SetUp(i *TestInfo) {
-	AssertFalse(true)
+func (s *AssertFailDuringSetUpTest) SetUp(t *ogletest.T) {
+	t.AssertFalse(true)
 }
 
-func (t *AssertFailDuringSetUpTest) TearDown() {
+func (s *AssertFailDuringSetUpTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
 }
 
-func (t *AssertFailDuringSetUpTest) PassingMethod() {
+func (s *AssertFailDuringSetUpTest) PassingMethod(t *ogletest.T) {
 	fmt.Println("Method running.")
 }
 
@@ -216,17 +211,17 @@ func (t *AssertFailDuringSetUpTest) PassingMethod() {
 type ExpectFailDuringTearDownTest struct {
 }
 
-func init() { RegisterTestSuite(&ExpectFailDuringTearDownTest{}) }
+func init() { ogletest.RegisterTestSuite(&ExpectFailDuringTearDownTest{}) }
 
-func (t *ExpectFailDuringTearDownTest) SetUp(i *TestInfo) {
+func (s *ExpectFailDuringTearDownTest) SetUp(t *ogletest.T) {
 	fmt.Println("SetUp running.")
 }
 
-func (t *ExpectFailDuringTearDownTest) TearDown() {
-	ExpectFalse(true)
+func (s *ExpectFailDuringTearDownTest) TearDown(t *ogletest.T) {
+	t.ExpectFalse(true)
 }
 
-func (t *ExpectFailDuringTearDownTest) PassingMethod() {
+func (s *ExpectFailDuringTearDownTest) PassingMethod(t *ogletest.T) {
 	fmt.Println("Method running.")
 }
 
@@ -237,16 +232,16 @@ func (t *ExpectFailDuringTearDownTest) PassingMethod() {
 type AssertFailDuringTearDownTest struct {
 }
 
-func init() { RegisterTestSuite(&AssertFailDuringTearDownTest{}) }
+func init() { ogletest.RegisterTestSuite(&AssertFailDuringTearDownTest{}) }
 
-func (t *AssertFailDuringTearDownTest) SetUp(i *TestInfo) {
+func (s *AssertFailDuringTearDownTest) SetUp(t *ogletest.T) {
 	fmt.Println("SetUp running.")
 }
 
-func (t *AssertFailDuringTearDownTest) TearDown() {
-	AssertFalse(true)
+func (s *AssertFailDuringTearDownTest) TearDown(t *ogletest.T) {
+	t.AssertFalse(true)
 }
 
-func (t *AssertFailDuringTearDownTest) PassingMethod() {
+func (s *AssertFailDuringTearDownTest) PassingMethod(t *ogletest.T) {
 	fmt.Println("Method running.")
 }

@@ -4,76 +4,76 @@ TearDown running.
 [       OK ] FailingTest.PassingMethod
 [ RUN      ] FailingTest.Equals
 TearDown running.
-failing_test.go:52:
+failing_test.go:47:
 Expected: 17.5
 Actual:   17
 
-failing_test.go:53:
+failing_test.go:48:
 Expected: taco
 Actual:   17, which is not a string
 
 [  FAILED  ] FailingTest.Equals
 [ RUN      ] FailingTest.LessThan
 TearDown running.
-failing_test.go:57:
+failing_test.go:52:
 Expected: less than 17
 Actual:   18
 
-failing_test.go:58:
+failing_test.go:53:
 Expected: less than "taco"
 Actual:   18, which is not comparable
 
 [  FAILED  ] FailingTest.LessThan
 [ RUN      ] FailingTest.HasSubstr
 TearDown running.
-failing_test.go:63:
+failing_test.go:58:
 Expected: has substring "ac"
 Actual:   17, which is not a string
 
 [  FAILED  ] FailingTest.HasSubstr
 [ RUN      ] FailingTest.ExpectWithUserErrorMessages
 TearDown running.
-failing_test.go:67:
+failing_test.go:62:
 Expected: 19
 Actual:   17
 foo bar: 112
 
-failing_test.go:68:
+failing_test.go:63:
 Expected: 17
 Actual:   17.5
 foo bar: 112
 
-failing_test.go:69:
+failing_test.go:64:
 Expected: less than or equal to 16.9
 Actual:   17
 foo bar: 112
 
-failing_test.go:70:
+failing_test.go:65:
 Expected: less than 16.9
 Actual:   17
 foo bar: 112
 
-failing_test.go:71:
+failing_test.go:66:
 Expected: greater than or equal to 17.1
 Actual:   17
 foo bar: 112
 
-failing_test.go:72:
+failing_test.go:67:
 Expected: greater than "taco"
 Actual:   17, which is not comparable
 foo bar: 112
 
-failing_test.go:73:
+failing_test.go:68:
 Expected: not(17)
 Actual:   17
 foo bar: 112
 
-failing_test.go:74:
+failing_test.go:69:
 Expected: false
 Actual:   true
 foo bar: 112
 
-failing_test.go:75:
+failing_test.go:70:
 Expected: true
 Actual:   false
 foo bar: 112
@@ -81,7 +81,7 @@ foo bar: 112
 [  FAILED  ] FailingTest.ExpectWithUserErrorMessages
 [ RUN      ] FailingTest.AssertWithUserErrorMessages
 TearDown running.
-failing_test.go:79:
+failing_test.go:74:
 Expected: 19
 Actual:   17
 foo bar: 112
@@ -89,122 +89,122 @@ foo bar: 112
 [  FAILED  ] FailingTest.AssertWithUserErrorMessages
 [ RUN      ] FailingTest.ExpectationAliases
 TearDown running.
-failing_test.go:83:
+failing_test.go:78:
 Expected: 17
 Actual:   17.5
 
-failing_test.go:84:
+failing_test.go:79:
 Expected: taco
 Actual:   17.5, which is not a string
 
-failing_test.go:86:
+failing_test.go:81:
 Expected: less than or equal to 16.9
 Actual:   17
 
-failing_test.go:87:
+failing_test.go:82:
 Expected: less than 16.9
 Actual:   17
 
-failing_test.go:88:
+failing_test.go:83:
 Expected: less than "taco"
 Actual:   17, which is not comparable
 
-failing_test.go:90:
+failing_test.go:85:
 Expected: greater than or equal to 17.1
 Actual:   17
 
-failing_test.go:91:
+failing_test.go:86:
 Expected: greater than 17.1
 Actual:   17
 
-failing_test.go:92:
+failing_test.go:87:
 Expected: greater than "taco"
 Actual:   17, which is not comparable
 
-failing_test.go:94:
+failing_test.go:89:
 Expected: not(17)
 Actual:   17
 
-failing_test.go:95:
+failing_test.go:90:
 Expected: not(17)
 Actual:   taco, which is not numeric
 
-failing_test.go:97:
+failing_test.go:92:
 Expected: false
 Actual:   true
 
-failing_test.go:98:
+failing_test.go:93:
 Expected: false
 Actual:   taco, which is not a bool
 
-failing_test.go:100:
+failing_test.go:95:
 Expected: true
 Actual:   false
 
-failing_test.go:101:
+failing_test.go:96:
 Expected: true
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.ExpectationAliases
 [ RUN      ] FailingTest.AssertThatFailure
 TearDown running.
-failing_test.go:105:
+failing_test.go:100:
 Expected: 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertThatFailure
 [ RUN      ] FailingTest.AssertEqFailure
 TearDown running.
-failing_test.go:110:
+failing_test.go:105:
 Expected: 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertEqFailure
 [ RUN      ] FailingTest.AssertNeFailure
 TearDown running.
-failing_test.go:115:
+failing_test.go:110:
 Expected: not(19)
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertNeFailure
 [ RUN      ] FailingTest.AssertLeFailure
 TearDown running.
-failing_test.go:120:
+failing_test.go:115:
 Expected: less than or equal to 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLeFailure
 [ RUN      ] FailingTest.AssertLtFailure
 TearDown running.
-failing_test.go:125:
+failing_test.go:120:
 Expected: less than 17
 Actual:   19
 
 [  FAILED  ] FailingTest.AssertLtFailure
 [ RUN      ] FailingTest.AssertGeFailure
 TearDown running.
-failing_test.go:130:
+failing_test.go:125:
 Expected: greater than or equal to 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGeFailure
 [ RUN      ] FailingTest.AssertGtFailure
 TearDown running.
-failing_test.go:135:
+failing_test.go:130:
 Expected: greater than 19
 Actual:   17
 
 [  FAILED  ] FailingTest.AssertGtFailure
 [ RUN      ] FailingTest.AssertTrueFailure
 TearDown running.
-failing_test.go:140:
+failing_test.go:135:
 Expected: true
 Actual:   taco, which is not a bool
 
 [  FAILED  ] FailingTest.AssertTrueFailure
 [ RUN      ] FailingTest.AssertFalseFailure
 TearDown running.
-failing_test.go:145:
+failing_test.go:140:
 Expected: false
 Actual:   taco, which is not a bool
 
@@ -218,26 +218,25 @@ burrito
 [  FAILED  ] FailingTest.AddFailureRecord
 [ RUN      ] FailingTest.AddFailure
 TearDown running.
-failing_test.go:160:
+failing_test.go:155:
 taco
 
-failing_test.go:161:
+failing_test.go:156:
 burrito: 17
 
 [  FAILED  ] FailingTest.AddFailure
 [ RUN      ] FailingTest.AddFailureThenAbortTest
 TearDown running.
-failing_test.go:165:
+failing_test.go:160:
 enchilada
 
 [  FAILED  ] FailingTest.AddFailureThenAbortTest
-TearDownTestSuite running.
 [----------] Finished with tests from FailingTest
 [----------] Running tests from ExpectFailDuringSetUpTest
 [ RUN      ] ExpectFailDuringSetUpTest.PassingMethod
 Method running.
 TearDown running.
-failing_test.go:180:
+failing_test.go:175:
 Expected: false
 Actual:   true
 
@@ -246,7 +245,7 @@ Actual:   true
 [----------] Running tests from AssertFailDuringSetUpTest
 [ RUN      ] AssertFailDuringSetUpTest.PassingMethod
 TearDown running.
-failing_test.go:201:
+failing_test.go:196:
 Expected: false
 Actual:   true
 
@@ -256,7 +255,7 @@ Actual:   true
 [ RUN      ] ExpectFailDuringTearDownTest.PassingMethod
 SetUp running.
 Method running.
-failing_test.go:226:
+failing_test.go:221:
 Expected: false
 Actual:   true
 
@@ -266,7 +265,7 @@ Actual:   true
 [ RUN      ] AssertFailDuringTearDownTest.PassingMethod
 SetUp running.
 Method running.
-failing_test.go:247:
+failing_test.go:242:
 Expected: false
 Actual:   true
 
