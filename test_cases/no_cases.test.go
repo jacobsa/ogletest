@@ -16,12 +16,12 @@
 package oglematchers_test
 
 import (
-	"fmt"
-	. "github.com/jacobsa/ogletest"
 	"testing"
+
+	"github.com/jacobsa/ogletest"
 )
 
-func TestNoCases(t *testing.T) { RunTests(t) }
+func TestNoCases(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -30,12 +30,4 @@ func TestNoCases(t *testing.T) { RunTests(t) }
 type NoCasesTest struct {
 }
 
-func init() { RegisterTestSuite(&NoCasesTest{}) }
-
-func (t *NoCasesTest) SetUpTestSuite() {
-	fmt.Println("SetUpTestSuite run!")
-}
-
-func (t *NoCasesTest) TearDownTestSuite() {
-	fmt.Println("TearDownTestSuite run!")
-}
+func init() { ogletest.RegisterTestSuite(&NoCasesTest{}) }
