@@ -19,7 +19,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"os"
 	"path"
 	"regexp"
 	"runtime"
@@ -240,38 +239,61 @@ func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 ////////////////////////////////////////////////////////////////////////
 
 // Run a single test suite, signalling failures to the supplied testing.T.
+//
+// TODO(jacobsa): Hoist parallelism so that we can process multiple suites in
+// parallel?
 func runTestSuite(
 	t *testing.T,
 	suite TestSuite) {
-	// Stop now if we've already seen a failure and we've been told to stop
-	// early.
-	if t.Failed() && *fStopEarly {
-		return
+	// Set a slice containing the functions to be run and storage for their
+	// results.
+	type workItem struct {
+		tf       TestFunction
+		duration time.Duration
+		failures []FailureRecord
 	}
 
-	// Print a banner.
-	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
-
-	// Run each test function that the user has not told us to skip.
-	stoppedEarly := false
+	var work []workItem
 	for _, tf := range filterTestFunctions(suite) {
-		// Did the user request that we stop running tests? If so, skip the rest
-		// of this suite (and exit after tearing it down).
-		if atomic.LoadUint64(&gStopRunning) != 0 {
-			stoppedEarly = true
-			break
-		}
+		work = append(work, workItem{tf: tf})
+	}
+
+	// Start several workers processing work in parallel.
+	//
+	// TODO(jacobsa): Make the parallelism configurable.
+	workChan := make(chan *workItem, len(work))
+	for i := range work {
+		workChan <- &work[i]
+	}
+
+	const parallelism = 1
+	var wg sync.WaitGroup
+	for i := 0; i < parallelism; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for wi := range workChan {
+				startTime := time.Now()
+				wi.failures = runTestFunction(wi.tf)
+				wi.duration = time.Since(startTime)
+			}
+		}()
+	}
+
+	// Wait for everything to finish.
+	wg.Wait()
+
+	// Print results.
+	fmt.Printf("[----------] Running tests from %s\n", suite.Name)
+	for _, wi := range work {
+		tf := wi.tf
+		failures := wi.failures
 
 		// Print a banner for the start of this test function.
 		fmt.Printf("[ RUN      ] %s.%s\n", suite.Name, tf.Name)
 
-		// Run the test function.
-		startTime := time.Now()
-		failed, output := runTestFunction(tf)
-		runDuration := time.Since(startTime)
-
-		// Mark the test as having failed if appropriate.
-		if failed {
+		// Print any failures, and mark the test as having failed if there are any.
+		for _, record := range failures {
 			t.Fail()
 		}
 
@@ -286,8 +308,8 @@ func runTestSuite(
 
 		// Print a summary of the time taken, if long enough.
 		var timeMessage string
-		if runDuration >= 25*time.Millisecond {
-			timeMessage = fmt.Sprintf(" (%s)", runDuration.String())
+		if wi.duration >= 25*time.Millisecond {
+			timeMessage = fmt.Sprintf(" (%v)", wi.duration)
 		}
 
 		fmt.Printf(
@@ -302,12 +324,6 @@ func runTestSuite(
 		if t.Failed() && *fStopEarly {
 			break
 		}
-	}
-
-	// Were we told to exit early?
-	if stoppedEarly {
-		fmt.Println("Exiting early due to user request.")
-		os.Exit(1)
 	}
 
 	fmt.Printf("[----------] Finished with tests from %s\n", suite.Name)
