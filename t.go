@@ -131,7 +131,16 @@ func (t *T) AddFailureRecord(r FailureRecord) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	t.records = append(t.records, r)
+	// Make sure we're marked as failed.
+	t.fail = true
+
+	// Add the message to our output.
+	fmt.Fprintf(
+		&t.buf,
+		"%s:%d:\n%s\n\n",
+		r.FileName,
+		r.LineNumber,
+		r.Error)
 }
 
 // Call AddFailureRecord with a record whose file name and line number come
