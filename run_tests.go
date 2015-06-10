@@ -258,7 +258,8 @@ func runTestSuite(
 	// Set up a slice of channels into which results will be written. These will
 	// be used to communicate results from the workers, in order.
 	type result struct {
-		failures []FailureRecord
+		failed   bool
+		output   []byte
 		duration time.Duration
 	}
 
@@ -275,10 +276,10 @@ func runTestSuite(
 		go func() {
 			for i := range indices {
 				startTime := time.Now()
-				failures := runTestFunction(tfs[i])
+				failed, output := runTestFunction(tfs[i])
 				duration := time.Since(startTime)
 
-				resultChans[i] <- result{failures, duration}
+				resultChans[i] <- result{failed, output, duration}
 			}
 		}()
 	}
@@ -292,17 +293,17 @@ func runTestSuite(
 		// Wait for the result.
 		result := <-resultChans[i]
 
-		// Print any failures, and mark the test as having failed if there are any.
-		for _, record := range result.failures {
+		// Mark the test as having failed if appropriate.
+		if result.failed {
 			t.Fail()
 		}
 
 		// Print output.
-		fmt.Printf("%s", output)
+		fmt.Printf("%s", result.output)
 
 		// Print a banner for the end of the test.
 		bannerMessage := "[       OK ]"
-		if failed {
+		if result.failed {
 			bannerMessage = "[  FAILED  ]"
 		}
 
