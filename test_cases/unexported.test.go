@@ -36,6 +36,15 @@ func TestUnexportedTest(t *testing.T) { ogletest.RunTests(t) }
 func (s *UnexportedTest) someUnexportedMethod(t *ogletest.T) {
 }
 
+func (s *UnexportedTest) TooFewArgs() {
+}
+
+func (s *UnexportedTest) TooManyArgs(t *ogletest.T, i int) {
+}
+
+func (s *UnexportedTest) WrongTypeArg(i int) {
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
