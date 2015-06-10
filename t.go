@@ -16,6 +16,7 @@
 package ogletest
 
 import (
+	"bytes"
 	"fmt"
 	"path"
 	"runtime"
@@ -51,10 +52,15 @@ type T struct {
 
 	mu sync.Mutex
 
-	// Failure records accumulated so far. Only ever appended to.
+	// Has the test failed?
 	//
 	// GUARDED_BY(mu)
-	records []FailureRecord
+	fail bool
+
+	// Output of the test, including failure messages.
+	//
+	// GUARDED_BY(mu)
+	buf bytes.Buffer
 }
 
 func newT(
@@ -74,11 +80,18 @@ func (t *T) name() string {
 	return t.testName
 }
 
-func (t *T) failureRecords() []FailureRecord {
+// Return whether the test failed, and a copy of the output.
+func (t *T) result() (failed bool, out []byte) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	return t.records
+	failed = t.fail
+
+	b := t.buf.Bytes()
+	out = make([]byte, len(b))
+	copy(out, b)
+
+	return
 }
 
 // FailureRecord represents a single failed expectation or assertion for a
@@ -113,7 +126,16 @@ func (t *T) AddFailureRecord(r FailureRecord) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	t.records = append(t.records, r)
+	// Make sure we're marked as failed.
+	t.fail = true
+
+	// Add the message to our output.
+	fmt.Fprintf(
+		&t.buf,
+		"%s:%d:\n%s\n\n",
+		r.FileName,
+		r.LineNumber,
+		r.Error)
 }
 
 // Call AddFailureRecord with a record whose file name and line number come

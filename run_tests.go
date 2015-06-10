@@ -51,8 +51,9 @@ func isAbortError(x interface{}) bool {
 	return ok
 }
 
-// Run a single test function, returning a slice of failure records.
-func runTestFunction(tf TestFunction) (failures []FailureRecord) {
+// Run a single test function, returning an indication of whether it failed and
+// its output.
+func runTestFunction(tf TestFunction) (failed bool, output []byte) {
 	// Start a trace.
 	ctx, reportOutcome := reqtrace.Trace(context.Background(), tf.Name)
 
@@ -80,15 +81,17 @@ func runTestFunction(tf TestFunction) (failures []FailureRecord) {
 	// on.
 	t.MockController.Finish()
 
+	// Find out what happened.
+	failed, output = t.result()
+
 	// Report the outcome to reqtrace.
-	failureRecords := t.failureRecords()
-	if len(failureRecords) == 0 {
-		reportOutcome(nil)
+	if failed {
+		reportOutcome(fmt.Errorf("failed"))
 	} else {
-		reportOutcome(fmt.Errorf("%v failure records", len(failureRecords)))
+		reportOutcome(nil)
 	}
 
-	return failureRecords
+	return
 }
 
 // Run everything registered with Register (including via the wrapper
@@ -152,22 +155,20 @@ func runTestsInternal(t *testing.T) {
 
 			// Run the test function.
 			startTime := time.Now()
-			failures := runTestFunction(tf)
+			failed, output := runTestFunction(tf)
 			runDuration := time.Since(startTime)
 
-			// Print any failures, and mark the test as having failed if there are any.
-			for _, record := range failures {
+			// Mark the test as having failed if appropriate.
+			if failed {
 				t.Fail()
-				fmt.Printf(
-					"%s:%d:\n%s\n\n",
-					record.FileName,
-					record.LineNumber,
-					record.Error)
 			}
+
+			// Print output.
+			fmt.Printf("%s", output)
 
 			// Print a banner for the end of the test.
 			bannerMessage := "[       OK ]"
-			if len(failures) != 0 {
+			if failed {
 				bannerMessage = "[  FAILED  ]"
 			}
 
