@@ -16,7 +16,6 @@
 package ogletest
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/jacobsa/ogletest/srcutil"
@@ -123,23 +122,22 @@ func RegisterTestSuite(p interface{}) {
 }
 
 func runTestMethod(t *T, suite reflect.Value, method reflect.Method) {
-	// TODO(jacobsa): Put type checking logic in filterMethods, and just leave
-	// out non-conforming methods. Then delete this check. Make sure to add an
-	// integration test that shows methods being left out.
-	if method.Func.Type().NumIn() != 2 {
-		panic(fmt.Sprintf(
-			"%s: expected 2 args, actually %d.",
-			method.Name,
-			method.Func.Type().NumIn()))
-	}
-
 	method.Func.Call([]reflect.Value{suite, reflect.ValueOf(t)})
 }
 
 func filterMethods(
 	suiteName string,
 	in []reflect.Method) (out []reflect.Method) {
+	expectedArgType := reflect.TypeOf(&T{})
+
 	for _, m := range in {
+		// Skip methods that don't have a single argument of the correct type
+		// (aside from the implicit receiver argument).
+		funcType := m.Func.Type()
+		if funcType.NumIn() != 2 || funcType.In(1) != expectedArgType {
+			continue
+		}
+
 		// Skip set up, tear down, and unexported methods.
 		if isSpecialMethod(m.Name) || !isExportedMethod(m.Name) {
 			continue
