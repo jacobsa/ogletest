@@ -21,10 +21,10 @@ import (
 	"testing"
 
 	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
+	"github.com/jacobsa/ogletest"
 )
 
-func TestPanickingTest(t *testing.T) { RunTests(t) }
+func TestPanickingTest(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // PanickingTest
@@ -37,27 +37,27 @@ func someFuncThatPanics() {
 type PanickingTest struct {
 }
 
-func init() { RegisterTestSuite(&PanickingTest{}) }
+func init() { ogletest.RegisterTestSuite(&PanickingTest{}) }
 
-func (t *PanickingTest) TearDown() {
+func (s *PanickingTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
 }
 
-func (t *PanickingTest) ExplicitPanic() {
+func (s *PanickingTest) ExplicitPanic(t *ogletest.T) {
 	panic("Panic in ExplicitPanic")
 }
 
-func (t *PanickingTest) ExplicitPanicInHelperFunction() {
+func (s *PanickingTest) ExplicitPanicInHelperFunction(t *ogletest.T) {
 	someFuncThatPanics()
 }
 
-func (t *PanickingTest) NilPointerDerefence() {
+func (s *PanickingTest) NilPointerDerefence(t *ogletest.T) {
 	var p *int
 	log.Println(*p)
 }
 
-func (t *PanickingTest) ZzzSomeOtherTest() {
-	ExpectThat(17, Equals(17.0))
+func (s *PanickingTest) ZzzSomeOtherTest(t *ogletest.T) {
+	t.ExpectThat(17, Equals(17.0))
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -67,18 +67,18 @@ func (t *PanickingTest) ZzzSomeOtherTest() {
 type SetUpPanicTest struct {
 }
 
-func init() { RegisterTestSuite(&SetUpPanicTest{}) }
+func init() { ogletest.RegisterTestSuite(&SetUpPanicTest{}) }
 
-func (t *SetUpPanicTest) SetUp(ti *TestInfo) {
+func (s *SetUpPanicTest) SetUp(t *ogletest.T) {
 	fmt.Println("SetUp about to panic.")
 	panic("Panic in SetUp")
 }
 
-func (t *SetUpPanicTest) TearDown() {
+func (s *SetUpPanicTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown running.")
 }
 
-func (t *SetUpPanicTest) SomeTestCase() {
+func (s *SetUpPanicTest) SomeTestCase(t *ogletest.T) {
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -88,12 +88,12 @@ func (t *SetUpPanicTest) SomeTestCase() {
 type TearDownPanicTest struct {
 }
 
-func init() { RegisterTestSuite(&TearDownPanicTest{}) }
+func init() { ogletest.RegisterTestSuite(&TearDownPanicTest{}) }
 
-func (t *TearDownPanicTest) TearDown() {
+func (s *TearDownPanicTest) TearDown(t *ogletest.T) {
 	fmt.Println("TearDown about to panic.")
 	panic("Panic in TearDown")
 }
 
-func (t *TearDownPanicTest) SomeTestCase() {
+func (s *TearDownPanicTest) SomeTestCase(t *ogletest.T) {
 }

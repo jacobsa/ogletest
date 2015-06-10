@@ -1,6 +1,6 @@
 [----------] Running tests from UnexportedTest
 [ RUN      ] UnexportedTest.SomeTest
-unexported_test.go:42:
+unexported_test.go:44:
 Expected: 4
 Actual:   3
 

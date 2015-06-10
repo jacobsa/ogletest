@@ -16,9 +16,10 @@
 package oglematchers_test
 
 import (
-	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
 	"testing"
+
+	. "github.com/jacobsa/oglematchers"
+	"github.com/jacobsa/ogletest"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -28,20 +29,20 @@ import (
 type RunTwiceTest struct {
 }
 
-func init() { RegisterTestSuite(&RunTwiceTest{}) }
+func init() { ogletest.RegisterTestSuite(&RunTwiceTest{}) }
 
-// Set up two helpers that call RunTests. The test should still only be run
-// once.
-func TestOgletest(t *testing.T)  { RunTests(t) }
-func TestOgletest2(t *testing.T) { RunTests(t) }
+// Set up two helpers that call ogletest.RunTests. The test should still only
+// be run once.
+func TestOgletest(t *testing.T)  { ogletest.RunTests(t) }
+func TestOgletest2(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *RunTwiceTest) PassingMethod() {
+func (s *RunTwiceTest) PassingMethod(t *ogletest.T) {
 }
 
-func (t *RunTwiceTest) FailingMethod() {
-	ExpectThat(17, Equals(17.5))
+func (s *RunTwiceTest) FailingMethod(t *ogletest.T) {
+	t.ExpectThat(17, Equals(17.5))
 }

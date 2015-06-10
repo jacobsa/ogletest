@@ -126,9 +126,9 @@ func runTestMethod(t *T, suite reflect.Value, method reflect.Method) {
 	// TODO(jacobsa): Put type checking logic in filterMethods, and just leave
 	// out non-conforming methods. Then delete this check. Make sure to add an
 	// integration test that shows methods being left out.
-	if method.Func.Type().NumIn() != 1 {
+	if method.Func.Type().NumIn() != 2 {
 		panic(fmt.Sprintf(
-			"%s: expected 1 args, actually %d.",
+			"%s: expected 2 args, actually %d.",
 			method.Name,
 			method.Func.Type().NumIn()))
 	}

@@ -16,9 +16,10 @@
 package oglematchers_test
 
 import (
-	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
 	"testing"
+
+	. "github.com/jacobsa/oglematchers"
+	"github.com/jacobsa/ogletest"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -28,16 +29,17 @@ import (
 type UnexportedTest struct {
 }
 
-func init()                           { RegisterTestSuite(&UnexportedTest{}) }
-func TestUnexportedTest(t *testing.T) { RunTests(t) }
+func init() { ogletest.RegisterTestSuite(&UnexportedTest{}) }
 
-func (t *UnexportedTest) someUnexportedMethod() {
+func TestUnexportedTest(t *testing.T) { ogletest.RunTests(t) }
+
+func (s *UnexportedTest) someUnexportedMethod(t *ogletest.T) {
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Tests
 ////////////////////////////////////////////////////////////////////////
 
-func (t *UnexportedTest) SomeTest() {
-	ExpectThat(3, Equals(4))
+func (s *UnexportedTest) SomeTest(t *ogletest.T) {
+	t.ExpectThat(3, Equals(4))
 }

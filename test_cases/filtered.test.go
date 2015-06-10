@@ -16,13 +16,13 @@
 package oglematchers_test
 
 import (
-	"fmt"
-	. "github.com/jacobsa/oglematchers"
-	. "github.com/jacobsa/ogletest"
 	"testing"
+
+	. "github.com/jacobsa/oglematchers"
+	"github.com/jacobsa/ogletest"
 )
 
-func TestFiltered(t *testing.T) { RunTests(t) }
+func TestFiltered(t *testing.T) { ogletest.RunTests(t) }
 
 ////////////////////////////////////////////////////////////////////////
 // Partially filtered out
@@ -31,26 +31,26 @@ func TestFiltered(t *testing.T) { RunTests(t) }
 type PartiallyFilteredTest struct {
 }
 
-func init() { RegisterTestSuite(&PartiallyFilteredTest{}) }
+func init() { ogletest.RegisterTestSuite(&PartiallyFilteredTest{}) }
 
-func (t *PartiallyFilteredTest) PassingTestFoo() {
-	ExpectThat(19, Equals(19))
+func (s *PartiallyFilteredTest) PassingTestFoo(t *ogletest.T) {
+	t.ExpectThat(19, Equals(19))
 }
 
-func (t *PartiallyFilteredTest) PassingTestBar() {
-	ExpectThat(17, Equals(17))
+func (s *PartiallyFilteredTest) PassingTestBar(t *ogletest.T) {
+	t.ExpectThat(17, Equals(17))
 }
 
-func (t *PartiallyFilteredTest) PartiallyFilteredTestFoo() {
-	ExpectThat(18, LessThan(17))
+func (s *PartiallyFilteredTest) PartiallyFilteredTestFoo(t *ogletest.T) {
+	t.ExpectThat(18, LessThan(17))
 }
 
-func (t *PartiallyFilteredTest) PartiallyFilteredTestBar() {
-	ExpectThat("taco", HasSubstr("blah"))
+func (s *PartiallyFilteredTest) PartiallyFilteredTestBar(t *ogletest.T) {
+	t.ExpectThat("taco", HasSubstr("blah"))
 }
 
-func (t *PartiallyFilteredTest) PartiallyFilteredTestBaz() {
-	ExpectThat(18, LessThan(17))
+func (s *PartiallyFilteredTest) PartiallyFilteredTestBaz(t *ogletest.T) {
+	t.ExpectThat(18, LessThan(17))
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -60,20 +60,12 @@ func (t *PartiallyFilteredTest) PartiallyFilteredTestBaz() {
 type CompletelyFilteredTest struct {
 }
 
-func init() { RegisterTestSuite(&CompletelyFilteredTest{}) }
+func init() { ogletest.RegisterTestSuite(&CompletelyFilteredTest{}) }
 
-func (t *CompletelyFilteredTest) SetUpTestSuite() {
-	fmt.Println("SetUpTestSuite run!")
+func (s *PartiallyFilteredTest) SomePassingTest(t *ogletest.T) {
+	t.ExpectThat(19, Equals(19))
 }
 
-func (t *CompletelyFilteredTest) TearDownTestSuite() {
-	fmt.Println("TearDownTestSuite run!")
-}
-
-func (t *PartiallyFilteredTest) SomePassingTest() {
-	ExpectThat(19, Equals(19))
-}
-
-func (t *PartiallyFilteredTest) SomeFailingTest() {
-	ExpectThat(19, Equals(17))
+func (s *PartiallyFilteredTest) SomeFailingTest(t *ogletest.T) {
+	t.ExpectThat(19, Equals(17))
 }
