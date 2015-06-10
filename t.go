@@ -80,11 +80,23 @@ func (t *T) name() string {
 	return t.testName
 }
 
-func (t *T) failureRecords() []FailureRecord {
+func (t *T) failed() bool {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	return t.records
+	return t.fail
+}
+
+// Return a copy of the current output.
+func (t *T) output() (out []byte) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	b := t.buf.Bytes()
+	out = make([]byte, len(b))
+	copy(out, b)
+
+	return
 }
 
 // FailureRecord represents a single failed expectation or assertion for a
