@@ -16,7 +16,6 @@
 package oglematchers_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/jacobsa/ogletest"
@@ -36,7 +35,7 @@ var _ ogletest.TearDownInterface = &StopTest{}
 func init() { ogletest.RegisterTestSuite(&StopTest{}) }
 
 func (s *StopTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -47,9 +46,9 @@ func (s *StopTest) First(t *ogletest.T) {
 }
 
 func (s *StopTest) Second(t *ogletest.T) {
-	fmt.Println("About to call StopRunningTests.")
+	t.Logf("About to call StopRunningTests.")
 	ogletest.StopRunningTests()
-	fmt.Println("Called StopRunningTests.")
+	t.Logf("Called StopRunningTests.")
 }
 
 func (s *StopTest) Third(t *ogletest.T) {

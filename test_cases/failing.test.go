@@ -16,7 +16,6 @@
 package oglematchers_test
 
 import (
-	"fmt"
 	"testing"
 
 	. "github.com/jacobsa/oglematchers"
@@ -37,7 +36,7 @@ var _ ogletest.TearDownInterface = &FailingTest{}
 func init() { ogletest.RegisterTestSuite(&FailingTest{}) }
 
 func (s *FailingTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 func (s *FailingTest) PassingMethod(t *ogletest.T) {
@@ -159,7 +158,7 @@ func (s *FailingTest) AddFailure(t *ogletest.T) {
 func (s *FailingTest) AddFailureThenAbortTest(t *ogletest.T) {
 	t.AddFailure("enchilada")
 	t.AbortTest()
-	fmt.Println("Shouldn't get here.")
+	t.Logf("Shouldn't get here.")
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -176,11 +175,11 @@ func (s *ExpectFailDuringSetUpTest) SetUp(t *ogletest.T) {
 }
 
 func (s *ExpectFailDuringSetUpTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 func (s *ExpectFailDuringSetUpTest) PassingMethod(t *ogletest.T) {
-	fmt.Println("Method running.")
+	t.Logf("Method running.")
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -197,11 +196,11 @@ func (s *AssertFailDuringSetUpTest) SetUp(t *ogletest.T) {
 }
 
 func (s *AssertFailDuringSetUpTest) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown running.")
+	t.Logf("TearDown running.")
 }
 
 func (s *AssertFailDuringSetUpTest) PassingMethod(t *ogletest.T) {
-	fmt.Println("Method running.")
+	t.Logf("Method running.")
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -214,7 +213,7 @@ type ExpectFailDuringTearDownTest struct {
 func init() { ogletest.RegisterTestSuite(&ExpectFailDuringTearDownTest{}) }
 
 func (s *ExpectFailDuringTearDownTest) SetUp(t *ogletest.T) {
-	fmt.Println("SetUp running.")
+	t.Logf("SetUp running.")
 }
 
 func (s *ExpectFailDuringTearDownTest) TearDown(t *ogletest.T) {
@@ -222,7 +221,7 @@ func (s *ExpectFailDuringTearDownTest) TearDown(t *ogletest.T) {
 }
 
 func (s *ExpectFailDuringTearDownTest) PassingMethod(t *ogletest.T) {
-	fmt.Println("Method running.")
+	t.Logf("Method running.")
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -235,7 +234,7 @@ type AssertFailDuringTearDownTest struct {
 func init() { ogletest.RegisterTestSuite(&AssertFailDuringTearDownTest{}) }
 
 func (s *AssertFailDuringTearDownTest) SetUp(t *ogletest.T) {
-	fmt.Println("SetUp running.")
+	t.Logf("SetUp running.")
 }
 
 func (s *AssertFailDuringTearDownTest) TearDown(t *ogletest.T) {
@@ -243,5 +242,5 @@ func (s *AssertFailDuringTearDownTest) TearDown(t *ogletest.T) {
 }
 
 func (s *AssertFailDuringTearDownTest) PassingMethod(t *ogletest.T) {
-	fmt.Println("Method running.")
+	t.Logf("Method running.")
 }

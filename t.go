@@ -18,6 +18,7 @@ package ogletest
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"path"
 	"runtime"
 	"sync"
@@ -61,6 +62,11 @@ type T struct {
 	//
 	// GUARDED_BY(mu)
 	buf bytes.Buffer
+
+	// A logger that writes into buf.
+	//
+	// GUARDED_BY(mu)
+	logger *log.Logger
 }
 
 func newT(
@@ -72,12 +78,22 @@ func newT(
 	}
 
 	t.MockController = oglemock.NewController(tErrorReporter{t})
+	t.logger = log.New(&t.buf, "", 0)
 
 	return
 }
 
 func (t *T) name() string {
 	return t.testName
+}
+
+// Format the supplied arguments in the manner of fmt.Sprintf, and include the
+// result in the output for this test.
+func (t *T) Logf(format string, args ...interface{}) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	t.logger.Printf(format, args...)
 }
 
 // Return whether the test failed, and a copy of the output.

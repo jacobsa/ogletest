@@ -16,7 +16,6 @@
 package oglematchers_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -99,11 +98,11 @@ var _ ogletest.TearDownInterface = &PassingTestWithHelpers{}
 func init() { ogletest.RegisterTestSuite(&PassingTestWithHelpers{}) }
 
 func (s *PassingTestWithHelpers) SetUp(t *ogletest.T) {
-	fmt.Println("SetUp ran.")
+	t.Logf("SetUp ran.")
 }
 
 func (s *PassingTestWithHelpers) TearDown(t *ogletest.T) {
-	fmt.Println("TearDown ran.")
+	t.Logf("TearDown ran.")
 }
 
 func (s *PassingTestWithHelpers) EmptyTestMethod(t *ogletest.T) {
