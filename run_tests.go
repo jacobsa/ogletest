@@ -368,7 +368,7 @@ func runTestSuite(
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Public interface
+// RunTests
 ////////////////////////////////////////////////////////////////////////
 
 // runTestsOnce protects RunTests from executing multiple times.
@@ -397,15 +397,6 @@ func RunTests(t *testing.T) {
 	runTestsOnce.Do(func() { runTestsInternal(t) })
 }
 
-// Signalling between RunTests and StopRunningTests.
-var gStopRunning uint64
-
-// Request that RunTests stop running additional tests and cause the program to
-// exit with a non-zero status when the currently running tests finish.
-func StopRunningTests() {
-	atomic.StoreUint64(&gStopRunning, 1)
-}
-
 // runTestsInternal does the real work of RunTests, which simply wraps it in a
 // sync.Once.
 func runTestsInternal(t *testing.T) {
@@ -413,4 +404,17 @@ func runTestsInternal(t *testing.T) {
 	for _, suite := range registeredSuites {
 		runTestSuite(t, suite)
 	}
+}
+
+////////////////////////////////////////////////////////////////////////
+// StopRunningTests
+////////////////////////////////////////////////////////////////////////
+
+// Signalling between RunTests and StopRunningTests.
+var gStopRunning uint64
+
+// Request that RunTests stop running additional tests and cause the program to
+// exit with a non-zero status when the currently running tests finish.
+func StopRunningTests() {
+	atomic.StoreUint64(&gStopRunning, 1)
 }
