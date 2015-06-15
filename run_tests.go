@@ -44,7 +44,7 @@ var fTestFilter = flag.String(
 var fStopEarly = flag.Bool(
 	"ogletest.stop_early",
 	false,
-	"If true, stop after the first failure.")
+	"If true, stop running additional tests after the first failure.")
 
 var fParallelism = flag.Int(
 	"ogletest.parallelism",
@@ -285,12 +285,6 @@ func processSuiteResults(
 	suiteName string,
 	work []workItem,
 	workers *sync.WaitGroup) {
-	// If the overall test target has already failed and we've been told to stop
-	// on failure, then don't do anything.
-	if t.Failed() && *fStopEarly {
-		return
-	}
-
 	// Print results.
 	fmt.Printf("[----------] Running tests from %s\n", suiteName)
 	for i := range work {
@@ -310,9 +304,14 @@ func processSuiteResults(
 		case <-wi.complete:
 		}
 
-		// Mark the test as having failed if appropriate.
+		// If the test function failed, mark the overall test as having failed and
+		// stop running additional tests if the user has asked us to do so.
 		if wi.failed {
 			t.Fail()
+
+			if *fStopEarly {
+				StopRunningTests()
+			}
 		}
 
 		// Print output.
@@ -336,12 +335,6 @@ func processSuiteResults(
 			suiteName,
 			wi.tf.Name,
 			timeMessage)
-
-		// Stop printing results from this suite if we've been told to stop on
-		// failure and we have failed already.
-		if t.Failed() && *fStopEarly {
-			break
-		}
 	}
 
 	fmt.Printf("[----------] Finished with tests from %s\n", suiteName)
