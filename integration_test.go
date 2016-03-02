@@ -121,12 +121,11 @@ func cleanOutput(o []byte, testPkg string) []byte {
 	// contains a unique number.
 	o = []byte(strings.Replace(string(o), path.Base(testPkg), "somepkg", -1))
 
-	// Replace things that look like line numbers and process counters in stack
-	// traces.
-	stackFrameRe := regexp.MustCompile(`\t\S+\.(c|go):\d+`)
+	// Replace specific paths and line numbers in stack traces.
+	stackFrameRe := regexp.MustCompile(`\t\S+\.(c|go|s):\d+`)
 	o = stackFrameRe.ReplaceAll(o, []byte("\tsome_file.txt:0"))
 
-	// Replace full paths in failure messages with fake paths.
+	// Don't include directories in ogletest-generated failure messages.
 	pathRe := regexp.MustCompile(`/\S+/(\w+\.(?:go|s):\d+)`)
 	o = pathRe.ReplaceAll(o, []byte("/some/path/$1"))
 
