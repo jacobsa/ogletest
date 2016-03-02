@@ -6,8 +6,8 @@ panic: Panic in ExplicitPanic
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanic
 	some_file.txt:0
-runtime.call16
-	/some/path/asm_amd64.s:401
+runtime.call32
+	some_file.txt:0
 reflect.Value.call
 	some_file.txt:0
 reflect.Value.Call
@@ -24,8 +24,8 @@ github.com/jacobsa/ogletest/somepkg_test.someFuncThatPanics
 	some_file.txt:0
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanicInHelperFunction
 	some_file.txt:0
-runtime.call16
-	/some/path/asm_amd64.s:401
+runtime.call32
+	some_file.txt:0
 reflect.Value.call
 	some_file.txt:0
 reflect.Value.Call
@@ -40,8 +40,8 @@ panic: runtime error: invalid memory address or nil pointer dereference
 
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).NilPointerDerefence
 	some_file.txt:0
-runtime.call16
-	/some/path/asm_amd64.s:401
+runtime.call32
+	some_file.txt:0
 reflect.Value.call
 	some_file.txt:0
 reflect.Value.Call
@@ -62,9 +62,9 @@ panic: Panic in SetUp
 
 github.com/jacobsa/ogletest/somepkg_test.(*SetUpPanicTest).SetUp
 	some_file.txt:0
-github.com/jacobsa/ogletest.func·003
+github.com/jacobsa/ogletest.RegisterTestSuite.func3
 	some_file.txt:0
-github.com/jacobsa/ogletest.func·007
+github.com/jacobsa/ogletest.runTestFunction.func2
 	some_file.txt:0
 
 
@@ -78,7 +78,7 @@ panic: Panic in TearDown
 
 github.com/jacobsa/ogletest/somepkg_test.(*TearDownPanicTest).TearDown
 	some_file.txt:0
-github.com/jacobsa/ogletest.func·005
+github.com/jacobsa/ogletest.RegisterTestSuite.func5
 	some_file.txt:0
 
 
