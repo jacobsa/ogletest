@@ -142,6 +142,10 @@ func cleanOutput(o []byte, testPkg string) []byte {
 	timingRe4 := regexp.MustCompile(`SlowTest \([0-9.]+ms\)`)
 	o = timingRe4.ReplaceAll(o, []byte("SlowTest (1234ms)"))
 
+	// Replace arch-dependent runtime.call32 etc. with runtime.callXX
+	callRe := regexp.MustCompile(`runtime.call\d+`)
+	o = callRe.ReplaceAll(o, []byte("runtime.callXX"))
+
 	return o
 }
 
