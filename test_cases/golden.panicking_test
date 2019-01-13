@@ -20,7 +20,7 @@ TearDown running.
 panicking_test.go:34:
 panic: Panic in someFuncThatPanics
 
-github.com/jacobsa/ogletest/somepkg_test.someFuncThatPanics
+github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanicInHelperFunction
 	some_file.txt:0
 github.com/jacobsa/ogletest/somepkg_test.(*PanickingTest).ExplicitPanicInHelperFunction
 	some_file.txt:0
